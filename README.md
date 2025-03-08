@@ -1,54 +1,107 @@
-# React + TypeScript + Vite
+# Stock Management Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend of the **Stock Management System**, built with **Vite, React, TypeScript, ShadCN, and Tailwind CSS**. This application provides an intuitive and responsive user interface for managing stock, tracking sales, and monitoring inventory.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📊 **Dashboard Overview** - Visualize stock statistics and sales trends.
+- 📦 **Inventory Management** - View, add, update, and delete stock items.
+- 🛒 **Sales Tracking** - Manage orders and track sales data.
+- 🔍 **Advanced Search & Filtering** - Find stock items quickly.
+- 🎨 **Modern UI with ShadCN & Tailwind CSS** - Clean and responsive design.
+- ⚡ **Fast & Scalable** - Built with Vite for lightning-fast development.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠 Tech Stack
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Frontend:** React, TypeScript, Vite
+- **UI Framework:** ShadCN, Tailwind CSS
+- **State Management:** TanStack Query (React Query)
+- **Routing:** React Router
+- **API Calls:** Fetch API / Axios
+
+---
+
+## 📦 Installation
+
+### 1️⃣ Clone the Repository
+
+```sh
+git clone https://github.com/md-mobassher/stock-management-client
+cd stock-management-client
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2️⃣ Install Dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```sh
+yarn install  # or npm install
 ```
+
+### 3️⃣ Setup Environment Variables
+
+Create a `.env` file in the root directory and add:
+
+```sh
+VITE_API_BASE_URL=http://localhost:5000/api/v1
+```
+
+### 4️⃣ Run the Development Server
+
+```sh
+yarn dev  # or npm run dev
+```
+
+---
+
+## 🏗 Project Structure
+
+```
+📂 src
+ ├── 📂 components      # Reusable UI components
+ ├── 📂 pages           # Page components (Dashboard, Inventory, etc.)
+ ├── 📂 hooks           # Custom hooks
+ ├── 📂 services        # API call functions
+ ├── 📂 context         # Global state management (if needed)
+ ├── 📂 utils           # Helper functions
+ ├── 📂 styles          # Global styles
+ ├── 📂 types           # TypeScript types/interfaces
+```
+
+---
+
+## 🔧 Build & Deploy
+
+### Build for Production
+
+```sh
+yarn build  # or npm run build
+```
+
+### Deploy (Vercel / Netlify Recommended)
+
+```sh
+vercel deploy  # or netlify deploy
+```
+
+---
+
+## 📌 To-Do List
+
+- [ ] Implement Authentication & Authorization
+- [ ] Improve Dashboard with Charts (Recharts / ApexCharts)
+- [ ] Add Role-Based Access Control (RBAC)
+
+---
+
+## 👨‍💻 Author
+
+**Md Mobassher Hossain**  
+Full-Stack Developer | [LinkedIn](https://www.linkedin.com/in/md-mobassher-hossain)  
+📧 Email: mdmobassherhossain1@gmail.com
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.

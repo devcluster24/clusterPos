@@ -3,6 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "This is the frontend of the Stock Management System. This application provides an intuitive and responsive user interface for managing stock, tracking sales, and monitoring inventory.",
+  "main": "./src/App.tsx",
+  "author": "Md Mobassher Hossain <mdmobassherhossain1@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md-mobassher/stock-management-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/md-mobassher/stock-management-client/issues"
+  },
+  "homepage": "https://github.com/md-mobassher/stock-management-client#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

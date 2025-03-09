@@ -1,23 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
+import { getCookie, setCookie, removeCookie } from "@/utils/cookieHelper";
+import { authKey } from "@/constant/authkey";
 
 export type TUser = {
   email: string;
   role: string;
   iat: number;
   exp: number;
-  data?: any;
 };
 
 type TAuthState = {
-  user: null | TUser;
-  token: null | string;
+  user: TUser | null;
+  token: string | null;
 };
 
 const initialState: TAuthState = {
   user: null,
-  token: null,
+  token: getCookie(authKey) || null, // Load token from cookies
 };
 
 const authSlice = createSlice({
@@ -28,10 +28,12 @@ const authSlice = createSlice({
       const { user, token } = action.payload;
       state.user = user;
       state.token = token;
+      setCookie(authKey, token); // Save token in cookies
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
+      removeCookie(authKey); // Remove token from cookies
     },
   },
 });

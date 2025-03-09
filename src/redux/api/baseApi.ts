@@ -5,7 +5,7 @@ import { tagTypesList } from "../tag-Types";
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: axiosBaseQuery({
-    baseUrl: `${process.env.VITE_SERVER_URL}`,
+    baseUrl: `${import.meta.env.VITE_SERVER_URL}`,
   }),
   endpoints: () => ({}),
   tagTypes: tagTypesList,

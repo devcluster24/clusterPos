@@ -1,4 +1,5 @@
 export enum tagTypes {
+  user = "user",
   party = "party",
   productBrand = "product-brand",
   productCategory = "product-category",
@@ -10,6 +11,7 @@ export enum tagTypes {
 }
 
 export const tagTypesList = [
+  tagTypes.user,
   tagTypes.party,
   tagTypes.productBrand,
   tagTypes.productCategory,

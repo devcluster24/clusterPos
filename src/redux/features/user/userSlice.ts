@@ -4,6 +4,7 @@ import { getCookie, setCookie, removeCookie } from "@/utils/cookieHelper";
 import { authKey } from "@/constant/authkey";
 
 export type TUser = {
+  userId: number;
   email: string;
   role: string;
   iat: number;

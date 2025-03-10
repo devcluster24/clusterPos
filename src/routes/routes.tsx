@@ -1,4 +1,3 @@
-import RootLayout from "@/components/layouts/RootLayout";
 import Error from "@/pages/Error";
 import Login from "@/pages/Login/Login";
 import { createBrowserRouter } from "react-router-dom";
@@ -6,13 +5,14 @@ import PrivateRoute from "./PrivateRoute";
 import MyProfile from "@/pages/Profile/MyProfile";
 import Party from "@/pages/Party/Party";
 import Account from "@/pages/Account/Account";
+import AppLayout from "@/components/layout/AppLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <PrivateRoute roles={["SUPER_ADMIN", "OWNER", "MANAGER"]}>
-        <RootLayout />
+        <AppLayout />
       </PrivateRoute>
     ),
     children: [

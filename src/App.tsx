@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import RootLayout from "./components/layouts/RootLayout";
 import { authKey } from "./constant/authkey";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import { getCookie } from "./utils/cookieHelper";
 import { decodeToken } from "./utils/tokenHelper";
 import { setUser } from "./redux/features/user/userSlice";
+import AppLayout from "./components/layout/AppLayout";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -22,7 +22,7 @@ function App() {
 
   return (
     <>
-      <RootLayout />
+      <AppLayout />
     </>
   );
 }

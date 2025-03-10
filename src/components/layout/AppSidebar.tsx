@@ -1,84 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import {
-  ChevronDownIcon,
-  GridIcon,
-  ListIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
-  UserCircleIcon,
-} from "@/icons";
+import { ChevronDownIcon } from "@/icons";
 import { useSidebar } from "@/context/SidebarContext";
-
-type NavItem = {
-  type: string;
-  name: string;
-  icon: React.ReactNode;
-  path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
-};
-
-const navItems: NavItem[] = [
-  {
-    type: "Main",
-    name: "Dashboard",
-    icon: <GridIcon />,
-    path: "/",
-  },
-  {
-    type: "Main",
-    name: "User Profile",
-    icon: <UserCircleIcon />,
-    path: "/profile",
-  },
-  {
-    type: "Inventory",
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements" }],
-  },
-  {
-    type: "Inventory",
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables" }],
-  },
-  {
-    type: "Inventory",
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank" },
-      { name: "404 Error", path: "/error-404" },
-    ],
-  },
-  {
-    type: "Sales",
-    name: "Reports",
-    icon: <PieChartIcon />,
-    subItems: [
-      { name: "Monthly Sales", path: "/monthly-sales" },
-      { name: "Yearly Sales", path: "/yearly-sales" },
-    ],
-  },
-  {
-    type: "Sales",
-    name: "Transactions",
-    icon: <PlugInIcon />,
-    subItems: [
-      { name: "Pending Transactions", path: "/pending-transactions" },
-      { name: "Completed Transactions", path: "/completed-transactions" },
-    ],
-  },
-  {
-    type: "Report",
-    name: "User Profiles",
-    icon: <UserCircleIcon />,
-    path: "/profiles",
-  },
-];
+import { NavItem, navItems } from "./NavItems";
 
 // Ensure all items have a type (default: "Miscellaneous")
 const menuTypes = Array.from(new Set(navItems.map((item) => item.type)));
@@ -227,14 +151,14 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed flex flex-col top-0  left-0 bg-white dark:bg-gray-900 h-screen transition-all z-50 border-r border-gray-200 
-      ${
-        isExpanded || isMobileOpen
-          ? "w-[260px]"
-          : isHovered
-          ? "w-[260px]"
-          : "w-[90px]"
-      } ${
+      className={`fixed flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
+     ${
+       isExpanded || isMobileOpen
+         ? "w-[260px]"
+         : isHovered
+         ? "w-[260px]"
+         : "w-[90px]"
+     } ${
         isMobileOpen ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}

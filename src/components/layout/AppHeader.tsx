@@ -2,6 +2,9 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useEffect, useRef, useState } from "react";
 
 import { Link } from "react-router";
+import { ThemeToggleButton } from "../common/ThemeToggleButton";
+import NotificationDropdown from "../shared/header/NotificationDropdown";
+import UserDropdown from "../shared/header/UserDropdown";
 
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -155,13 +158,13 @@ const AppHeader: React.FC = () => {
         >
           <div className="flex items-center gap-2 2xsm:gap-3">
             {/* <!-- Dark Mode Toggler --> */}
-            {/* <ThemeToggleButton /> */}
+            <ThemeToggleButton />
             {/* <!-- Dark Mode Toggler --> */}
-            {/* <NotificationDropdown /> */}
+            <NotificationDropdown />
             {/* <!-- Notification Menu Area --> */}
           </div>
           {/* <!-- User Area --> */}
-          {/* <UserDropdown /> */}
+          <UserDropdown />
         </div>
       </div>
     </header>

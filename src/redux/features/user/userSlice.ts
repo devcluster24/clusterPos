@@ -2,23 +2,20 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import { getCookie, setCookie, removeCookie } from "@/utils/cookieHelper";
 import { authKey } from "@/constant/authkey";
-
-export type TUser = {
-  userId: number;
-  email: string;
-  role: string;
-  iat: number;
-  exp: number;
-};
+import { decodeToken, TUser } from "@/utils/tokenHelper";
 
 type TAuthState = {
   user: TUser | null;
   token: string | null;
 };
 
+// Get token from cookies
+const storedToken = getCookie(authKey);
+const storedUser = decodeToken(storedToken); // Decode user from token
+
 const initialState: TAuthState = {
-  user: null,
-  token: getCookie(authKey) || null, // Load token from cookies
+  user: storedUser,
+  token: storedToken,
 };
 
 const authSlice = createSlice({
@@ -29,7 +26,7 @@ const authSlice = createSlice({
       const { user, token } = action.payload;
       state.user = user;
       state.token = token;
-      setCookie(authKey, token); // Save token in cookies
+      setCookie(authKey, token); // Store token in cookies
     },
     logout: (state) => {
       state.user = null;
@@ -40,8 +37,8 @@ const authSlice = createSlice({
 });
 
 export const { setUser, logout } = authSlice.actions;
-
 export default authSlice.reducer;
 
+// Selectors
 export const selectCurrentToken = (state: RootState) => state.auth.token;
 export const selectCurrentUser = (state: RootState) => state.auth.user;

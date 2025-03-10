@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { useUserLoginMutation } from "@/redux/features/auth/authApi";
 import { Input, Form, Card } from "antd";
 import { useAppDispatch } from "@/redux/hooks";
-import { setUser, TUser } from "@/redux/features/user/userSlice";
+import { setUser } from "@/redux/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { TUser } from "@/utils/tokenHelper";
 
 const Login = () => {
   const [loginUser, { isLoading }] = useUserLoginMutation();
@@ -19,45 +20,6 @@ const Login = () => {
     password: string;
   }
 
-  // const onFinish = async (values: LoginFormValues) => {
-  //   try {
-  //     const result = await loginUser(values).unwrap();
-  //     console.log("API Response:", result);
-
-  //     if (result.success) {
-  //       const accessToken = result.data?.accessToken;
-  //       const decodedToken = jwtDecode(accessToken);
-  //       console.log("Decoded Token:", decodedToken);
-
-  //       // Show success message
-  //       Swal.fire({
-  //         title: "Success",
-  //         text: result?.message || "You have successfully logged in!",
-  //         icon: "success",
-  //       });
-
-  //       // Store user in Redux
-  //       dispatch(setUser({ user: decodedToken, token: accessToken }));
-
-  //       // Reset form and navigate to home
-  //       form.resetFields();
-  //       navigate("/");
-  //     }
-  //   } catch (error: any) {
-  //     console.error("Login Error:", error);
-
-  //     // Show error message
-  //     Swal.fire({
-  //       title: "Error",
-  //       text: error?.data?.message || "Invalid email or password!",
-  //       icon: "error",
-  //     });
-
-  //     // Dispatch logout to clear any existing user state
-  //     dispatch(logout());
-  //     form.resetFields();
-  //   }
-  // };
   const onFinish = async (values: LoginFormValues) => {
     try {
       const result = await loginUser(values).unwrap();
@@ -69,12 +31,14 @@ const Login = () => {
           title: "Success",
           text: result.message || "You have successfully logged in!",
           icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
         });
 
         // Extract the access token correctly
         const accessToken = result.data.accessToken;
         const decodedToken = jwtDecode(accessToken) as TUser;
-        console.log("Decoded Token:", decodedToken);
+        // console.log("Decoded Token:", decodedToken);
 
         // Store user in Redux correctly
         dispatch(setUser({ user: decodedToken, token: accessToken }));
@@ -89,6 +53,8 @@ const Login = () => {
         title: "Error",
         text: error?.data?.message || "Invalid email or password!",
         icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
       });
     }
   };

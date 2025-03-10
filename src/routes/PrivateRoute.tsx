@@ -1,19 +1,33 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-
 import { ReactNode } from "react";
+import { RootState } from "@/redux/store";
+import { useAppDispatch } from "@/redux/hooks";
+import { getCookie, removeCookie } from "@/utils/cookieHelper";
+import { authKey } from "@/constant/authkey";
 import { logout } from "@/redux/features/user/userSlice";
 
-const PrivateRoute = ({ children }: { children: ReactNode }) => {
-  const token = useSelector(
-    (state: { user: { token: string } }) => state.user.token
-  );
-  const dispatch = useDispatch();
+const PrivateRoute = ({
+  children,
+  roles,
+}: {
+  children: ReactNode;
+  roles?: string[];
+}) => {
+  const token =
+    useSelector((state: RootState) => state.auth.token) || getCookie(authKey);
+  const user = useSelector((state: RootState) => state.auth.user);
   const location = useLocation();
+  const dispatch = useAppDispatch();
 
   if (!token) {
     dispatch(logout());
-    return <Navigate to="/login" replace state={location.pathname} />;
+    removeCookie(authKey);
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (roles && user && !roles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;

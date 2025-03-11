@@ -2,11 +2,20 @@ import Error from "@/pages/Error";
 import Login from "@/pages/Login/Login";
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import Party from "@/pages/Party/Party";
-import Account from "@/pages/Account/Account";
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard/Dashboard";
 import UserProfiles from "@/pages/Profile/UserProfile";
+import CommingSoon from "@/pages/CommingSoon";
+import Products from "@/pages/Inventory/Products";
+import Category from "@/pages/Inventory/Category";
+import Brand from "@/pages/Inventory/Brand";
+import SubCategory from "@/pages/Inventory/SubCategory";
+import Items from "@/pages/Inventory/Items";
+import Units from "@/pages/Inventory/Units";
+import Varients from "@/pages/Inventory/Varients";
+import Warrenty from "@/pages/Inventory/Warrenty";
+import QRCode from "@/pages/Inventory/QRCode";
+import BarCode from "@/pages/Inventory/BarCode";
 
 const router = createBrowserRouter([
   {
@@ -30,102 +39,54 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <Dashboard />,
       },
+
+      /* Inventory routes */
       {
-        path: "/party",
-        element: <Party />,
+        path: "/products",
+        element: <Products />,
       },
       {
-        path: "/accounts",
-        element: <Account />,
+        path: "/brand",
+        element: <Brand />,
       },
-      // {
-      //   path: "/factory_costs",
-      //   element: (
-      //     <ManagerRoute>
-      //       <FactoryCostUpdated />
-      //     </ManagerRoute>
-      //   ),
-      // },
-      // {
-      //   path: "/purchases",
-      //   element: (
-      //     <ManagerRoute>
-      //       <PurchasesPage />
-      //     </ManagerRoute>
-      //   ),
-      // },
-      // {
-      //   path: "/sales",
-      //   element: (
-      //     <ManagerRoute>
-      //       <Sales />
-      //     </ManagerRoute>
-      //   ),
-      // },
-      // {
-      //   path: "/report/loss_profit",
-      //   element: <LossProfit />,
-      // },
-      // {
-      //   path: "/report/purchases",
-      //   element: <Purchase />,
-      // },
-      // {
-      //   path: "/report/factory",
-      //   element: <FactoryCostUpdated />,
-      // },
-      // {
-      //   path: "/report/bags",
-      //   element: <Bags />,
-      // },
-      // {
-      //   path: "/report/sales",
-      //   element: <SalesReport />,
-      // },
-      // {
-      //   path: "/report/return",
-      //   element: <Return />,
-      // },
-      // {
-      //   path: "/report/balance",
-      //   element: <BalanceReport />,
-      // },
-      // {
-      //   path: "/company/balance",
-      //   element: <Balance />,
-      // },
-      // {
-      //   path: "/production",
-      //   element: (
-      //     <ManagerRoute>
-      //       <Production />
-      //     </ManagerRoute>
-      //   ),
-      // },
-      // {
-      //   path: "/inventory",
-      //   element: <Inventory />,
-      // },
-      // {
-      //   path: "/categories",
-      //   element: <Categories />,
-      // },
-      // {
-      //   path: "/items",
-      //   element: <Items />,
-      // },
-      // {
-      //   path: "/authentication",
-      //   element: (
-      //     <PrivateRoute>
-      //       <Authentication />
-      //     </PrivateRoute>
-      //   ),
-      // },
-      // {
-      //   path: "/profile",
-      //   element: <Profile />,
-      // },
+      {
+        path: "/categories",
+        element: <Category />,
+      },
+      {
+        path: "/sub-categories",
+        element: <SubCategory />,
+      },
+      {
+        path: "/items",
+        element: <Items />,
+      },
+      {
+        path: "/units",
+        element: <Units />,
+      },
+      {
+        path: "/varients",
+        element: <Varients />,
+      },
+      {
+        path: "/warrenty",
+        element: <Warrenty />,
+      },
+      {
+        path: "/print-qrcode",
+        element: <QRCode />,
+      },
+      {
+        path: "/print-barcode",
+        element: <BarCode />,
+      },
+
+      /* Stock routes */
+      {
+        path: "/comming-soon",
+        element: <CommingSoon />,
+      },
     ],
     errorElement: <Error />,
   },

@@ -2,43 +2,36 @@ import Error from "@/pages/Error";
 import Login from "@/pages/Login/Login";
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import MyProfile from "@/pages/Profile/MyProfile";
 import Party from "@/pages/Party/Party";
 import Account from "@/pages/Account/Account";
 import AppLayout from "@/components/layout/AppLayout";
+import Dashboard from "@/pages/Dashboard/Dashboard";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <PrivateRoute roles={["SUPER_ADMIN", "OWNER", "MANAGER"]}>
+      <PrivateRoute>
         <AppLayout />
       </PrivateRoute>
     ),
     children: [
       {
-        path: "/profile",
-        element: (
-          <PrivateRoute roles={["USER"]}>
-            <MyProfile />
-          </PrivateRoute>
-        ),
+        path: "/",
+        index: true,
+        element: <Dashboard />,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
       },
       {
         path: "/party",
-        element: (
-          <PrivateRoute roles={["MANAGER", "OWNER"]}>
-            <Party />
-          </PrivateRoute>
-        ),
+        element: <Party />,
       },
       {
         path: "/accounts",
-        element: (
-          <PrivateRoute roles={["SUPER_ADMIN"]}>
-            <Account />
-          </PrivateRoute>
-        ),
+        element: <Account />,
       },
       // {
       //   path: "/factory_costs",

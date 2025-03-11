@@ -60,10 +60,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center dark:bg-gray-500 bg-cyan-800">
       <Card className="p-8 max-w-sm w-full shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">
-          Bismillah Trading
+          Stock Management
         </h2>
         <Form layout="vertical" onFinish={onFinish} form={form}>
           <Form.Item
@@ -91,7 +91,7 @@ const Login = () => {
           </Form.Item>
 
           <Button
-            className="w-full bg-primary text-white font-bold py-2 rounded-lg hover:bg-opacity-90 transition mt-2 cursor-pointer"
+            className="w-full dark:bg-gray-500 text-white bg-gray-900  font-bold py-2 rounded-lg hover:bg-opacity-90 transition mt-2 cursor-pointer"
             type="submit"
             disabled={isLoading}
           >

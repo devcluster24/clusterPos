@@ -5,6 +5,7 @@ import { getCookie } from "./utils/cookieHelper";
 import { decodeToken } from "./utils/tokenHelper";
 import { setUser } from "./redux/features/user/userSlice";
 import AppLayout from "./components/layout/AppLayout";
+import { ScrollToTop } from "./components/common/ScrollToTop";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       <AppLayout />
     </>
   );

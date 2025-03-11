@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { ChevronDownIcon } from "@/icons";
 import { useSidebar } from "@/context/SidebarContext";
-import { NavItem, navItems } from "./NavItems";
+import { NavItem, navItems } from "./SidebarItems";
 
 // Ensure all items have a type (default: "Miscellaneous")
 const menuTypes = Array.from(new Set(navItems.map((item) => item.type)));
@@ -160,7 +160,7 @@ const AppSidebar: React.FC = () => {
          : "w-[90px]"
      } ${
         isMobileOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0`}
+      } lg:translate-x-0 overflow-y-auto no-scrollbar`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -186,7 +186,9 @@ const AppSidebar: React.FC = () => {
                 width={150}
                 height={40}
               /> */}
-              <h2 className="text-2xl font-semibold">Stock Management</h2>
+              <h2 className="text-2xl font-semibold dark:text-white text-black">
+                Stock Management
+              </h2>
             </>
           ) : (
             <img

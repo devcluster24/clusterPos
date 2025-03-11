@@ -6,12 +6,15 @@ import { store } from "./redux/store.ts";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/routes.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
+import { AppWrapper } from "./components/common/PageMeta.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <AppWrapper>
+          <RouterProvider router={router} />
+        </AppWrapper>
       </ThemeProvider>
     </Provider>
   </StrictMode>

@@ -7,16 +7,9 @@ import { getCookie, removeCookie } from "@/utils/cookieHelper";
 import { authKey } from "@/constant/authkey";
 import { logout } from "@/redux/features/user/userSlice";
 
-const PrivateRoute = ({
-  children,
-  roles,
-}: {
-  children: ReactNode;
-  roles?: string[];
-}) => {
+const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const token =
     useSelector((state: RootState) => state.auth.token) || getCookie(authKey);
-  const user = useSelector((state: RootState) => state.auth.user);
   const location = useLocation();
   const dispatch = useAppDispatch();
 
@@ -24,10 +17,6 @@ const PrivateRoute = ({
     dispatch(logout());
     removeCookie(authKey);
     return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  if (roles && user && !roles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
   }
 
   return children;

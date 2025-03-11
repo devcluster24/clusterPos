@@ -6,6 +6,7 @@ import Party from "@/pages/Party/Party";
 import Account from "@/pages/Account/Account";
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard/Dashboard";
+import UserProfiles from "@/pages/Profile/UserProfile";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
         path: "/",
         index: true,
         element: <Dashboard />,
+      },
+      {
+        path: "/my-profile",
+        element: <UserProfiles />,
       },
       {
         path: "/dashboard",

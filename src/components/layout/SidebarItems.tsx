@@ -25,7 +25,7 @@ export const navItems: NavItem[] = [
     type: "Main",
     name: "User Profile",
     icon: <UserCircleIcon />,
-    path: "/profile",
+    path: "/my-profile",
   },
 
   /* Inventory */

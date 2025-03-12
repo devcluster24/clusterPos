@@ -126,9 +126,9 @@ const AppSidebar: React.FC = () => {
                     : "0px",
               }}
             >
-              <ul className="mt-1 space-y-1 ml-4">
+              <ul className="mt-1 ml-2 space-y-1 list-disc list-item pl-5">
                 {nav.subItems.map((subItem) => (
-                  <li key={subItem.name}>
+                  <li key={subItem.name} className="">
                     <Link
                       to={subItem.path}
                       className={`menu-dropdown-item ${

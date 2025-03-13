@@ -1,178 +1,63 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
-import { ChevronDownIcon } from "@/icons";
+import { Link } from "react-router";
 import { useSidebar } from "@/context/SidebarContext";
-import { NavItem, navItems } from "./SidebarItems";
+import {
+  FaBox,
+  FaCalendarPlus,
+  FaChartBar,
+  FaClipboardList,
+  FaFileAlt,
+  FaRegSun,
+  FaShoppingCart,
+  FaTasks,
+  FaTruck,
+  FaUser,
+  FaUserCheck,
+} from "react-icons/fa";
+import SidebarButton from "../ui/button/SidebarButton";
 
-// Ensure all items have a type (default: "Miscellaneous")
-const menuTypes = Array.from(new Set(navItems.map((item) => item.type)));
+const SidebarItems = [
+  { id: "dashboard", label: "Dashboard", icon: <FaChartBar /> },
+  { id: "inventory", label: "Inventory", icon: <FaBox /> },
+  { id: "purchases", label: "Purchases", icon: <FaShoppingCart /> },
+  { id: "sales", label: "Sales", icon: <FaFileAlt /> },
+  { id: "orders", label: "Orders", icon: <FaClipboardList /> },
+  { id: "transfer", label: "Transfer", icon: <FaTruck /> },
+  { id: "accounting", label: "Accounting", icon: <FaCalendarPlus /> },
+  { id: "users", label: "Users", icon: <FaUser /> },
+  { id: "hrm", label: "HRM", icon: <FaUserCheck /> },
+  { id: "task", label: "Task Manage", icon: <FaTasks /> },
+  { id: "settings", label: "Set-Up", icon: <FaRegSun /> },
+];
 
-const AppSidebar: React.FC = () => {
+interface AppSidebarProps {
+  setActiveTab: (tab: string) => void;
+}
+const AppSidebar = ({ setActiveTab }: AppSidebarProps) => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-  const location = useLocation();
-
-  const [openSubmenu, setOpenSubmenu] = useState<{
-    type: string;
-    index: number;
-  } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
-  );
-  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  const isActive = useCallback(
-    (path: string) => location.pathname === path,
-    [location.pathname]
-  );
-
-  useEffect(() => {
-    let submenuMatched = false;
-    menuTypes.forEach((menuType) => {
-      navItems.forEach((nav, index) => {
-        if (nav.type === menuType && nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({ type: menuType, index });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-  }, [location, isActive]);
-
-  useEffect(() => {
-    if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
-    }
-  }, [openSubmenu]);
-
-  const handleSubmenuToggle = (index: number, menuType: string) => {
-    setOpenSubmenu((prevOpenSubmenu) => {
-      if (
-        prevOpenSubmenu &&
-        prevOpenSubmenu.type === menuType &&
-        prevOpenSubmenu.index === index
-      ) {
-        return null;
-      }
-      return { type: menuType, index };
-    });
-  };
-
-  const renderMenuItems = (items: NavItem[], menuType: string) => (
-    <ul className="flex flex-col gap-1">
-      {items.map((nav, index) => (
-        <li key={nav.name}>
-          {nav.subItems ? (
-            <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              }`}
-            >
-              <span className="menu-item-icon-size">{nav.icon}</span>
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
-              )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
-              )}
-            </button>
-          ) : (
-            nav.path && (
-              <Link
-                to={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
-              >
-                <span className="menu-item-icon-size">{nav.icon}</span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">{nav.name}</span>
-                )}
-              </Link>
-            )
-          )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
-            <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
-              className="overflow-hidden transition-all duration-300"
-              style={{
-                height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : "0px",
-              }}
-            >
-              <ul className="mt-1 ml-2 space-y-1 list-disc list-item pl-5">
-                {nav.subItems.map((subItem) => (
-                  <li key={subItem.name} className="">
-                    <Link
-                      to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
 
   return (
     <aside
-      className={`fixed flex flex-col lg:mt-0 top-0 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
+      className={`fixed flex flex-col lg:mt-0 top-0 left-0 bg-blue-50 dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
      ${
        isExpanded || isMobileOpen
-         ? "w-[260px]"
+         ? "w-[200px]"
          : isHovered
-         ? "w-[260px]"
-         : "w-[90px]"
-     } ${
-        isMobileOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 overflow-y-auto no-scrollbar`}
+         ? "w-[200px]"
+         : "lg:w-[200px] md:w-[200px] w-[0px]"
+     }
+        ${isMobileOpen ? "translate-x-0" : "-translate-x-full "}
+        md:translate-x-0 no-scrollbar overflow-y-auto`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`px-5 py-5  flex ${
+        className={`py-5 px-2  flex ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
         <Link to="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              {/* <img
+          <>
+            {/* <img
                 className="dark:hidden"
                 src="/images/logo/logo.svg"
                 alt="Logo"
@@ -186,36 +71,33 @@ const AppSidebar: React.FC = () => {
                 width={150}
                 height={40}
               /> */}
-              <h2 className="text-2xl font-semibold dark:text-white text-black">
-                Stock Management
-              </h2>
-            </>
-          ) : (
-            <img
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
-          )}
+            <h2 className="text-xl font-semibold dark:text-white text-black lg:py-1 md:py-0">
+              Stock Management
+            </h2>
+          </>
         </Link>
       </div>
-      <div className="px-5 ">
-        {menuTypes.map((menuType) => (
-          <div key={menuType} className={`py-3 border-b last:border-b-0`}>
-            <h2
-              className={`${
-                isExpanded || isHovered ? "flex" : "hidden"
-              } mb-1 text-xs  font-semibold text-gray-500 `}
-            >
-              {menuType}
-            </h2>
-            {renderMenuItems(
-              navItems.filter((nav) => nav.type === menuType),
-              menuType
-            )}
-          </div>
-        ))}
+      <div className="">
+        <nav className={` grid  grid-cols-1`}>
+          {SidebarItems?.slice(0, 1)?.map((item) => (
+            <SidebarButton
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              onClick={() => setActiveTab(item.id)}
+            />
+          ))}
+        </nav>
+        <nav className={` grid grid-cols-2 no-scrollbar overflow-y-auto`}>
+          {SidebarItems?.slice(1)?.map((item) => (
+            <SidebarButton
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              onClick={() => setActiveTab(item.id)}
+            />
+          ))}
+        </nav>
       </div>
     </aside>
   );

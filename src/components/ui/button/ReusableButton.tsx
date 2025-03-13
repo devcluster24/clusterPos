@@ -1,0 +1,43 @@
+import { LucideIcon, X, ArrowLeft, Plus, Trash, Filter } from "lucide-react";
+import clsx from "clsx";
+
+interface ReusableButtonProps {
+  label?: string;
+  type?: "primary" | "danger";
+  icon?: string;
+  onClick?: () => void;
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  back: ArrowLeft,
+  add: Plus,
+  delete: Trash,
+  filter: Filter,
+  close: X,
+};
+
+const ReusableButton: React.FC<ReusableButtonProps> = ({
+  label,
+  type = "primary",
+  icon,
+  onClick,
+}) => {
+  const IconComponent = icon ? iconMap[icon] : null;
+
+  return (
+    <button
+      onClick={onClick}
+      className={clsx(
+        "flex flex-col justify-center items-center gap-[2px] px-4  h-12 rounded text-white font-semibold text-sm",
+        type === "primary"
+          ? "bg-blue-500 hover:bg-blue-700"
+          : "bg-red-500 hover:bg-red-700"
+      )}
+    >
+      {IconComponent && <IconComponent size={16} />}
+      {label}
+    </button>
+  );
+};
+
+export default ReusableButton;

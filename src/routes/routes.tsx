@@ -2,7 +2,6 @@ import Error from "@/pages/Error";
 import Login from "@/pages/Login/Login";
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard/Dashboard";
 import UserProfiles from "@/pages/Profile/UserProfile";
 import CommingSoon from "@/pages/CommingSoon";
@@ -16,13 +15,14 @@ import Varients from "@/pages/Inventory/Varients";
 import Warrenty from "@/pages/Inventory/Warrenty";
 import QRCode from "@/pages/Inventory/QRCode";
 import BarCode from "@/pages/Inventory/BarCode";
+import App from "@/App";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <PrivateRoute>
-        <AppLayout />
+        <App />
       </PrivateRoute>
     ),
     children: [

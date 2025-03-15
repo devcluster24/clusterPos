@@ -1,61 +1,62 @@
-import React from "react";
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
 import { Plus, List } from "lucide-react";
 
-const InventoryItems = [
+const OrderItems = [
   {
-    category: "PURCHASE MANAGEMENT",
+    category: "QUOTATION MANAGEMENT",
     buttons: [
-      { label: "Add Purchase", icon: Plus, link: "/add-purchase" },
-      { label: "Purchase List", icon: List, link: "/purchase-list" },
-      {
-        label: "Purchased Product List",
-        icon: List,
-        link: "/purchased-product-list",
-      },
+      { label: "Add Quotation", icon: Plus, link: "/add-quotation" },
+      { label: "Quotation List", icon: List, link: "/quotation-list" },
     ],
   },
   {
-    category: "PURCHASE RETURN MANAGEMENT",
+    category: "SALES ORDER MANAGEMENT",
     buttons: [
+      { label: "Add Sales Order", icon: Plus, link: "/add-sales-order" },
+      { label: "Sales Order List", icon: List, link: "/sales-order-list" },
       {
-        label: "Add Purchase Return",
+        label: "Sales Order to Invoice",
         icon: Plus,
-        link: "/add-purchase-return",
-      },
-      {
-        label: "Purchase Return List",
-        icon: List,
-        link: "/purchase-return-list",
+        link: "/sales-order-to-invoice",
       },
     ],
   },
   {
-    category: "PURCHASE REPORTS",
+    category: "PURCHASE ORDER MANAGEMENT",
     buttons: [
-      { label: "Purchase Report", icon: List, link: "/purchase-report" },
+      { label: "Add Purchase Order", icon: Plus, link: "/add-purchase-order" },
       {
-        label: "Purchased Products Report",
+        label: "Purchase Order List",
         icon: List,
-        link: "/purchased-products-report",
+        link: "/purchase-order-list",
       },
       {
-        label: "Purchase Return Report",
+        label: "Purchase Order to Invoice",
+        icon: Plus,
+        link: "/purchase-order-to-invoice",
+      },
+    ],
+  },
+  {
+    category: "ORDER REPORTS",
+    buttons: [
+      { label: "Sales Order Report", icon: List, link: "/sales-order-report" },
+      {
+        label: "Sales Ordered Products Report",
         icon: List,
-        link: "/purchase-return-report",
+        link: "/sales-ordered-products-report",
       },
       {
-        label: "Purchase Returned Products Report",
+        label: "Purchase Order Report",
         icon: List,
-        link: "/purchase-returned-products-report",
+        link: "/purchase-order-report",
       },
       {
-        label: "Payments Against Purchase Report",
+        label: "Purchase Ordered Products Report",
         icon: List,
-        link: "/payments-against-purchase-report",
+        link: "/purchase-ordered-products-report",
       },
-      { label: "Sales Vs Purchase", icon: List, link: "/sales-vs-purchase" },
     ],
   },
 ];
@@ -63,7 +64,7 @@ const InventoryItems = [
 const OrderMenuItems = () => {
   return (
     <div className="grid grid-cols-1 gap-4 p-3">
-      {InventoryItems.map((menu) => (
+      {OrderItems.map((menu) => (
         <NavMenuCard key={menu.category} title={menu.category}>
           {menu.buttons.map(({ label, icon, link }) => (
             <ActionButton

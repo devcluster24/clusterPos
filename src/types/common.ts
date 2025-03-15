@@ -23,3 +23,9 @@ export type IGenericErrorMessage = {
   path: string | number;
   message: string;
 };
+
+export interface StatusCardProps {
+  title: string;
+  count: number;
+  color: string;
+}

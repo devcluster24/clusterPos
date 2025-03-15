@@ -20,7 +20,9 @@ const NavMenuButton: React.FC<NavMenuButtonProps> = ({
       <span className="w-10 h-10 flex justify-center items-center border-r group-hover:bg-blue-500 ">
         <Icon className="text-purple-700 group-hover:text-white" size={20} />
       </span>
-      <span className="text-sm font-medium px-4">{label}</span>
+      <span className="text-sm font-medium px-4 dark:text-gray-700">
+        {label}
+      </span>
     </button>
   );
 };

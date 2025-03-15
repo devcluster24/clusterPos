@@ -1,20 +1,9 @@
 import React from "react";
 
-interface SummaryProps {
-  title: string;
-  value: string | number;
-  highlightColor?: string;
-}
-
-const SummaryCard: React.FC<SummaryProps> = ({
-  title,
-  value,
-  highlightColor = "text-black",
-}) => {
+const SummaryCard = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-green-100 border border-gray-300 p-3 rounded-md text-center">
-      <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-      <p className={`text-lg font-semibold ${highlightColor}`}>{value}</p>
+    <div className="flex lg:justify-between justify-end bg-gray-200 overflow-hidden box-border border-b">
+      {children}
     </div>
   );
 };

@@ -1,44 +1,36 @@
-import React from "react";
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
-import { Plus, List } from "lucide-react";
+import { Plus, List, Terminal, Truck, Percent } from "lucide-react";
 
 const SalesItems = [
   {
     category: "SALES MANAGEMENT",
     buttons: [
       { label: "Add Sale", icon: Plus, link: "/add-sale" },
-      { label: "Sales List", icon: List, link: "/sales-list" },
-      {
-        label: "Sales Product List",
-        icon: List,
-        link: "/salesd-product-list",
-      },
+      { label: "POS", icon: Terminal, link: "/pos" },
+      { label: "Manage Sales", icon: List, link: "/manage-sales" },
+      { label: "Draft List", icon: List, link: "/draft-list" },
+      { label: "Sold Product List", icon: List, link: "/sold-product-list" },
+      { label: "Shipment List", icon: Truck, link: "/shipment-list" },
+      { label: "Cash Register List", icon: List, link: "/cash-register-list" },
+      { label: "Manage Offers", icon: Percent, link: "/manage-offers" },
     ],
   },
   {
     category: "SALES RETURN",
     buttons: [
-      {
-        label: "Add Sales Return",
-        icon: Plus,
-        link: "/add-sales-return",
-      },
-      {
-        label: "Sales Return List",
-        icon: List,
-        link: "/Sales-return-list",
-      },
+      { label: "Add Sales Return", icon: Plus, link: "/add-sales-return" },
+      { label: "Sales Return List", icon: List, link: "/sales-return-list" },
     ],
   },
   {
-    category: "SALES REPORTS",
+    category: "SALE REPORTS",
     buttons: [
       { label: "Sales Report", icon: List, link: "/sales-report" },
       {
-        label: "Sales Products Report",
+        label: "Sold Products Report",
         icon: List,
-        link: "/salesd-products-report",
+        link: "/sold-products-report",
       },
       {
         label: "Sales Return Report",
@@ -51,11 +43,15 @@ const SalesItems = [
         link: "/sales-returned-products-report",
       },
       {
-        label: "Payments Against sales Report",
+        label: "Received Against Sales Report",
         icon: List,
-        link: "/payments-against-sales-report",
+        link: "/received-against-sales-report",
       },
-      { label: "Sales Vs sales", icon: List, link: "/sales-vs-sales" },
+      {
+        label: "Cash Register Report",
+        icon: List,
+        link: "/cash-register-report",
+      },
     ],
   },
 ];

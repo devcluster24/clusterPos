@@ -1,80 +1,123 @@
+import CrossButton from "@/components/ui/button/CrossButton";
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
-import { Plus, List } from "lucide-react";
+import StatusCard from "@/components/ui/card/StatusCard";
+import SummaryCard from "@/components/ui/card/SummaryCard";
+import { StatusCardProps } from "@/types";
+import {
+  Plus,
+  List,
+  Upload,
+  AlertCircle,
+  Grid,
+  Badge,
+  BaggageClaim,
+  Boxes,
+  Shield,
+  Layers,
+  Barcode,
+  Users,
+} from "lucide-react";
 
 const InventoryItems = [
   {
-    category: "PURCHASE MANAGEMENT",
+    category: "PRODUCT MANAGEMENT",
     buttons: [
-      { label: "Add Purchase", icon: Plus, link: "/add-purchase" },
-      { label: "Purchase List", icon: List, link: "/purchase-list" },
+      { label: "Add Product", icon: Plus, link: "/add-product" },
+      { label: "Product List", icon: List, link: "/product-list" },
+      { label: "Import Products", icon: Upload, link: "/import-products" },
+      { label: "Expired Product List", icon: List, link: "/expired-products" },
       {
-        label: "Purchased Product List",
+        label: "Alert Quantities",
+        icon: AlertCircle,
+        link: "/alert-quantities",
+      },
+      { label: "Categories", icon: Grid, link: "/categories" },
+      { label: "Brands", icon: Badge, link: "/brands" },
+      { label: "Units", icon: BaggageClaim, link: "/units" },
+      { label: "Bulk Variants", icon: Boxes, link: "/bulk-variants" },
+      { label: "Warranties", icon: Shield, link: "/warranties" },
+      {
+        label: "Selling Price Groups",
+        icon: Layers,
+        link: "/selling-price-groups",
+      },
+      { label: "Generate Barcode", icon: Barcode, link: "/generate-barcode" },
+    ],
+  },
+  {
+    category: "MANAGE STOCK ISSUES",
+    buttons: [
+      { label: "Add Stock Issue", icon: Plus, link: "/add-stock-issue" },
+      { label: "Stock Issue List", icon: List, link: "/stock-issue-list" },
+      {
+        label: "Stock Issued Product List",
         icon: List,
-        link: "/purchased-product-list",
+        link: "/stock-issued-product-list",
       },
     ],
   },
   {
-    category: "PURCHASE RETURN MANAGEMENT",
+    category: "PRODUCT REPORTS",
     buttons: [
+      { label: "Stock Report", icon: Users, link: "/stock-report" },
       {
-        label: "Add Purchase Return",
-        icon: Plus,
-        link: "/add-purchase-return",
+        label: "Stock Out Products Report",
+        icon: Users,
+        link: "/stock-out-products-report",
       },
-      {
-        label: "Purchase Return List",
-        icon: List,
-        link: "/purchase-return-list",
-      },
+      { label: "Stock In-Out Report", icon: Layers, link: "/stock-in-out" },
     ],
   },
+];
+
+const stats: StatusCardProps[] = [
   {
-    category: "PURCHASE REPORTS",
-    buttons: [
-      { label: "Purchase Report", icon: List, link: "/purchase-report" },
-      {
-        label: "Purchased Products Report",
-        icon: List,
-        link: "/purchased-products-report",
-      },
-      {
-        label: "Purchase Return Report",
-        icon: List,
-        link: "/purchase-return-report",
-      },
-      {
-        label: "Purchase Returned Products Report",
-        icon: List,
-        link: "/purchase-returned-products-report",
-      },
-      {
-        label: "Payments Against Purchase Report",
-        icon: List,
-        link: "/payments-against-purchase-report",
-      },
-      { label: "Sales Vs Purchase", icon: List, link: "/sales-vs-purchase" },
-    ],
+    title: "Total In-Progress Todo",
+    count: 0,
+    color: "bg-yellow-100 text-yellow-700",
+  },
+  { title: "Total On-Hold Todo", count: 0, color: "bg-red-100 text-red-700" },
+  {
+    title: "Total Completed Todo",
+    count: 0,
+    color: "bg-green-100 text-green-700",
+  },
+  {
+    title: "Total In-Progress Project",
+    count: 0,
+    color: "bg-yellow-100 text-yellow-700",
   },
 ];
 
 const InventoryTabItems = () => {
   return (
-    <div className="grid grid-cols-1 gap-4 p-3">
-      {InventoryItems.map((menu) => (
-        <NavMenuCard key={menu.category} title={menu.category}>
-          {menu.buttons.map(({ label, icon, link }) => (
-            <ActionButton
-              key={label}
-              label={label}
-              icon={icon}
-              onClick={() => (window.location.href = link)}
-            />
+    <>
+      <SummaryCard>
+        <div className="lg:flex hidden">
+          {stats.map((stat, index) => (
+            <StatusCard key={index} {...stat} />
           ))}
-        </NavMenuCard>
-      ))}
-    </div>
+        </div>
+
+        <CrossButton onClose={() => console.log("close")} />
+      </SummaryCard>
+
+      <div className="grid grid-cols-1 gap-4 p-3">
+        {InventoryItems.map((menu) => (
+          <NavMenuCard key={menu.category} title={menu.category}>
+            {menu.buttons.map(({ label, icon, link }) => (
+              <ActionButton
+                key={label}
+                label={label}
+                icon={icon}
+                onClick={() => (window.location.href = link)}
+              />
+            ))}
+          </NavMenuCard>
+        ))}
+      </div>
+    </>
   );
 };
 

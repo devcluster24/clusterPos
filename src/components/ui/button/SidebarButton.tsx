@@ -1,26 +1,39 @@
 import { ReactNode } from "react";
 
-interface ReusableButtonProps {
-  label?: string;
-  type?: "primary" | "danger";
-  icon?: ReactNode;
-  onClick?: () => void;
+interface SidebarButtonProps {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  activeTab: string;
+  onClick: () => void;
 }
 
-const SidebarButton: React.FC<ReusableButtonProps> = ({
+const SidebarButton: React.FC<SidebarButtonProps> = ({
+  id,
   label,
   icon,
+  activeTab,
   onClick,
 }) => {
+  const isActive = activeTab === id;
+
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center justify-center md:p-5 p-3 w-full text-left border hover:bg-blue-500 active:bg-blue-500 hover:text-white gap-2 group dark:text-white"
+      className={`flex flex-col items-center justify-center md:p-5 p-3 w-full text-left border gap-2 group dark:text-white cursor-pointer
+        ${
+          isActive
+            ? "bg-blue-500 text-white"
+            : "hover:bg-blue-200 hover:text-blue-900"
+        }`}
     >
-      <span className="text-3xl text-blue-500 group-hover:text-white">
+      <span
+        className={`text-3xl ${
+          isActive ? "text-white" : "text-blue-500"
+        } group-hover:text-blue-900`}
+      >
         {icon}
       </span>
-
       <span className="text-sm text-center font-semibold">{label}</span>
     </button>
   );

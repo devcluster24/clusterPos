@@ -30,9 +30,10 @@ const SidebarItems = [
 ];
 
 interface AppSidebarProps {
+  activeTab: string;
   setActiveTab: (tab: string) => void;
 }
-const AppSidebar = ({ setActiveTab }: AppSidebarProps) => {
+const AppSidebar = ({ activeTab, setActiveTab }: AppSidebarProps) => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
 
   return (
@@ -82,8 +83,10 @@ const AppSidebar = ({ setActiveTab }: AppSidebarProps) => {
           {SidebarItems?.slice(0, 1)?.map((item) => (
             <SidebarButton
               key={item.id}
+              id={item.id}
               icon={item.icon}
               label={item.label}
+              activeTab={activeTab}
               onClick={() => setActiveTab(item.id)}
             />
           ))}
@@ -92,8 +95,10 @@ const AppSidebar = ({ setActiveTab }: AppSidebarProps) => {
           {SidebarItems?.slice(1)?.map((item) => (
             <SidebarButton
               key={item.id}
+              id={item.id}
               icon={item.icon}
               label={item.label}
+              activeTab={activeTab}
               onClick={() => setActiveTab(item.id)}
             />
           ))}

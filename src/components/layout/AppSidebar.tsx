@@ -14,6 +14,9 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import SidebarButton from "../ui/button/SidebarButton";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setGState } from "@/redux/features/state/stateSlice";
+import { RootState } from "@/redux/store";
 
 const SidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: <FaChartBar /> },
@@ -29,12 +32,12 @@ const SidebarItems = [
   { id: "settings", label: "Set-Up", icon: <FaRegSun /> },
 ];
 
-interface AppSidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-}
-const AppSidebar = ({ activeTab, setActiveTab }: AppSidebarProps) => {
+const AppSidebar = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const dispatch = useAppDispatch();
+  const activeTab = useAppSelector(
+    (state: RootState) => state.gState.activeTab
+  );
 
   return (
     <aside
@@ -87,7 +90,7 @@ const AppSidebar = ({ activeTab, setActiveTab }: AppSidebarProps) => {
               icon={item.icon}
               label={item.label}
               activeTab={activeTab}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => dispatch(setGState({ activeTab: item.id }))}
             />
           ))}
         </nav>
@@ -99,7 +102,7 @@ const AppSidebar = ({ activeTab, setActiveTab }: AppSidebarProps) => {
               icon={item.icon}
               label={item.label}
               activeTab={activeTab}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => dispatch(setGState({ activeTab: item.id }))}
             />
           ))}
         </nav>

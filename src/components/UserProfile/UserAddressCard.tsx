@@ -1,8 +1,6 @@
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import Input from "../form/input/InputField";
-import Label from "../form/Label";
 
 export default function UserAddressCard() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -95,7 +93,7 @@ export default function UserAddressCard() {
           <form className="flex flex-col">
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                <div>
+                {/* <div>
                   <Label>Country</Label>
                   <Input type="text" value="United States" />
                 </div>
@@ -113,7 +111,7 @@ export default function UserAddressCard() {
                 <div>
                   <Label>TAX ID</Label>
                   <Input type="text" value="AS4568384" />
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">

@@ -9,7 +9,7 @@ interface StatusCardProps {
 const StatusCard: React.FC<StatusCardProps> = ({ title, count, color }) => {
   return (
     <div
-      className={`px-3 shadow-md text-start flex flex-col justify-center border-r ${color}`}
+      className={`px-3 text-start flex flex-col justify-center border-r ${color}`}
     >
       <h3 className="text-sm font-semibold">{title}</h3>
       <p className="text-sm font-bold">{count}</p>

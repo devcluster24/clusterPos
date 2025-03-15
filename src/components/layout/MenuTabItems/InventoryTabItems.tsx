@@ -1,9 +1,6 @@
-import CrossButton from "@/components/ui/button/CrossButton";
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
-import StatusCard from "@/components/ui/card/StatusCard";
-import SummaryCard from "@/components/ui/card/SummaryCard";
-import { StatusCardProps } from "@/types";
+import SummaryCard, { Status } from "@/components/ui/card/SummaryCard";
 import {
   Plus,
   List,
@@ -23,26 +20,26 @@ const InventoryItems = [
   {
     category: "PRODUCT MANAGEMENT",
     buttons: [
-      { label: "Add Product", icon: Plus, link: "/add-product" },
-      { label: "Product List", icon: List, link: "/product-list" },
-      { label: "Import Products", icon: Upload, link: "/import-products" },
-      { label: "Expired Product List", icon: List, link: "/expired-products" },
+      { label: "Add Product", icon: Plus, link: "/products/create" },
+      { label: "Product List", icon: List, link: "/products/list" },
+      { label: "Import Products", icon: Upload, link: "/comming-soon" },
+      { label: "Expired Product List", icon: List, link: "/comming-soon" },
       {
         label: "Alert Quantities",
         icon: AlertCircle,
-        link: "/alert-quantities",
+        link: "/comming-soon",
       },
-      { label: "Categories", icon: Grid, link: "/categories" },
-      { label: "Brands", icon: Badge, link: "/brands" },
-      { label: "Units", icon: BaggageClaim, link: "/units" },
-      { label: "Bulk Variants", icon: Boxes, link: "/bulk-variants" },
-      { label: "Warranties", icon: Shield, link: "/warranties" },
+      { label: "Categories", icon: Grid, link: "/comming-soon" },
+      { label: "Brands", icon: Badge, link: "/comming-soon" },
+      { label: "Units", icon: BaggageClaim, link: "/comming-soon" },
+      { label: "Bulk Variants", icon: Boxes, link: "/comming-soon" },
+      { label: "Warranties", icon: Shield, link: "/comming-soon" },
       {
         label: "Selling Price Groups",
         icon: Layers,
-        link: "/selling-price-groups",
+        link: "/comming-soon",
       },
-      { label: "Generate Barcode", icon: Barcode, link: "/generate-barcode" },
+      { label: "Generate Barcode", icon: Barcode, link: "/comming-soon" },
     ],
   },
   {
@@ -71,7 +68,7 @@ const InventoryItems = [
   },
 ];
 
-const stats: StatusCardProps[] = [
+export const stats: Status[] = [
   {
     title: "Total In-Progress Todo",
     count: 0,
@@ -93,15 +90,7 @@ const stats: StatusCardProps[] = [
 const InventoryTabItems = () => {
   return (
     <>
-      <SummaryCard>
-        <div className="lg:flex hidden">
-          {stats.map((stat, index) => (
-            <StatusCard key={index} {...stat} />
-          ))}
-        </div>
-
-        <CrossButton onClose={() => console.log("close")} />
-      </SummaryCard>
+      <SummaryCard stats={stats} />
 
       <div className="grid grid-cols-1 gap-4 p-3">
         {InventoryItems.map((menu) => (

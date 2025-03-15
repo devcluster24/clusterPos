@@ -1,11 +1,17 @@
+import { useAppDispatch } from "@/redux/hooks";
 import ReusableButton from "./ReusableButton";
+import { resetGState } from "@/redux/features/state/stateSlice";
 
-interface CrossButtonProps {
-  onClose: () => void;
-}
+const CrossButton: React.FC = () => {
+  const dispatch = useAppDispatch();
 
-const CrossButton: React.FC<CrossButtonProps> = ({ onClose }) => {
-  return <ReusableButton icon="close" type="danger" onClick={onClose} />;
+  return (
+    <ReusableButton
+      icon="close"
+      type="danger"
+      onClick={() => dispatch(resetGState())}
+    />
+  );
 };
 
 export default CrossButton;

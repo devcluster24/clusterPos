@@ -1,3 +1,4 @@
+import { useSidebar } from "@/context/SidebarContext";
 import { ReactNode } from "react";
 
 interface SidebarButtonProps {
@@ -16,10 +17,14 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({
   onClick,
 }) => {
   const isActive = activeTab === id;
+  const { toggleMobileSidebar } = useSidebar();
 
   return (
     <button
-      onClick={onClick}
+      onClick={() => {
+        onClick();
+        toggleMobileSidebar();
+      }}
       className={`flex flex-col items-center justify-center md:p-5 p-3 w-full text-left border gap-2 group dark:text-white cursor-pointer
         ${
           isActive

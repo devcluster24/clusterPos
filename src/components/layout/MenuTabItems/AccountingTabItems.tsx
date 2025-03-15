@@ -1,6 +1,8 @@
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
+import SummaryCard from "@/components/ui/card/SummaryCard";
 import { Banknote, Book, Contrast, Receipt } from "lucide-react";
+import { stats } from "./InventoryTabItems";
 
 const AccountingItems = [
   {
@@ -39,20 +41,24 @@ const AccountingItems = [
 
 const AccountingTabItems = () => {
   return (
-    <div className="grid grid-cols-1 gap-4 p-3">
-      {AccountingItems.map((menu) => (
-        <NavMenuCard key={menu.category} title={menu.category}>
-          {menu.buttons.map(({ label, icon, link }) => (
-            <ActionButton
-              key={label}
-              label={label}
-              icon={icon}
-              onClick={() => (window.location.href = link)}
-            />
-          ))}
-        </NavMenuCard>
-      ))}
-    </div>
+    <>
+      <SummaryCard stats={stats} />
+
+      <div className="grid grid-cols-1 gap-4 p-3">
+        {AccountingItems.map((menu) => (
+          <NavMenuCard key={menu.category} title={menu.category}>
+            {menu.buttons.map(({ label, icon, link }) => (
+              <ActionButton
+                key={label}
+                label={label}
+                icon={icon}
+                onClick={() => (window.location.href = link)}
+              />
+            ))}
+          </NavMenuCard>
+        ))}
+      </div>
+    </>
   );
 };
 

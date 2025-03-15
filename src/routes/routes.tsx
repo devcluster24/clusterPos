@@ -5,7 +5,6 @@ import PrivateRoute from "./PrivateRoute";
 import Dashboard from "@/pages/Dashboard/Dashboard";
 import UserProfiles from "@/pages/Profile/UserProfile";
 import CommingSoon from "@/pages/CommingSoon";
-import Products from "@/pages/Inventory/Products";
 import Category from "@/pages/Inventory/Category";
 import Brand from "@/pages/Inventory/Brand";
 import SubCategory from "@/pages/Inventory/SubCategory";
@@ -16,6 +15,8 @@ import Warrenty from "@/pages/Inventory/Warrenty";
 import QRCode from "@/pages/Inventory/QRCode";
 import BarCode from "@/pages/Inventory/BarCode";
 import App from "@/App";
+import CreateProduct from "@/pages/Inventory/ProductMangement/CreateProduct";
+import Products from "@/pages/Inventory/Products";
 
 const router = createBrowserRouter([
   {
@@ -42,7 +43,11 @@ const router = createBrowserRouter([
 
       /* Inventory routes */
       {
-        path: "/products",
+        path: "/products/create",
+        element: <CreateProduct />,
+      },
+      {
+        path: "/products/list",
         element: <Products />,
       },
       {

@@ -2,7 +2,6 @@ import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { Outlet } from "react-router";
 import Backdrop from "./Backdrop";
 import AppHeader from "./AppHeader";
-import { useState } from "react";
 import InventoryTabItems from "./MenuTabItems/InventoryTabItems";
 import AppSidebar from "./AppSidebar";
 import SalesTabItems from "./MenuTabItems/SalesTabItems";
@@ -15,15 +14,22 @@ import UsersTabItems from "./MenuTabItems/UsersTabItems";
 import HrmTabItems from "./MenuTabItems/HrmTabItems";
 import TaskManageTabItems from "./MenuTabItems/TaskManageTabItems";
 import SetUpTabItems from "./MenuTabItems/SetUpTabItems";
+import { useAppSelector } from "@/redux/hooks";
+import { RootState } from "@/redux/store";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  const [activeTab, setActiveTab] = useState("");
+  const activeTab = useAppSelector(
+    (state: RootState) => state.gState.activeTab
+  );
 
   return (
     <div className="min-h-screen xl:flex">
       <div>
-        <AppSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <AppSidebar
+        // activeTab={activeTab}
+        // setActiveTab={(state: string) => dispatch(setState(state))}
+        />
         <Backdrop />
       </div>
       <div

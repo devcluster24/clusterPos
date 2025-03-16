@@ -1,6 +1,10 @@
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
 import SummaryCard, { Status } from "@/components/ui/card/SummaryCard";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setGState } from "@/redux/features/state/stateSlice";
+import { RootState } from "@/redux/store";
+import { useNavigate } from "react-router-dom";
 import {
   Plus,
   List,
@@ -22,23 +26,15 @@ const InventoryItems = [
     buttons: [
       { label: "Add Product", icon: Plus, link: "/products/create" },
       { label: "Product List", icon: List, link: "/products/list" },
-      { label: "Import Products", icon: Upload, link: "/comming-soon" },
-      { label: "Expired Product List", icon: List, link: "/comming-soon" },
-      {
-        label: "Alert Quantities",
-        icon: AlertCircle,
-        link: "/comming-soon",
-      },
+      { label: "Import Products", icon: Upload, link: "/products/import" },
+      { label: "Expired Product List", icon: List, link: "/products/expired" },
+      { label: "Alert Quantities", icon: AlertCircle, link: "/comming-soon" },
       { label: "Categories", icon: Grid, link: "/comming-soon" },
       { label: "Brands", icon: Badge, link: "/comming-soon" },
       { label: "Units", icon: BaggageClaim, link: "/comming-soon" },
       { label: "Bulk Variants", icon: Boxes, link: "/comming-soon" },
       { label: "Warranties", icon: Shield, link: "/comming-soon" },
-      {
-        label: "Selling Price Groups",
-        icon: Layers,
-        link: "/comming-soon",
-      },
+      { label: "Selling Price Groups", icon: Layers, link: "/comming-soon" },
       { label: "Generate Barcode", icon: Barcode, link: "/comming-soon" },
     ],
   },
@@ -88,6 +84,15 @@ export const stats: Status[] = [
 ];
 
 const InventoryTabItems = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { activeTab } = useAppSelector((state: RootState) => state.gState);
+
+  const handleNavigation = (label: string, link: string) => {
+    dispatch(setGState({ previousActiveTab: activeTab, activePage: true })); // Store active tab
+    navigate(link);
+  };
+
   return (
     <>
       <SummaryCard stats={stats} />
@@ -100,7 +105,7 @@ const InventoryTabItems = () => {
                 key={label}
                 label={label}
                 icon={icon}
-                onClick={() => (window.location.href = link)}
+                onClick={() => handleNavigation(label, link)}
               />
             ))}
           </NavMenuCard>

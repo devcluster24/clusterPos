@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useUserLoginMutation } from "@/redux/features/auth/authApi";
 import { Input, Form, Card } from "antd";
 import { useAppDispatch } from "@/redux/hooks";
-import { setUser } from "@/redux/features/user/userSlice";
+import { setUser } from "@/redux/features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { TUser } from "@/utils/tokenHelper";

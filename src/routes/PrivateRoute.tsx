@@ -5,7 +5,7 @@ import { RootState } from "@/redux/store";
 import { useAppDispatch } from "@/redux/hooks";
 import { getCookie, removeCookie } from "@/utils/cookieHelper";
 import { authKey } from "@/constant/authkey";
-import { logout } from "@/redux/features/user/userSlice";
+import { logout } from "@/redux/features/auth/authSlice";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const token =

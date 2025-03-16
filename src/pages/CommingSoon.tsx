@@ -8,7 +8,7 @@ const CommingSoon = () => {
       <img src="/uc2.png" alt="" className="flex   my-20" />
 
       <div className="flex items-center justify-center w-full gap-5">
-        <Button onClick={() => navigate("/")} className="px-10">
+        <Button onClick={() => navigate(-1)} className="px-10">
           Back
         </Button>
         <Button

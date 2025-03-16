@@ -11,7 +11,7 @@ const Error = () => {
       </p>
       <div className="flex items-center justify-center w-full gap-5">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate(-1)}
           className="border border-primary text-primary rounded-lg px-10 py-3"
         >
           Back

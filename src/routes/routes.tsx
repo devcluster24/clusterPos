@@ -16,7 +16,9 @@ import QRCode from "@/pages/Inventory/QRCode";
 import BarCode from "@/pages/Inventory/BarCode";
 import App from "@/App";
 import CreateProduct from "@/pages/Inventory/ProductMangement/CreateProduct";
-import Products from "@/pages/Inventory/Products";
+import ProductList from "@/pages/Inventory/ProductMangement/ProductList";
+import ExpiredProductList from "@/pages/Inventory/ProductMangement/ExpiredProductList";
+import ImportProduct from "@/pages/Inventory/ProductMangement/ImportProduct";
 
 const router = createBrowserRouter([
   {
@@ -48,7 +50,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/products/list",
-        element: <Products />,
+        element: <ProductList />,
+      },
+      {
+        path: "/products/import",
+        element: <ImportProduct />,
+      },
+      {
+        path: "/products/expired",
+        element: <ExpiredProductList />,
       },
       {
         path: "/brand",

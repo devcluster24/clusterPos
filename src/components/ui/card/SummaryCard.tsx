@@ -23,7 +23,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     <div
       className={`flex border-b ${
         backBtnActive
-          ? "justify-between bg-white  shadow-md"
+          ? "justify-between bg-white dark:bg-gray-900  shadow-md"
           : "lg:justify-between justify-end bg-gray-200"
       }  `}
     >

@@ -41,7 +41,7 @@ const AppSidebar = () => {
 
   return (
     <aside
-      className={`fixed flex flex-col lg:mt-0 top-0 left-0 bg-blue-50 dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
+      className={`fixed flex flex-col lg:mt-0 top-0 left-0 dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
      ${
        isExpanded || isMobileOpen
          ? "w-[200px]"

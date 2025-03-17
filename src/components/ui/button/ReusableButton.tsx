@@ -6,6 +6,7 @@ interface ReusableButtonProps {
   type?: "primary" | "danger";
   icon?: string;
   onClick?: () => void;
+  className?: string;
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -21,18 +22,23 @@ const ReusableButton: React.FC<ReusableButtonProps> = ({
   type = "primary",
   icon,
   onClick,
+  className,
 }) => {
   const IconComponent = icon ? iconMap[icon] : null;
 
   return (
     <button
       onClick={onClick}
-      className={clsx(
-        "flex flex-col justify-center items-center gap-[2px] px-4  h-12 rounded text-white font-semibold text-sm cursor-pointer",
-        type === "primary"
-          ? "bg-blue-500 hover:bg-blue-700"
-          : "bg-red-500 hover:bg-red-700"
-      )}
+      className={`${
+        className
+          ? className
+          : clsx(
+              "flex flex-col justify-center items-center gap-[2px] px-4  h-12 rounded text-white font-semibold text-sm cursor-pointer",
+              type === "primary"
+                ? "bg-blue-500 hover:bg-blue-700"
+                : "bg-red-500 hover:bg-red-700"
+            )
+      }`}
     >
       {IconComponent && <IconComponent size={16} />}
       {label}

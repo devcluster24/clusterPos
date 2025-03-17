@@ -1,3 +1,4 @@
+import { Button } from "../button";
 import BackButton from "../button/BackButton";
 import CrossButton from "../button/CrossButton";
 import StatusCard from "./StatusCard";
@@ -12,12 +13,14 @@ interface SummaryCardProps {
   stats?: Status[];
   backBtnActive?: boolean;
   pageTitle?: string;
+  addButton?: string | boolean;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({
   stats,
   backBtnActive,
   pageTitle,
+  addButton,
 }) => {
   return (
     <div
@@ -40,7 +43,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         </h2>
       )}
 
-      <div>{backBtnActive ? <BackButton /> : <CrossButton />}</div>
+      <div>
+        <div>{addButton && <Button />}</div>
+        {backBtnActive ? <BackButton /> : <CrossButton />}
+      </div>
     </div>
   );
 };

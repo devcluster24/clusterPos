@@ -5,7 +5,7 @@ import PrivateRoute from "./PrivateRoute";
 import Dashboard from "@/pages/Dashboard/Dashboard";
 import UserProfiles from "@/pages/Profile/UserProfile";
 import CommingSoon from "@/pages/CommingSoon";
-import Category from "@/pages/Inventory/Category";
+import Category from "@/pages/Inventory/ProductMangement/Category";
 import Brand from "@/pages/Inventory/Brand";
 import SubCategory from "@/pages/Inventory/SubCategory";
 import Items from "@/pages/Inventory/Items";
@@ -19,6 +19,7 @@ import CreateProduct from "@/pages/Inventory/ProductMangement/CreateProduct";
 import ProductList from "@/pages/Inventory/ProductMangement/ProductList";
 import ExpiredProductList from "@/pages/Inventory/ProductMangement/ExpiredProductList";
 import ImportProduct from "@/pages/Inventory/ProductMangement/ImportProduct";
+import AlertQuantities from "@/pages/Inventory/ProductMangement/AlertQuantities";
 
 const router = createBrowserRouter([
   {
@@ -61,17 +62,22 @@ const router = createBrowserRouter([
         element: <ExpiredProductList />,
       },
       {
-        path: "/brand",
-        element: <Brand />,
+        path: "/products/alert-quantities",
+        element: <AlertQuantities />,
       },
       {
-        path: "/categories",
+        path: "/products/categories",
         element: <Category />,
       },
       {
-        path: "/sub-categories",
+        path: "/products/sub-categories",
         element: <SubCategory />,
       },
+      {
+        path: "/brand",
+        element: <Brand />,
+      },
+
       {
         path: "/items",
         element: <Items />,

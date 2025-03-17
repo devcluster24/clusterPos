@@ -1,4 +1,3 @@
-import React from "react";
 import ActionButton from "@/components/ui/button/NavMenuButton";
 import NavMenuCard from "@/components/ui/card/NavMenuCard";
 import { Plus, List } from "lucide-react";

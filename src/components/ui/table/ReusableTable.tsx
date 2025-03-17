@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { JSX } from "react";
 import { Table, Input, Button, Dropdown, Menu, Select } from "antd";
 import { TableRowSelection } from "antd/es/table/interface";
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
@@ -7,8 +8,8 @@ import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 interface TableColumn {
   title: string;
   dataIndex: string;
-  key: string;
-  render?: (value: any, record: any, index: number) => React.ReactNode;
+  key?: string;
+  render?: () => JSX.Element;
 }
 
 interface ReusableTableProps {
@@ -45,8 +46,8 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   // Export Options
   const exportMenu = (
     <Menu>
-      <Menu.Item key="pdf">Export to PDF</Menu.Item>
-      <Menu.Item key="excel">Export to Excel</Menu.Item>
+      <Menu.Item key="pdf">PDF</Menu.Item>
+      <Menu.Item key="excel">Excel</Menu.Item>
       <Menu.Item key="print">Print</Menu.Item>
     </Menu>
   );
@@ -73,7 +74,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
           <Select
             defaultValue={50}
             onChange={(value) => setPageSize(value)}
-            className="w-24 h-full"
+            className="w-16 h-full"
           >
             <Select.Option value={20}>20</Select.Option>
             <Select.Option value={50}>50</Select.Option>

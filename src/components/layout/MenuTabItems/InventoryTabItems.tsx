@@ -29,10 +29,15 @@ const InventoryItems = [
       { label: "Product List", icon: List, link: "/products/list" },
       { label: "Import Products", icon: Upload, link: "/products/import" },
       { label: "Expired Product List", icon: List, link: "/products/expired" },
-      { label: "Alert Quantities", icon: AlertCircle, link: "/comming-soon" },
-      { label: "Categories", icon: Grid, link: "/comming-soon" },
-      { label: "Brands", icon: Badge, link: "/comming-soon" },
-      { label: "Units", icon: BaggageClaim, link: "/comming-soon" },
+      {
+        label: "Alert Quantities",
+        icon: AlertCircle,
+        link: "/products/alert-quantities",
+      },
+      { label: "Categories", icon: Grid, link: "/products/categories" },
+      { label: "Sub Categories", icon: Grid, link: "/products/sub-categories" },
+      { label: "Brands", icon: Badge, link: "/products/brands" },
+      { label: "Units", icon: BaggageClaim, link: "/products/units" },
       { label: "Bulk Variants", icon: Boxes, link: "/comming-soon" },
       { label: "Warranties", icon: Shield, link: "/comming-soon" },
       { label: "Selling Price Groups", icon: Layers, link: "/comming-soon" },
@@ -42,12 +47,12 @@ const InventoryItems = [
   {
     category: "MANAGE STOCK ISSUES",
     buttons: [
-      { label: "Add Stock Issue", icon: Plus, link: "/add-stock-issue" },
-      { label: "Stock Issue List", icon: List, link: "/stock-issue-list" },
+      { label: "Add Stock Issue", icon: Plus, link: "/comming-soon" },
+      { label: "Stock Issue List", icon: List, link: "/comming-soon" },
       {
         label: "Stock Issued Product List",
         icon: List,
-        link: "/stock-issued-product-list",
+        link: "/comming-soon",
       },
     ],
   },
@@ -89,8 +94,8 @@ const InventoryTabItems = () => {
   const navigate = useNavigate();
   const { activeTab } = useAppSelector((state: RootState) => state.gState);
 
-  const handleNavigation = (label: string, link: string) => {
-    dispatch(setGState({ previousActiveTab: activeTab, activePage: true })); // Store active tab
+  const handleNavigation = (link: string) => {
+    dispatch(setGState({ previousActiveTab: activeTab, activePage: true }));
     navigate(link);
   };
 
@@ -106,7 +111,7 @@ const InventoryTabItems = () => {
                   key={label}
                   label={label}
                   icon={icon}
-                  onClick={() => handleNavigation(label, link)}
+                  onClick={() => handleNavigation(link)}
                 />
               ))}
             </NavMenuCard>

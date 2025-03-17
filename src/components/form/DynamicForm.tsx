@@ -10,6 +10,7 @@ import NumberField from "./NumberField";
 import PasswordField from "./PasswordField";
 import DateField from "./DateField";
 import SubmitButton from "./SubmitButton";
+import { FormLayout } from "antd/es/form/Form";
 
 export interface FormField {
   name: string;
@@ -22,7 +23,8 @@ export interface FormField {
     | "checkbox"
     | "radio"
     | "number"
-    | "password";
+    | "password"
+    | "file";
   rules?: any[];
   options?: { value: string; label: string }[];
   placeholder?: string;
@@ -35,6 +37,7 @@ interface DynamicFormProps {
   loading?: boolean;
   submitLabel?: string;
   initialValues?: Record<string, any>;
+  layout?: FormLayout;
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -44,15 +47,21 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   loading = false,
   submitLabel,
   initialValues = {},
+  layout = "horizontal",
 }) => {
   const [form] = Form.useForm();
+
+  const computedFormItemLayout =
+    layout === "vertical"
+      ? { labelCol: { span: 24 }, wrapperCol: { span: 24 } }
+      : { labelCol: { span: 8 }, wrapperCol: { span: 16 } };
 
   return (
     <Form
       form={form}
-      layout="horizontal"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
+      layout={layout}
+      labelCol={computedFormItemLayout.labelCol}
+      wrapperCol={computedFormItemLayout.wrapperCol}
       onFinish={onSubmit}
       initialValues={initialValues}
       style={{ margin: 0, padding: 0 }}

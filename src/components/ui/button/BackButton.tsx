@@ -7,15 +7,32 @@ import { RootState } from "@/redux/store";
 const BackButton = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { activeTab, previousActiveTab } = useAppSelector(
+  const { activeTab, previousActiveTab, activePage } = useAppSelector(
     (state: RootState) => state.gState
   );
 
   const handleBack = () => {
-    if (previousActiveTab) {
-      dispatch(setGState({ activeTab: previousActiveTab }));
+    if (activePage) {
+      dispatch(
+        setGState({
+          activePage: false,
+        })
+      );
+    } else if (previousActiveTab) {
+      dispatch(
+        setGState({
+          activeTab: previousActiveTab,
+          previousActiveTab: "",
+        })
+      );
+    } else if (activeTab) {
+      dispatch(
+        setGState({
+          activeTab: "",
+        })
+      );
     } else {
-      navigate(-1); // Go back in history if no previous tab is stored
+      navigate(-1);
     }
   };
 

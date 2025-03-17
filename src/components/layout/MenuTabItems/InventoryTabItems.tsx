@@ -19,6 +19,7 @@ import {
   Barcode,
   Users,
 } from "lucide-react";
+import DefaultCard from "@/components/ui/card/DefaultCard";
 
 const InventoryItems = [
   {
@@ -96,21 +97,22 @@ const InventoryTabItems = () => {
   return (
     <>
       <SummaryCard stats={stats} />
-
-      <div className="grid grid-cols-1 gap-4 p-3">
-        {InventoryItems.map((menu) => (
-          <NavMenuCard key={menu.category} title={menu.category}>
-            {menu.buttons.map(({ label, icon, link }) => (
-              <ActionButton
-                key={label}
-                label={label}
-                icon={icon}
-                onClick={() => handleNavigation(label, link)}
-              />
-            ))}
-          </NavMenuCard>
-        ))}
-      </div>
+      <DefaultCard>
+        <div className="grid grid-cols-1 gap-4">
+          {InventoryItems.map((menu) => (
+            <NavMenuCard key={menu.category} title={menu.category}>
+              {menu.buttons.map(({ label, icon, link }) => (
+                <ActionButton
+                  key={label}
+                  label={label}
+                  icon={icon}
+                  onClick={() => handleNavigation(label, link)}
+                />
+              ))}
+            </NavMenuCard>
+          ))}
+        </div>
+      </DefaultCard>
     </>
   );
 };

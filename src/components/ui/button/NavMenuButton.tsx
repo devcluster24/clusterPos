@@ -14,7 +14,7 @@ const NavMenuButton: React.FC<NavMenuButtonProps> = ({
 }) => {
   return (
     <button
-      className="flex items-center border border-gray-300  rounded text-gray-700 hover:bg-blue-100 transition group lg:min-w-56 md:min-w-[48%] sm:min-w-[48%]  xs:min-w-full hover:border-blue-300 hover:cursor-pointer"
+      className="flex items-center border border-gray-300  rounded text-gray-700 dark:text-gray-100 hover:bg-blue-100 transition group lg:min-w-56 md:min-w-[48%] sm:min-w-[48%]  xs:min-w-full hover:border-blue-300 hover:cursor-pointer"
       onClick={onClick}
     >
       <span className="w-10 h-10 flex justify-center items-center border-r group-hover:bg-blue-500 ">

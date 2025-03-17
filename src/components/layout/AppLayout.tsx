@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { Outlet } from "react-router";
 import Backdrop from "./Backdrop";
@@ -20,7 +21,7 @@ import TaskManageTabItems from "./MenuTabItems/TaskManageTabItems";
 import SetUpTabItems from "./MenuTabItems/SetUpTabItems";
 
 // Mapping tabs to their respective components
-const tabComponents: Record<string, React.ElementType> = {
+const tabComponents: Record<string, React.FC> = {
   dashboard: Dashboard,
   inventory: InventoryTabItems,
   purchases: PurchaseTabItems,
@@ -39,12 +40,25 @@ const LayoutContent: React.FC = () => {
   const activeTab = useAppSelector(
     (state: RootState) => state.gState.activeTab
   );
+  const activePage = useAppSelector(
+    (state: RootState) => state.gState.activePage
+  );
 
-  // Get the component based on activeTab
-  const ActiveComponent = activeTab ? tabComponents[activeTab] : null;
+  // State to store the active component
+  const [CurrentComponent, setCurrentComponent] = useState<React.FC | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (activeTab) {
+      setCurrentComponent(() => tabComponents[activeTab] || null);
+    } else {
+      setCurrentComponent(null);
+    }
+  }, [activeTab]);
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="min-h-screen xl:flex bg-gray-100 dark:bg-gray-800">
       {/* Sidebar & Backdrop */}
       <div>
         <AppSidebar />
@@ -53,14 +67,23 @@ const LayoutContent: React.FC = () => {
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${
+        className={`flex-1 transition-all duration-300 ease-in-out h-full ${
           isExpanded || isHovered ? "md:ml-[200px]" : "md:ml-[0px]"
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         <AppHeader />
-        <div className="w-full h-full">
-          {/* Render the active tab component if available, otherwise render Outlet */}
-          {ActiveComponent ? <ActiveComponent /> : <Outlet />}
+        <div className="w-full h-auto">
+          {activeTab && activePage ? (
+            <Outlet />
+          ) : activeTab ? (
+            CurrentComponent ? (
+              <CurrentComponent />
+            ) : (
+              <Outlet />
+            )
+          ) : (
+            <Outlet />
+          )}
         </div>
       </div>
     </div>

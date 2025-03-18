@@ -1,4 +1,4 @@
-import DynamicForm from "@/components/form/DynamicForm";
+import DynamicForm from "@/components/form/ReusableForm";
 import FileInputField from "@/components/form/FileInputField";
 import SelectField from "@/components/form/SelectField";
 import { validationRules } from "@/components/form/Validation";

@@ -30,7 +30,7 @@ export interface FormField {
   placeholder?: string;
 }
 
-interface DynamicFormProps {
+interface ReusableFormProps {
   formFields?: FormField[];
   children: React.ReactNode;
   onSubmit: (values: any) => void;
@@ -40,7 +40,7 @@ interface DynamicFormProps {
   layout?: FormLayout;
 }
 
-const DynamicForm: React.FC<DynamicFormProps> = ({
+const ReusableForm: React.FC<ReusableFormProps> = ({
   formFields,
   children,
   onSubmit,
@@ -159,4 +159,4 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   );
 };
 
-export default DynamicForm;
+export default ReusableForm;

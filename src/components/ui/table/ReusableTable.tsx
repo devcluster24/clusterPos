@@ -1,22 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import { JSX } from "react";
 import { Table, Input, Button, Dropdown, Menu, Select } from "antd";
-import { TableRowSelection } from "antd/es/table/interface";
+import { ColumnsType, TableRowSelection } from "antd/es/table/interface";
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
-
-interface TableColumn {
-  title: string;
-  dataIndex: string;
-  key?: string;
-  render?: () => JSX.Element;
-}
+import { AnyObject } from "antd/es/_util/type";
 
 interface ReusableTableProps {
-  columns: TableColumn[];
+  columns: ColumnsType<AnyObject>;
   data: any[];
   loading?: boolean;
   border?: boolean;
+  searchTerm?: string;
+  setPagination?: (pagination: any) => void;
+  pagination?: { page: number; pageSize: number };
+  setSearchTerm?: (term: string) => void;
 }
 
 const ReusableTable: React.FC<ReusableTableProps> = ({
@@ -24,19 +21,11 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   data,
   loading = false,
   border = true,
+  setSearchTerm,
+  pagination = { page: 1, pageSize: 10 },
+  setPagination,
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [searchText, setSearchText] = useState("");
-  const [pageSize, setPageSize] = useState(50);
-
-  // Filtered Data
-  const filteredData = data.filter((item) =>
-    Object.values(item).some(
-      (value) =>
-        typeof value === "string" &&
-        value.toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
 
   const rowSelection: TableRowSelection<any> = {
     selectedRowKeys,
@@ -62,9 +51,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
 
           <Input
             addonBefore={<SearchOutlined />}
-            placeholder="Search..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={(e) => setSearchTerm && setSearchTerm(e.target.value)}
             className="max-w-96"
           />
         </div>
@@ -72,11 +59,14 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
         <div className="flex items-center gap-4 h-full">
           {/* Page Size Selector */}
           <Select
-            defaultValue={50}
-            onChange={(value) => setPageSize(value)}
+            defaultValue={pagination.pageSize}
+            onChange={(value) =>
+              setPagination && setPagination({ page: 1, pageSize: value })
+            }
             className="w-16 h-full"
           >
-            <Select.Option value={20}>20</Select.Option>
+            <Select.Option value={10}>10</Select.Option>
+            <Select.Option value={25}>25</Select.Option>
             <Select.Option value={50}>50</Select.Option>
             <Select.Option value={100}>100</Select.Option>
           </Select>
@@ -93,10 +83,10 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       {/* Table */}
       <Table
         columns={columns}
-        dataSource={filteredData}
+        dataSource={data}
         loading={loading}
         rowKey={(record) => record.key}
-        pagination={{ pageSize }}
+        pagination={{ pageSize: pagination?.pageSize }}
         size="small"
         rowSelection={rowSelection}
         scroll={{ x: "max-content", y: 50 * 10 }}

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import DynamicForm from "@/components/form/DynamicForm";
 import InputField from "@/components/form/InputField";
 import NumberField from "@/components/form/NumberField";
 import SelectField from "@/components/form/SelectField";
@@ -8,6 +7,7 @@ import { validationRules } from "@/components/form/Validation";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import FormCard from "@/components/ui/card/FormCard";
 import SummaryCard from "@/components/ui/card/SummaryCard";
+import ReusableForm from "@/components/form/ReusableForm";
 
 const CreateProduct = () => {
   const handleSubmit = (values: any) => {
@@ -17,8 +17,9 @@ const CreateProduct = () => {
   return (
     <>
       <SummaryCard pageTitle="Add Product" backBtnActive={true} />
+
       <DefaultCard>
-        <DynamicForm onSubmit={handleSubmit}>
+        <ReusableForm onSubmit={handleSubmit}>
           {/* Product Details Section */}
           <FormCard>
             <InputField
@@ -201,7 +202,7 @@ const CreateProduct = () => {
           <div className="flex justify-end">
             <SubmitButton />
           </div>
-        </DynamicForm>
+        </ReusableForm>
       </DefaultCard>
     </>
   );

@@ -1,69 +1,204 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useMemo, useState } from "react";
 import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
-import { FaEdit, FaTrash } from "react-icons/fa";
-
-export const columns = [
-  { title: "Category ID", dataIndex: "code", id: "code" },
-  { title: "Name", dataIndex: "name", id: "name" },
-  {
-    title: "Photo",
-    dataIndex: "photo",
-    id: "photo",
-  },
-  { title: "Description", dataIndex: "description", id: "description" },
-  {
-    title: "Action",
-    id: "action",
-    dataIndex: "action",
-    render: () => (
-      <div className="flex md:gap-3 gap-2 justify-center ">
-        <button className="text-blue-400 hover:text-blue-700 bg-white cursor-pointer">
-          <FaEdit className="size-5" />
-        </button>
-        <button className="text-red-400 hover:text-red-700  cursor-pointer">
-          <FaTrash className="size-5" />
-        </button>
-      </div>
-    ),
-  },
-];
-
-export const data = [
-  {
-    id: "1",
-    code: "C-002",
-    photo: "/path-to-placeholder.png",
-    name: "Category A",
-    description: "lorem ipsum dolor sit amet, consectetur adip id in  20  ",
-    status: "1",
-  },
-  {
-    id: "2",
-    code: "C-003",
-    photo: "/path-to-placeholder.png",
-    name: "Category b",
-    description: "lorem ",
-    status: "1",
-  },
-  {
-    id: "3",
-    code: "C-001",
-    photo: "/path-to-placeholder.png",
-    name: "hfg",
-    description: "",
-    status: "1",
-  },
-];
+import { ColumnsType } from "antd/es/table";
+import { Tag } from "antd";
+import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
+import ReusableModal from "@/components/ui/modal/ReusableModal";
+import ReusableForm from "@/components/form/ReusableForm";
+import InputField from "@/components/form/InputField";
+import SelectField from "@/components/form/SelectField";
+import { validationRules } from "@/components/form/Validation";
+import SubmitButton from "@/components/form/SubmitButton";
+import Swal from "sweetalert2";
+import noImage from "/noimage.png";
+import {
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetAllCategoryQuery,
+  useUpdateCategoryMutation,
+} from "@/redux/features/admin/categoryApi";
+import { AnyObject } from "antd/es/_util/type";
+import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
+import { useDebounced } from "@/redux/hooks";
 
 const CategoriesList: React.FC = () => {
+  const [modalActive, setModalActive] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
+  const { handleDelete } = useDeleteConfirmation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+
+  const query = useMemo(
+    () => ({
+      page: pagination.page,
+      limit: pagination.pageSize,
+      ...(debouncedTerm && { searchTerm: debouncedTerm }),
+    }),
+    [pagination, debouncedTerm]
+  );
+
+  const { data: categories, isLoading } = useGetAllCategoryQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const [addCategory] = useCreateCategoryMutation();
+  const [editCategory] = useUpdateCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
+
+  const openAddModal = () => {
+    setIsEdit(false);
+    setSelectedData(null);
+    setModalActive(true);
+  };
+
+  const openEditModal = (category: any) => {
+    setIsEdit(true);
+    setSelectedData(category);
+    setModalActive(true);
+  };
+
+  const handleSubmit = async (values: any) => {
+    try {
+      if (isEdit) {
+        await editCategory({ id: selectedData?.id, ...values });
+        Swal.fire("Updated!", "Category has been updated.", "success");
+      } else {
+        await addCategory(values);
+        Swal.fire("Added!", "Category has been added.", "success");
+      }
+      setModalActive(false);
+    } catch {
+      Swal.fire("Error!", "Something went wrong.", "error");
+    }
+  };
+
+  const columns: ColumnsType<AnyObject> = [
+    {
+      title: "Category ID",
+      dataIndex: "code",
+      key: "code",
+      width: 100,
+    },
+    {
+      title: "Photo",
+      dataIndex: "photo",
+      key: "photo",
+      width: 100,
+      render: (_, record) => (
+        <img
+          src={record.photo ? record.photo : noImage}
+          alt={record?.name}
+          width={40}
+          height={30}
+        />
+      ),
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+      render: (status) =>
+        status === "1" ? (
+          <Tag color="#87d068">Active</Tag>
+        ) : (
+          <Tag color="#f50">Inactive</Tag>
+        ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      fixed: "right",
+      align: "center",
+      render: (_, record) => (
+        <EditDeleteButtons
+          onEdit={() => openEditModal(record)}
+          onDelete={() =>
+            handleDelete(
+              record?.id,
+              () => deleteCategory(record?.id),
+              "Category?"
+            )
+          }
+        />
+      ),
+    },
+  ];
+
   return (
     <>
-      <SummaryCard pageTitle="Categories" backBtnActive={true} />
+      <SummaryCard
+        pageTitle="Categories"
+        backBtnActive={true}
+        addBtnActive
+        addBtnClick={openAddModal}
+      />
+
       <DefaultCard>
-        <ReusableTable columns={columns} data={data} />
+        <ReusableTable
+          columns={columns}
+          data={categories?.data || []}
+          loading={isLoading}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          pagination={pagination}
+          setPagination={setPagination}
+        />
       </DefaultCard>
+
+      <ReusableModal
+        title={isEdit ? "Edit Category" : "Add Category"}
+        visible={modalActive}
+        onClose={() => setModalActive(false)}
+        content={
+          <ReusableForm
+            onSubmit={handleSubmit}
+            layout="vertical"
+            initialValues={isEdit && selectedData ? selectedData : {}}
+          >
+            <div className="flex flex-col gap-3">
+              <InputField
+                name="name"
+                label="Category Name"
+                rules={validationRules.required("Category Name")}
+              />
+              <InputField
+                name="code"
+                label="Category Code"
+                rules={validationRules.required("Category Code")}
+              />
+              <SelectField
+                name="status"
+                label="Status"
+                options={[
+                  { value: "1", label: "Active" },
+                  { value: "0", label: "Inactive" },
+                ]}
+                rules={validationRules.required("Status")}
+              />
+              <div className="flex justify-end">
+                <SubmitButton />
+              </div>
+            </div>
+          </ReusableForm>
+        }
+      />
     </>
   );
 };

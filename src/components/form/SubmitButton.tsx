@@ -15,7 +15,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
         type="primary"
         htmlType="submit"
         loading={loading}
-        style={{ marginBottom: "0px" }}
+        style={{ marginTop: "10px", marginLeft: "auto" }}
       >
         {label}
       </Button>

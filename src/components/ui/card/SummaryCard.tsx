@@ -1,6 +1,6 @@
-import { Button } from "../button";
 import BackButton from "../button/BackButton";
 import CrossButton from "../button/CrossButton";
+import ReusableButton from "../button/ReusableButton";
 import StatusCard from "./StatusCard";
 
 export interface Status {
@@ -12,15 +12,31 @@ export interface Status {
 interface SummaryCardProps {
   stats?: Status[];
   backBtnActive?: boolean;
+  addBtnActive?: boolean;
+  addBtnLabel?: string;
+  addBtnClick?: () => void;
+  filterBtnActive?: boolean;
+  filterBtnLabel?: string;
+  filterBtnClick?: () => void;
+  deleteBtnActive?: boolean;
+  deleteBtnLabel?: string;
+  deleteBtnClick?: () => void;
   pageTitle?: string;
-  addButton?: string | boolean;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({
   stats,
-  backBtnActive,
   pageTitle,
-  addButton,
+  backBtnActive,
+  addBtnActive,
+  addBtnLabel,
+  addBtnClick,
+  filterBtnActive,
+  filterBtnLabel,
+  filterBtnClick,
+  deleteBtnActive,
+  deleteBtnLabel,
+  deleteBtnClick,
 }) => {
   return (
     <div
@@ -43,8 +59,33 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         </h2>
       )}
 
-      <div>
-        <div>{addButton && <Button />}</div>
+      <div className="flex gap-2">
+        <div className="flex">
+          {filterBtnActive && (
+            <ReusableButton
+              label={filterBtnLabel || "Filter"}
+              type="primary"
+              icon="filter"
+              onClick={() => (filterBtnClick ? filterBtnClick() : null)}
+            />
+          )}
+          {addBtnActive && (
+            <ReusableButton
+              label={addBtnLabel || "Add"}
+              type="primary"
+              icon="add"
+              onClick={() => (addBtnClick ? addBtnClick() : null)}
+            />
+          )}
+          {deleteBtnActive && (
+            <ReusableButton
+              label={deleteBtnLabel || "Delete"}
+              type="danger"
+              icon="delete"
+              onClick={() => (deleteBtnClick ? deleteBtnClick() : null)}
+            />
+          )}
+        </div>
         {backBtnActive ? <BackButton /> : <CrossButton />}
       </div>
     </div>

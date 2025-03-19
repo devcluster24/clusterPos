@@ -38,34 +38,51 @@ const InventoryItems = [
       { label: "Sub Categories", icon: Grid, link: "/products/sub-categories" },
       { label: "Brands", icon: Badge, link: "/products/brands" },
       { label: "Units", icon: BaggageClaim, link: "/products/units" },
-      { label: "Bulk Variants", icon: Boxes, link: "/comming-soon" },
-      { label: "Warranties", icon: Shield, link: "/comming-soon" },
-      { label: "Selling Price Groups", icon: Layers, link: "/comming-soon" },
-      { label: "Generate Barcode", icon: Barcode, link: "/comming-soon" },
+      { label: "Bulk Variants", icon: Boxes, link: "/products/varients" },
+      { label: "Warranties", icon: Shield, link: "/products/warranties" },
+      {
+        label: "Generate Barcode",
+        icon: Barcode,
+        link: "/products/generate-barcode",
+      },
+      {
+        label: "Generate QRcode",
+        icon: Barcode,
+        link: "/products/generate-qrcode",
+      },
+      // { label: "Selling Price Groups", icon: Layers, link: "/comming-soon" },
     ],
   },
   {
     category: "MANAGE STOCK ISSUES",
     buttons: [
-      { label: "Add Stock Issue", icon: Plus, link: "/comming-soon" },
-      { label: "Stock Issue List", icon: List, link: "/comming-soon" },
+      {
+        label: "Add Stock Issue",
+        icon: Plus,
+        link: "/products/add-stock-issue",
+      },
+      { label: "Stock Issue List", icon: List, link: "/products/stock-issues" },
       {
         label: "Stock Issued Product List",
         icon: List,
-        link: "/comming-soon",
+        link: "/products/stock-issued-list",
       },
     ],
   },
   {
     category: "PRODUCT REPORTS",
     buttons: [
-      { label: "Stock Report", icon: Users, link: "/stock-report" },
+      { label: "Stock Report", icon: Users, link: "/products/stock-report" },
       {
         label: "Stock Out Products Report",
         icon: Users,
-        link: "/stock-out-products-report",
+        link: "/products/stock-out-report",
       },
-      { label: "Stock In-Out Report", icon: Layers, link: "/stock-in-out" },
+      {
+        label: "Stock In-Out Report",
+        icon: Layers,
+        link: "/products/stock-in-report",
+      },
     ],
   },
 ];

@@ -21,13 +21,13 @@ import TextAreaField from "@/components/form/TextAreaField";
 import FileInputField from "@/components/form/FileInputField";
 import { UploadChangeParam } from "antd/es/upload";
 import {
-  useCreateProductMutation,
-  useDeleteProductMutation,
-  useGetAllProductQuery,
-  useUpdateProductMutation,
-} from "@/redux/features/admin/productApi";
+  useCreateSubcategoryMutation,
+  useDeleteSubcategoryMutation,
+  useGetAllSubcategoryQuery,
+  useUpdateSubcategoryMutation,
+} from "@/redux/features/admin/subCateogryApi";
 
-const ProductList: React.FC = () => {
+const SubCategoryList: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -58,12 +58,12 @@ const ProductList: React.FC = () => {
   };
 
   // api call
-  const { data: products, isLoading } = useGetAllProductQuery(query, {
+  const { data: subcategories, isLoading } = useGetAllSubcategoryQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const [addProduct] = useCreateProductMutation();
-  const [editProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
+  const [addSubategory] = useCreateSubcategoryMutation();
+  const [editSubcategory] = useUpdateSubcategoryMutation();
+  const [deleteSubcategory] = useDeleteSubcategoryMutation();
 
   // Add Modal Open
   const openAddModal = () => {
@@ -73,9 +73,9 @@ const ProductList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (Product: any) => {
+  const openEditModal = (category: any) => {
     setIsEdit(true);
-    setSelectedData(Product);
+    setSelectedData(category);
     setModalActive(true);
   };
 
@@ -83,11 +83,11 @@ const ProductList: React.FC = () => {
   const handleSubmit = async (values: any) => {
     try {
       if (isEdit) {
-        await editProduct({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Product has been updated.", "success");
+        await editSubcategory({ id: selectedData?.id, ...values });
+        Swal.fire("Updated!", "Subcategory has been updated.", "success");
       } else {
-        await addProduct(values);
-        Swal.fire("Added!", "Product has been added.", "success");
+        await addSubategory(values);
+        Swal.fire("Added!", "Subcategory has been added.", "success");
       }
       setModalActive(false);
     } catch {
@@ -98,7 +98,7 @@ const ProductList: React.FC = () => {
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Product ID",
+      title: "Subcategory ID",
       dataIndex: "code",
       key: "code",
       width: 100,
@@ -118,7 +118,7 @@ const ProductList: React.FC = () => {
       ),
     },
     {
-      title: "Product Name",
+      title: "Subcategory Name",
       dataIndex: "name",
       key: "name",
     },
@@ -126,6 +126,11 @@ const ProductList: React.FC = () => {
       title: "Description",
       dataIndex: "description",
       key: "description",
+    },
+    {
+      title: "Parent Category",
+      dataIndex: "parent_category_name",
+      key: "parent_category_name",
     },
     {
       title: "Status",
@@ -151,8 +156,8 @@ const ProductList: React.FC = () => {
           onDelete={() =>
             handleDelete(
               record?.id,
-              () => deleteProduct(record?.id),
-              "Product?"
+              () => deleteSubcategory(record?.id),
+              "Subcategory?"
             )
           }
         />
@@ -163,17 +168,17 @@ const ProductList: React.FC = () => {
   return (
     <>
       <SummaryCard
-        pageTitle="Product"
+        pageTitle="Subcategories"
         backBtnActive={true}
-        filterBtnActive
-        addBtnLabel="Add Product"
+        addBtnActive
+        addBtnLabel="Add Subcategory"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
         <ReusableTable
           columns={columns}
-          data={products?.data || []}
+          data={subcategories?.data || []}
           loading={isLoading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -183,7 +188,7 @@ const ProductList: React.FC = () => {
       </DefaultCard>
 
       <ReusableModal
-        title={isEdit ? "Edit Product" : "Add Product"}
+        title={isEdit ? "Edit Subcategory" : "Add Subcategory"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
         content={
@@ -195,8 +200,18 @@ const ProductList: React.FC = () => {
             <div className="flex flex-col gap-3">
               <InputField
                 name="name"
-                label="Product Name"
-                rules={validationRules.required("Product Name")}
+                label="Subcategory Name"
+                rules={validationRules.required("Subcategory Name")}
+              />
+              <SelectField
+                name="parentCategory"
+                label="Parent Category"
+                options={[
+                  { value: "1", label: "Cat A" },
+                  { value: "2", label: "Cat B" },
+                ]}
+                rules={validationRules.required("Parent Category")}
+                showSearch={true}
               />
               <TextAreaField name="description" label="Description" />
               <SelectField
@@ -230,4 +245,4 @@ const ProductList: React.FC = () => {
   );
 };
 
-export default ProductList;
+export default SubCategoryList;

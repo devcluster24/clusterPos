@@ -27,7 +27,7 @@ import {
   useUpdateProductMutation,
 } from "@/redux/features/admin/productApi";
 
-const ProductList: React.FC = () => {
+const ProductReports: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -230,4 +230,4 @@ const ProductList: React.FC = () => {
   );
 };
 
-export default ProductList;
+export default ProductReports;

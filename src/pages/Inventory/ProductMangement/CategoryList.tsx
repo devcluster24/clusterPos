@@ -14,20 +14,20 @@ import { validationRules } from "@/components/form/Validation";
 import SubmitButton from "@/components/form/SubmitButton";
 import Swal from "sweetalert2";
 import noImage from "/noimage.png";
+import {
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetAllCategoryQuery,
+  useUpdateCategoryMutation,
+} from "@/redux/features/admin/categoryApi";
 import { AnyObject } from "antd/es/_util/type";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
 import TextAreaField from "@/components/form/TextAreaField";
 import FileInputField from "@/components/form/FileInputField";
 import { UploadChangeParam } from "antd/es/upload";
-import {
-  useCreateProductMutation,
-  useDeleteProductMutation,
-  useGetAllProductQuery,
-  useUpdateProductMutation,
-} from "@/redux/features/admin/productApi";
 
-const ProductList: React.FC = () => {
+const CategoriesList: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -47,6 +47,14 @@ const ProductList: React.FC = () => {
     [pagination, debouncedTerm]
   );
 
+  // Mutation
+  const { data: categories, isLoading } = useGetAllCategoryQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [addCategory] = useCreateCategoryMutation();
+  const [editCategory] = useUpdateCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
+
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
     setFileList(info.fileList);
@@ -57,25 +65,23 @@ const ProductList: React.FC = () => {
     return true;
   };
 
-  // api call
-  const { data: products, isLoading } = useGetAllProductQuery(query, {
-    refetchOnMountOrArgChange: true,
-  });
-  const [addProduct] = useCreateProductMutation();
-  const [editProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
-
   // Add Modal Open
   const openAddModal = () => {
     setIsEdit(false);
     setSelectedData(null);
+    setFileList([]);
     setModalActive(true);
   };
 
   // Edit Modal Open
-  const openEditModal = (Product: any) => {
+  const openEditModal = (category: any) => {
     setIsEdit(true);
-    setSelectedData(Product);
+    setSelectedData(category);
+    setFileList(
+      category.photo
+        ? [{ uid: "-1", url: category.photo, name: "Existing Photo" }]
+        : []
+    );
     setModalActive(true);
   };
 
@@ -83,11 +89,11 @@ const ProductList: React.FC = () => {
   const handleSubmit = async (values: any) => {
     try {
       if (isEdit) {
-        await editProduct({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Product has been updated.", "success");
+        await editCategory({ id: selectedData?.id, ...values });
+        Swal.fire("Updated!", "Category has been updated.", "success");
       } else {
-        await addProduct(values);
-        Swal.fire("Added!", "Product has been added.", "success");
+        await addCategory(values);
+        Swal.fire("Added!", "Category has been added.", "success");
       }
       setModalActive(false);
     } catch {
@@ -98,7 +104,7 @@ const ProductList: React.FC = () => {
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Product ID",
+      title: "Category ID",
       dataIndex: "code",
       key: "code",
       width: 100,
@@ -118,7 +124,7 @@ const ProductList: React.FC = () => {
       ),
     },
     {
-      title: "Product Name",
+      title: "Name",
       dataIndex: "name",
       key: "name",
     },
@@ -151,8 +157,8 @@ const ProductList: React.FC = () => {
           onDelete={() =>
             handleDelete(
               record?.id,
-              () => deleteProduct(record?.id),
-              "Product?"
+              () => deleteCategory(record?.id),
+              "Category?"
             )
           }
         />
@@ -163,17 +169,17 @@ const ProductList: React.FC = () => {
   return (
     <>
       <SummaryCard
-        pageTitle="Product"
+        pageTitle="Categories"
         backBtnActive={true}
-        filterBtnActive
-        addBtnLabel="Add Product"
+        addBtnActive
+        addBtnLabel="Add Category"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
         <ReusableTable
           columns={columns}
-          data={products?.data || []}
+          data={categories?.data || []}
           loading={isLoading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -183,7 +189,7 @@ const ProductList: React.FC = () => {
       </DefaultCard>
 
       <ReusableModal
-        title={isEdit ? "Edit Product" : "Add Product"}
+        title={isEdit ? "Edit Category" : "Add Category"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
         content={
@@ -195,8 +201,8 @@ const ProductList: React.FC = () => {
             <div className="flex flex-col gap-3">
               <InputField
                 name="name"
-                label="Product Name"
-                rules={validationRules.required("Product Name")}
+                label="Category Name"
+                rules={validationRules.required("Category Name")}
               />
               <TextAreaField name="description" label="Description" />
               <SelectField
@@ -216,9 +222,7 @@ const ProductList: React.FC = () => {
                 fileList={fileList}
                 handleUpload={handleUpload}
                 handleRemove={handleRemove}
-                multiple={true}
               />
-
               <div className="flex justify-end">
                 <SubmitButton />
               </div>
@@ -230,4 +234,4 @@ const ProductList: React.FC = () => {
   );
 };
 
-export default ProductList;
+export default CategoriesList;

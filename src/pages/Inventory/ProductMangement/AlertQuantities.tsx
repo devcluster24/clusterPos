@@ -1,78 +1,102 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useMemo, useState } from "react";
 import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
+import { ColumnsType } from "antd/es/table";
+import { Tag } from "antd";
+import noImage from "/noimage.png";
+import { AnyObject } from "antd/es/_util/type";
+import { useDebounced } from "@/redux/hooks";
 
-export const columns = [
-  { title: "Image", dataIndex: "image", key: "image" },
-  { title: "Product", dataIndex: "product", key: "product" },
-  {
-    title: "Business Access",
-    dataIndex: "businessAccess",
-    key: "businessAccess",
-  },
-  { title: "Unit Cost (Inc. Tax)", dataIndex: "unitCost", key: "unitCost" },
-  {
-    title: "Unit Price (Inc. Tax)",
-    dataIndex: "unitPrice",
-    key: "unitPrice",
-  },
-  { title: "Curr. Stock", dataIndex: "stock", key: "stock" },
-  { title: "Type", dataIndex: "type", key: "type" },
-  { title: "Category", dataIndex: "category", key: "category" },
-  { title: "Brand", dataIndex: "brand", key: "brand" },
-  { title: "Status", dataIndex: "status", key: "status" },
-];
-
-export const data = [
-  {
-    key: "1",
-    image: "📷",
-    product: "Product 2",
-    businessAccess: "Training 01",
-    unitCost: "100.00",
-    unitPrice: "110.00",
-    stock: "0.00/Pieces",
-    type: "Single",
-    category: "Category A",
-    brand: "Korean",
-    status: "Active",
-  },
-  {
-    key: "2",
-    image: "📷",
-    product: "Ink",
-    businessAccess: "Training 01",
-    unitCost: "50.00",
-    unitPrice: "0.00",
-    stock: "49.50/Kilogram",
-    type: "Single",
-    category: "...",
-    brand: "...",
-    status: "Active",
-  },
-  {
-    key: "3",
-    image: "📷",
-    product: "Pager",
-    businessAccess: "Training 01",
-    unitCost: "5.00",
-    unitPrice: "0.00",
-    stock: "0.00/Pieces",
-    type: "Single",
-    category: "...",
-    brand: "...",
-    status: "Active",
-  },
-];
+import { useGetAllProductQuery } from "@/redux/features/admin/productApi";
 
 const AlertQuantities: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+
+  // Query
+  const query = useMemo(
+    () => ({
+      page: pagination.page,
+      limit: pagination.pageSize,
+      ...(debouncedTerm && { searchTerm: debouncedTerm }),
+    }),
+    [pagination, debouncedTerm]
+  );
+
+  // api call
+  const { data: products, isLoading } = useGetAllProductQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  // Table Column
+  const columns: ColumnsType<AnyObject> = [
+    {
+      title: "Product ID",
+      dataIndex: "code",
+      key: "code",
+      width: 100,
+    },
+    {
+      title: "Photo",
+      dataIndex: "photo",
+      key: "photo",
+      width: 100,
+      render: (_, record) => (
+        <img
+          src={record.photo ? record.photo : noImage}
+          alt={record?.name}
+          width={40}
+          height={30}
+        />
+      ),
+    },
+    {
+      title: "Product Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+      render: (status) =>
+        status === "1" ? (
+          <Tag color="#87d068">Active</Tag>
+        ) : (
+          <Tag color="#f50">Inactive</Tag>
+        ),
+    },
+  ];
+
   return (
     <>
-      <SummaryCard pageTitle="Alert Quantities" backBtnActive={true} />
+      <SummaryCard
+        pageTitle="Alert Quantities"
+        backBtnActive={true}
+        filterBtnActive
+        filterBtnLabel="Filter Options"
+        // filterBtnClick={openAddModal}
+      />
 
       <DefaultCard>
-        <ReusableTable columns={columns} data={data} />
+        <ReusableTable
+          columns={columns}
+          data={products?.data || []}
+          loading={isLoading}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          pagination={pagination}
+          setPagination={setPagination}
+        />
       </DefaultCard>
     </>
   );

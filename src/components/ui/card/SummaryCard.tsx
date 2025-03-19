@@ -59,11 +59,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         </h2>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 ml-auto">
         <div className="flex">
           {filterBtnActive && (
             <ReusableButton
-              label={filterBtnLabel || "Filter"}
+              label={filterBtnLabel || "Filter Options"}
               type="primary"
               icon="filter"
               onClick={() => (filterBtnClick ? filterBtnClick() : null)}

@@ -25,6 +25,7 @@ const ImportProduct = () => {
               <FileInputField
                 label="File To Import"
                 name="file"
+                type="file"
                 rules={validationRules.required("File")}
               />
 

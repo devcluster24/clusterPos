@@ -1,4 +1,3 @@
-// 📁 src/components/form/SelectField.tsx
 import { Form, Select } from "antd";
 
 interface SelectFieldProps {
@@ -7,6 +6,7 @@ interface SelectFieldProps {
   rules?: Array<{ required?: boolean; message?: string }>;
   options: { value: string; label: string }[];
   placeholder?: string;
+  showSearch?: boolean;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -15,6 +15,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   rules,
   options,
   placeholder = `Select ${label}`,
+  showSearch = false, // Default is false
 }) => (
   <Form.Item
     label={label}
@@ -22,7 +23,18 @@ const SelectField: React.FC<SelectFieldProps> = ({
     rules={rules}
     style={{ marginBottom: "0px" }}
   >
-    <Select options={options} placeholder={placeholder} />
+    <Select
+      showSearch={showSearch} // Enable search only if showSearch is true
+      optionFilterProp={showSearch ? "label" : undefined} // Only filter if search is enabled
+      options={options}
+      placeholder={placeholder}
+      filterOption={
+        showSearch
+          ? (input, option) =>
+              option?.label.toLowerCase().includes(input.toLowerCase()) ?? false
+          : false
+      }
+    />
   </Form.Item>
 );
 

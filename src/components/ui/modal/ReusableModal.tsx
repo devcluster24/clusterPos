@@ -35,8 +35,8 @@ const ReusableModal: React.FC<ReusableModalProps> = ({
       className={` ${className || ""}`}
     >
       {/* title */}
-      <div className={` w-full rounded-lg`}>
-        <h2 className="text-xl w-full font-semibold text-white bg-blue-500 py-3 px-4 rounded-t-md">
+      <div className={` w-full rounded`}>
+        <h2 className="text-xl w-full font-semibold text-white bg-blue-500 py-2.5 px-4 ">
           {title}
         </h2>
 

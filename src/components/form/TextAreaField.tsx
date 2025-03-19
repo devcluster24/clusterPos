@@ -5,6 +5,7 @@ interface TextAreaFieldProps {
   label: string;
   rules?: Array<{ required?: boolean; message?: string }>;
   placeholder?: string;
+  row?: number;
 }
 
 const TextAreaField: React.FC<TextAreaFieldProps> = ({
@@ -12,6 +13,7 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
   label,
   rules,
   placeholder = `${label}`,
+  row = 2,
 }) => (
   <Form.Item
     label={label}
@@ -19,7 +21,7 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
     rules={rules}
     style={{ marginBottom: "0px" }}
   >
-    <Input.TextArea rows={4} placeholder={placeholder} />
+    <Input.TextArea rows={row} placeholder={placeholder} />
   </Form.Item>
 );
 

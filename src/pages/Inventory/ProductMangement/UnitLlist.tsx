@@ -4,7 +4,7 @@ import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import { ColumnsType } from "antd/es/table";
-import { Tag } from "antd";
+import { Tag, UploadFile } from "antd";
 import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
 import ReusableModal from "@/components/ui/modal/ReusableModal";
 import ReusableForm from "@/components/form/ReusableForm";
@@ -14,17 +14,21 @@ import { validationRules } from "@/components/form/Validation";
 import SubmitButton from "@/components/form/SubmitButton";
 import Swal from "sweetalert2";
 import noImage from "/noimage.png";
-import {
-  useCreateCategoryMutation,
-  useDeleteCategoryMutation,
-  useGetAllCategoryQuery,
-  useUpdateCategoryMutation,
-} from "@/redux/features/admin/categoryApi";
 import { AnyObject } from "antd/es/_util/type";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
+import TextAreaField from "@/components/form/TextAreaField";
+import FileInputField from "@/components/form/FileInputField";
+import { UploadChangeParam } from "antd/es/upload";
+import {
+  useCreateUnitsMutation,
+  useDeleteUnitsMutation,
+  useGetAllUnitsQuery,
+  useUpdateUnitsMutation,
+} from "@/redux/features/admin/unitsApi";
 
-const CategoriesList: React.FC = () => {
+const UnitList: React.FC = () => {
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
@@ -33,6 +37,7 @@ const CategoriesList: React.FC = () => {
   const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
   const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
 
+  // Query
   const query = useMemo(
     () => ({
       page: pagination.page,
@@ -42,34 +47,47 @@ const CategoriesList: React.FC = () => {
     [pagination, debouncedTerm]
   );
 
-  const { data: categories, isLoading } = useGetAllCategoryQuery(query, {
+  // Handle file selection
+  const handleUpload = (info: UploadChangeParam<UploadFile>) => {
+    setFileList(info.fileList);
+  };
+  // Handle remove file selection
+  const handleRemove = (file: UploadFile) => {
+    setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+    return true;
+  };
+
+  // api call
+  const { data: unitsList, isLoading } = useGetAllUnitsQuery(query, {
     refetchOnMountOrArgChange: true,
   });
+  const [addUnit] = useCreateUnitsMutation();
+  const [editUnit] = useUpdateUnitsMutation();
+  const [deleteUnit] = useDeleteUnitsMutation();
 
-  const [addCategory] = useCreateCategoryMutation();
-  const [editCategory] = useUpdateCategoryMutation();
-  const [deleteCategory] = useDeleteCategoryMutation();
-
+  // Add Modal Open
   const openAddModal = () => {
     setIsEdit(false);
     setSelectedData(null);
     setModalActive(true);
   };
 
-  const openEditModal = (category: any) => {
+  // Edit Modal Open
+  const openEditModal = (Units: any) => {
     setIsEdit(true);
-    setSelectedData(category);
+    setSelectedData(Units);
     setModalActive(true);
   };
 
+  // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
       if (isEdit) {
-        await editCategory({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Category has been updated.", "success");
+        await editUnit({ id: selectedData?.id, ...values });
+        Swal.fire("Updated!", "Unit has been updated.", "success");
       } else {
-        await addCategory(values);
-        Swal.fire("Added!", "Category has been added.", "success");
+        await addUnit(values);
+        Swal.fire("Added!", "Unit has been added.", "success");
       }
       setModalActive(false);
     } catch {
@@ -77,9 +95,10 @@ const CategoriesList: React.FC = () => {
     }
   };
 
+  // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Category ID",
+      title: "Units ID",
       dataIndex: "code",
       key: "code",
       width: 100,
@@ -99,7 +118,7 @@ const CategoriesList: React.FC = () => {
       ),
     },
     {
-      title: "Name",
+      title: "Units Name",
       dataIndex: "name",
       key: "name",
     },
@@ -130,11 +149,7 @@ const CategoriesList: React.FC = () => {
         <EditDeleteButtons
           onEdit={() => openEditModal(record)}
           onDelete={() =>
-            handleDelete(
-              record?.id,
-              () => deleteCategory(record?.id),
-              "Category?"
-            )
+            handleDelete(record?.id, () => deleteUnit(record?.id), "Units?")
           }
         />
       ),
@@ -144,16 +159,17 @@ const CategoriesList: React.FC = () => {
   return (
     <>
       <SummaryCard
-        pageTitle="Categories"
+        pageTitle="Units"
         backBtnActive={true}
         addBtnActive
+        addBtnLabel="Add Unit"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
         <ReusableTable
           columns={columns}
-          data={categories?.data || []}
+          data={unitsList?.data || []}
           loading={isLoading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -163,7 +179,7 @@ const CategoriesList: React.FC = () => {
       </DefaultCard>
 
       <ReusableModal
-        title={isEdit ? "Edit Category" : "Add Category"}
+        title={isEdit ? "Edit Unit" : "Add Unit"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
         content={
@@ -175,14 +191,10 @@ const CategoriesList: React.FC = () => {
             <div className="flex flex-col gap-3">
               <InputField
                 name="name"
-                label="Category Name"
-                rules={validationRules.required("Category Name")}
+                label="Unit Name"
+                rules={validationRules.required("Unit Name")}
               />
-              <InputField
-                name="code"
-                label="Category Code"
-                rules={validationRules.required("Category Code")}
-              />
+              <TextAreaField name="description" label="Description" />
               <SelectField
                 name="status"
                 label="Status"
@@ -192,6 +204,17 @@ const CategoriesList: React.FC = () => {
                 ]}
                 rules={validationRules.required("Status")}
               />
+              <FileInputField
+                label="Photo"
+                allowedExtensions={["jpg", "png", "pdf"]}
+                fileSize="250px * 250px"
+                name="file"
+                fileList={fileList}
+                handleUpload={handleUpload}
+                handleRemove={handleRemove}
+                multiple={true}
+              />
+
               <div className="flex justify-end">
                 <SubmitButton />
               </div>
@@ -203,4 +226,4 @@ const CategoriesList: React.FC = () => {
   );
 };
 
-export default CategoriesList;
+export default UnitList;

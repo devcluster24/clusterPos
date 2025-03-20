@@ -19,7 +19,7 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
     label={label}
     name={name}
     rules={rules}
-    style={{ marginBottom: "0px" }}
+    style={{ marginBottom: "0px", width: "100%" }}
   >
     <Input.TextArea rows={row} placeholder={placeholder} />
   </Form.Item>

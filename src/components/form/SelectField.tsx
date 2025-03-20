@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form, Select } from "antd";
 
 interface SelectFieldProps {
@@ -7,6 +8,8 @@ interface SelectFieldProps {
   options: { value: string; label: string }[];
   placeholder?: string;
   showSearch?: boolean;
+  value?: any;
+  onChange?: (value: any) => void;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -15,19 +18,23 @@ const SelectField: React.FC<SelectFieldProps> = ({
   rules,
   options,
   placeholder = `Select ${label}`,
-  showSearch = false, // Default is false
+  showSearch = false,
+  value,
+  onChange,
 }) => (
   <Form.Item
     label={label}
     name={name}
     rules={rules}
-    style={{ marginBottom: "0px" }}
+    style={{ marginBottom: "0px", width: "100%" }}
   >
     <Select
       showSearch={showSearch} // Enable search only if showSearch is true
       optionFilterProp={showSearch ? "label" : undefined} // Only filter if search is enabled
       options={options}
       placeholder={placeholder}
+      value={value}
+      onChange={onChange}
       filterOption={
         showSearch
           ? (input, option) =>

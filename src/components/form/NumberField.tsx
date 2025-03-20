@@ -17,7 +17,7 @@ const NumberField: React.FC<NumberFieldProps> = ({
     label={label}
     name={name}
     rules={rules}
-    style={{ marginBottom: "0px" }}
+    style={{ marginBottom: "0px", width: "100%" }}
   >
     <InputNumber style={{ width: "100%" }} placeholder={placeholder} />
   </Form.Item>

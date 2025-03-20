@@ -72,16 +72,16 @@ const InventoryItems = [
   {
     category: "PRODUCT REPORTS",
     buttons: [
-      { label: "Stock Report", icon: Users, link: "/products/stock-report" },
+      { label: "Stock Report", icon: Users, link: "/products/report/stock" },
       {
         label: "Stock Out Products Report",
         icon: Users,
-        link: "/products/stock-out-report",
+        link: "/products/report/stock-out",
       },
       {
         label: "Stock In-Out Report",
         icon: Layers,
-        link: "/products/stock-in-report",
+        link: "/products/report/stock-in-out",
       },
     ],
   },

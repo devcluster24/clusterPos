@@ -19,7 +19,7 @@ import {
   useDeleteCategoryMutation,
   useGetAllCategoryQuery,
   useUpdateCategoryMutation,
-} from "@/redux/features/admin/categoryApi";
+} from "@/redux/features/admin/Inventory/categoryApi";
 import { AnyObject } from "antd/es/_util/type";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
@@ -197,37 +197,38 @@ const CategoriesList: React.FC = () => {
             onSubmit={handleSubmit}
             layout="vertical"
             initialValues={isEdit && selectedData ? selectedData : {}}
-          >
-            <div className="flex flex-col gap-3">
-              <InputField
-                name="name"
-                label="Category Name"
-                rules={validationRules.required("Category Name")}
-              />
-              <TextAreaField name="description" label="Description" />
-              <SelectField
-                name="status"
-                label="Status"
-                options={[
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ]}
-                rules={validationRules.required("Status")}
-              />
-              <FileInputField
-                label="Photo"
-                allowedExtensions={["jpg", "png", "pdf"]}
-                fileSize="250px * 250px"
-                name="file"
-                fileList={fileList}
-                handleUpload={handleUpload}
-                handleRemove={handleRemove}
-              />
-              <div className="flex justify-end">
-                <SubmitButton />
+            content={
+              <div className="flex flex-col gap-3">
+                <InputField
+                  name="name"
+                  label="Category Name"
+                  rules={validationRules.required("Category Name")}
+                />
+                <TextAreaField name="description" label="Description" />
+                <SelectField
+                  name="status"
+                  label="Status"
+                  options={[
+                    { value: "1", label: "Active" },
+                    { value: "0", label: "Inactive" },
+                  ]}
+                  rules={validationRules.required("Status")}
+                />
+                <FileInputField
+                  label="Photo"
+                  allowedExtensions={["jpg", "png", "pdf"]}
+                  fileSize="250px * 250px"
+                  name="file"
+                  fileList={fileList}
+                  handleUpload={handleUpload}
+                  handleRemove={handleRemove}
+                />
+                <div className="flex justify-end">
+                  <SubmitButton />
+                </div>
               </div>
-            </div>
-          </ReusableForm>
+            }
+          />
         }
       />
     </>

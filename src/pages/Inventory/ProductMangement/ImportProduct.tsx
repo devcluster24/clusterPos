@@ -20,29 +20,33 @@ const ImportProduct = () => {
       <DefaultCard>
         <Card>
           {/* File Input */}
-          <DynamicForm onSubmit={handleSubmit} layout="vertical">
-            <div className="flex flex-wrap items-end gap-4">
-              <FileInputField
-                label="File To Import"
-                name="file"
-                type="file"
-                rules={validationRules.required("File")}
-              />
+          <DynamicForm
+            onSubmit={handleSubmit}
+            layout="vertical"
+            content={
+              <div className="flex flex-wrap items-end gap-4">
+                <FileInputField
+                  label="File To Import"
+                  name="file"
+                  type="file"
+                  rules={validationRules.required("File")}
+                />
 
-              {/* Select Option */}
-              <SelectField
-                name="unit"
-                label="Same Name and Same Code Product Action"
-                options={[
-                  { value: "update", label: "Update The Product" },
-                  { value: "skip", label: "Skip The Product" },
-                ]}
-              />
-              <button className="bg-blue-600 text-white px-4 py-[5px] rounded hover:bg-blue-700 transition">
-                Upload
-              </button>
-            </div>
-          </DynamicForm>
+                {/* Select Option */}
+                <SelectField
+                  name="unit"
+                  label="Same Name and Same Code Product Action"
+                  options={[
+                    { value: "update", label: "Update The Product" },
+                    { value: "skip", label: "Skip The Product" },
+                  ]}
+                />
+                <button className="bg-blue-600 text-white px-4 py-[5px] rounded hover:bg-blue-700 transition">
+                  Upload
+                </button>
+              </div>
+            }
+          />
 
           {/* Upload Button */}
 

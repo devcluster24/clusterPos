@@ -3,13 +3,19 @@ import Swal from "sweetalert2";
 
 const useDeleteConfirmation = () => {
   const handleDelete = async (
-    id: string,
-    deleteFunction: (id: string) => Promise<any>,
+    ids: string | string[], // Accept single or multiple IDs
+    deleteFunction: (id: string | string[]) => Promise<any>,
     title: string = "Item"
   ) => {
+    const isMultiple = Array.isArray(ids);
+    const titleText = isMultiple ? `${title}s` : title;
+    const confirmationText = isMultiple
+      ? `Are you sure you want to delete these ${title.toLowerCase()}s?`
+      : `Are you sure you want to delete this ${title.toLowerCase()}?`;
+
     Swal.fire({
-      title: `Delete ${title}?`,
-      text: `Are you sure you want to delete this ${title.toLowerCase()}?`,
+      title: `Delete ${titleText}?`,
+      text: confirmationText,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -18,10 +24,10 @@ const useDeleteConfirmation = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await deleteFunction(id);
+          const response = await deleteFunction(ids);
 
           if (response) {
-            Swal.fire("Deleted!", `${title} has been deleted.`, "success");
+            Swal.fire("Deleted!", `${titleText} has been deleted.`, "success");
           }
         } catch {
           Swal.fire("Error!", "Something went wrong.", "error");

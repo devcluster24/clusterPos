@@ -11,12 +11,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
 }) => {
   return (
     <Form.Item>
-      <Button
-        type="primary"
-        htmlType="submit"
-        loading={loading}
-        style={{ marginTop: "10px", marginLeft: "auto" }}
-      >
+      <Button type="primary" htmlType="submit" loading={loading} style={{}}>
         {label}
       </Button>
     </Form.Item>

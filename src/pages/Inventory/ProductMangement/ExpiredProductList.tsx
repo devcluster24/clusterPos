@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from "react";
 import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
@@ -8,7 +7,7 @@ import { Tag } from "antd";
 import noImage from "/noimage.png";
 import { AnyObject } from "antd/es/_util/type";
 import { useDebounced } from "@/redux/hooks";
-import { useGetAllProductQuery } from "@/redux/features/admin/productApi";
+import { useGetAllProductQuery } from "@/redux/features/admin/Inventory/productApi";
 
 const ExpiredProductList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");

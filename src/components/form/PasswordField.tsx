@@ -17,7 +17,7 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
     label={label}
     name={name}
     rules={rules}
-    style={{ marginBottom: "0px" }}
+    style={{ marginBottom: "0px", width: "100%" }}
   >
     <Input.Password placeholder={placeholder} />
   </Form.Item>

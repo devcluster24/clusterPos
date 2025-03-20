@@ -1,101 +1,66 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from "react";
 import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import { ColumnsType } from "antd/es/table";
-import { Tag, UploadFile } from "antd";
-import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
-import ReusableModal from "@/components/ui/modal/ReusableModal";
-import ReusableForm from "@/components/form/ReusableForm";
-import InputField from "@/components/form/InputField";
+import { Tag } from "antd";
 import SelectField from "@/components/form/SelectField";
-import { validationRules } from "@/components/form/Validation";
-import SubmitButton from "@/components/form/SubmitButton";
-import Swal from "sweetalert2";
-import noImage from "/noimage.png";
 import { AnyObject } from "antd/es/_util/type";
-import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
-import TextAreaField from "@/components/form/TextAreaField";
-import FileInputField from "@/components/form/FileInputField";
-import { UploadChangeParam } from "antd/es/upload";
 import {
-  useCreateProductMutation,
-  useDeleteProductMutation,
+  // useDeleteProductMutation,
   useGetAllProductQuery,
-  useUpdateProductMutation,
-} from "@/redux/features/admin/productApi";
+} from "@/redux/features/admin/Inventory/productApi";
+import { useNavigate } from "react-router-dom";
+import FilterCard from "@/components/ui/card/FilterCard";
+import ReusableForm from "@/components/form/ReusableForm";
+import noImage from "/noimage.png";
+// import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
+
+// filter types
+interface FilterState {
+  category?: string;
+  brand?: string;
+  units?: string;
+  status?: string;
+}
 
 const ProductList: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [modalActive, setModalActive] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
-  const { handleDelete } = useDeleteConfirmation();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filterActive, setFilterActive] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
   const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState<FilterState>({});
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  // const { handleDelete } = useDeleteConfirmation();
+  // const [deleteProduct] = useDeleteProductMutation();
 
-  // Query
+  // Handle filter change
+  const handleFilter = (key: keyof FilterState, value: string | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // Query parameters
   const query = useMemo(
     () => ({
       page: pagination.page,
       limit: pagination.pageSize,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters, // Apply selected filters dynamically
     }),
-    [pagination, debouncedTerm]
+    [pagination, debouncedTerm, filters]
   );
 
-  // Handle file selection
-  const handleUpload = (info: UploadChangeParam<UploadFile>) => {
-    setFileList(info.fileList);
-  };
-  // Handle remove file selection
-  const handleRemove = (file: UploadFile) => {
-    setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
-    return true;
-  };
-
-  // api call
+  // Fetch products based on query
   const { data: products, isLoading } = useGetAllProductQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const [addProduct] = useCreateProductMutation();
-  const [editProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
 
-  // Add Modal Open
-  const openAddModal = () => {
-    setIsEdit(false);
-    setSelectedData(null);
-    setModalActive(true);
-  };
-
-  // Edit Modal Open
-  const openEditModal = (Product: any) => {
-    setIsEdit(true);
-    setSelectedData(Product);
-    setModalActive(true);
-  };
-
-  // Handle Submit for add or edit
-  const handleSubmit = async (values: any) => {
-    try {
-      if (isEdit) {
-        await editProduct({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Product has been updated.", "success");
-      } else {
-        await addProduct(values);
-        Swal.fire("Added!", "Product has been added.", "success");
-      }
-      setModalActive(false);
-    } catch {
-      Swal.fire("Error!", "Something went wrong.", "error");
-    }
-  };
-
-  // Table Column
+  // Table columns with correct types
   const columns: ColumnsType<AnyObject> = [
     {
       title: "Product ID",
@@ -132,45 +97,95 @@ const ProductList: React.FC = () => {
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status) =>
+      render: (status: string) =>
         status === "1" ? (
           <Tag color="#87d068">Active</Tag>
         ) : (
           <Tag color="#f50">Inactive</Tag>
         ),
     },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 120,
-      fixed: "right",
-      align: "center",
-      render: (_, record) => (
-        <EditDeleteButtons
-          onEdit={() => openEditModal(record)}
-          onDelete={() =>
-            handleDelete(
-              record?.id,
-              () => deleteProduct(record?.id),
-              "Product?"
-            )
-          }
-        />
-      ),
-    },
   ];
 
+  console.log(selectedRowKeys);
   return (
     <>
       <SummaryCard
         pageTitle="Product"
         backBtnActive={true}
         filterBtnActive
-        addBtnLabel="Add Product"
-        addBtnClick={openAddModal}
+        filterBtnClick={() => setFilterActive((prev) => !prev)}
+        addBtnActive
+        addBtnLabel="Add"
+        addBtnClick={() => navigate("/products/create")}
+        deleteBtnActive
+        deleteBtnLabel="Delete"
       />
 
       <DefaultCard>
+        <FilterCard
+          visible={filterActive}
+          content={
+            <ReusableForm
+              layout="vertical"
+              content={
+                <div className="flex md:flex-row flex-col justify-between items-end gap-3 w-full">
+                  <SelectField
+                    name="category"
+                    label="Category"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "a", label: "A" },
+                      { value: "b", label: "B" },
+                    ]}
+                    value={filters.category || undefined}
+                    onChange={(value) => handleFilter("category", value)}
+                  />
+                  <SelectField
+                    name="brand"
+                    label="Brand"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "c", label: "C" },
+                      { value: "d", label: "D" },
+                    ]}
+                    value={filters.brand || undefined}
+                    onChange={(value) => handleFilter("brand", value)}
+                  />
+                  <SelectField
+                    name="units"
+                    label="Unit"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "kg", label: "Kilogram" },
+                      { value: "pc", label: "Piece" },
+                    ]}
+                    value={filters.units || undefined}
+                    onChange={(value) => handleFilter("units", value)}
+                  />
+                  <SelectField
+                    name="status"
+                    label="Status"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "1", label: "Active" },
+                      { value: "0", label: "Inactive" },
+                    ]}
+                    value={filters.status || undefined}
+                    onChange={(value) => handleFilter("status", value)}
+                  />
+                  {/* <ReusableButton
+                    icon="reset"
+                    label="Reset"
+                    onClick={() => {
+                      setFilters({}); 
+                    }}
+                  /> */}
+                </div>
+              }
+            />
+          }
+        />
+
         <ReusableTable
           columns={columns}
           data={products?.data || []}
@@ -179,53 +194,10 @@ const ProductList: React.FC = () => {
           setSearchTerm={setSearchTerm}
           pagination={pagination}
           setPagination={setPagination}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
         />
       </DefaultCard>
-
-      <ReusableModal
-        title={isEdit ? "Edit Product" : "Add Product"}
-        visible={modalActive}
-        onClose={() => setModalActive(false)}
-        content={
-          <ReusableForm
-            onSubmit={handleSubmit}
-            layout="vertical"
-            initialValues={isEdit && selectedData ? selectedData : {}}
-          >
-            <div className="flex flex-col gap-3">
-              <InputField
-                name="name"
-                label="Product Name"
-                rules={validationRules.required("Product Name")}
-              />
-              <TextAreaField name="description" label="Description" />
-              <SelectField
-                name="status"
-                label="Status"
-                options={[
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ]}
-                rules={validationRules.required("Status")}
-              />
-              <FileInputField
-                label="Photo"
-                allowedExtensions={["jpg", "png", "pdf"]}
-                fileSize="250px * 250px"
-                name="file"
-                fileList={fileList}
-                handleUpload={handleUpload}
-                handleRemove={handleRemove}
-                multiple={true}
-              />
-
-              <div className="flex justify-end">
-                <SubmitButton />
-              </div>
-            </div>
-          </ReusableForm>
-        }
-      />
     </>
   );
 };

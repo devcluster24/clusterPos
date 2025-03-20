@@ -7,10 +7,9 @@ import { Tag } from "antd";
 import noImage from "/noimage.png";
 import { AnyObject } from "antd/es/_util/type";
 import { useDebounced } from "@/redux/hooks";
-
 import { useGetAllProductQuery } from "@/redux/features/admin/Inventory/productApi";
 
-const AlertQuantities: React.FC = () => {
+const StockInOutReports: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
   const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
@@ -79,11 +78,9 @@ const AlertQuantities: React.FC = () => {
   return (
     <>
       <SummaryCard
-        pageTitle="Alert Quantities"
+        pageTitle="Stock In-Out Report"
         backBtnActive={true}
         filterBtnActive
-        filterBtnLabel="Filter Options"
-        // filterBtnClick={openAddModal}
       />
 
       <DefaultCard>
@@ -101,4 +98,4 @@ const AlertQuantities: React.FC = () => {
   );
 };
 
-export default AlertQuantities;
+export default StockInOutReports;

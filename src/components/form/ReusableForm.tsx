@@ -32,8 +32,8 @@ export interface FormField {
 
 interface ReusableFormProps {
   formFields?: FormField[];
-  children: React.ReactNode;
-  onSubmit: (values: any) => void;
+  content: React.ReactNode;
+  onSubmit?: (values: any) => void;
   loading?: boolean;
   submitLabel?: string;
   initialValues?: Record<string, any>;
@@ -42,7 +42,7 @@ interface ReusableFormProps {
 
 const ReusableForm: React.FC<ReusableFormProps> = ({
   formFields,
-  children,
+  content,
   onSubmit,
   loading = false,
   submitLabel,
@@ -153,7 +153,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
               return null;
           }
         })}
-      {children} {/* Render any additional children provided */}
+      {content} {/* Render any additional children provided */}
       {submitLabel && <SubmitButton loading={loading} label={submitLabel} />}
     </Form>
   );

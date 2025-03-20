@@ -1,4 +1,13 @@
-import { LucideIcon, X, ArrowLeft, Plus, Trash, Filter } from "lucide-react";
+import {
+  LucideIcon,
+  X,
+  ArrowLeft,
+  Plus,
+  Trash,
+  Filter,
+  List,
+  RotateCcw,
+} from "lucide-react";
 import clsx from "clsx";
 
 interface ReusableButtonProps {
@@ -15,6 +24,11 @@ const iconMap: Record<string, LucideIcon> = {
   delete: Trash,
   filter: Filter,
   close: X,
+  reset: RotateCcw,
+  undo: ArrowLeft,
+  redo: ArrowLeft,
+  save: Plus,
+  view: List,
 };
 
 const ReusableButton: React.FC<ReusableButtonProps> = ({

@@ -25,7 +25,7 @@ import {
   useDeleteUnitsMutation,
   useGetAllUnitsQuery,
   useUpdateUnitsMutation,
-} from "@/redux/features/admin/unitsApi";
+} from "@/redux/features/admin/Inventory/unitsApi";
 
 const WarrentyList: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -191,39 +191,40 @@ const WarrentyList: React.FC = () => {
             onSubmit={handleSubmit}
             layout="vertical"
             initialValues={isEdit && selectedData ? selectedData : {}}
-          >
-            <div className="flex flex-col gap-3">
-              <InputField
-                name="name"
-                label="Warrenty Name"
-                rules={validationRules.required("Warrenty Name")}
-              />
-              <TextAreaField name="description" label="Description" />
-              <SelectField
-                name="status"
-                label="Status"
-                options={[
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ]}
-                rules={validationRules.required("Status")}
-              />
-              <FileInputField
-                label="Photo"
-                allowedExtensions={["jpg", "png", "pdf"]}
-                fileSize="250px * 250px"
-                name="file"
-                fileList={fileList}
-                handleUpload={handleUpload}
-                handleRemove={handleRemove}
-                multiple={true}
-              />
+            content={
+              <div className="flex flex-col gap-3">
+                <InputField
+                  name="name"
+                  label="Warrenty Name"
+                  rules={validationRules.required("Warrenty Name")}
+                />
+                <TextAreaField name="description" label="Description" />
+                <SelectField
+                  name="status"
+                  label="Status"
+                  options={[
+                    { value: "1", label: "Active" },
+                    { value: "0", label: "Inactive" },
+                  ]}
+                  rules={validationRules.required("Status")}
+                />
+                <FileInputField
+                  label="Photo"
+                  allowedExtensions={["jpg", "png", "pdf"]}
+                  fileSize="250px * 250px"
+                  name="file"
+                  fileList={fileList}
+                  handleUpload={handleUpload}
+                  handleRemove={handleRemove}
+                  multiple={true}
+                />
 
-              <div className="flex justify-end">
-                <SubmitButton />
+                <div className="flex justify-end">
+                  <SubmitButton />
+                </div>
               </div>
-            </div>
-          </ReusableForm>
+            }
+          />
         }
       />
     </>

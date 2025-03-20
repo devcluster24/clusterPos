@@ -63,7 +63,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         <div className="flex">
           {filterBtnActive && (
             <ReusableButton
-              label={filterBtnLabel || "Filter Options"}
+              label={filterBtnLabel || "Filter"}
               type="primary"
               icon="filter"
               onClick={() => (filterBtnClick ? filterBtnClick() : null)}

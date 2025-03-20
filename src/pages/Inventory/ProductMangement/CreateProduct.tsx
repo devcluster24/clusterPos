@@ -19,190 +19,191 @@ const CreateProduct = () => {
       <SummaryCard pageTitle="Add Product" backBtnActive={true} />
 
       <DefaultCard>
-        <ReusableForm onSubmit={handleSubmit}>
-          {/* Product Details Section */}
-          <FormCard>
-            <InputField
-              name="productName"
-              label="Product Name"
-              rules={validationRules.required("Product Name")}
-            />
-            <InputField
-              name="productCode"
-              label="Product Code"
-              rules={validationRules.required("Product Code")}
-            />
-            <SelectField
-              name="unit"
-              label="Unit"
-              options={[
-                { value: "piece", label: "Piece" },
-                { value: "box", label: "Box" },
-              ]}
-              rules={validationRules.required("Unit")}
-            />
-            <SelectField
-              name="category"
-              label="Category"
-              options={[
-                { value: "electronics", label: "Electronics" },
-                { value: "clothing", label: "Clothing" },
-              ]}
-            />
-            <SelectField
-              name="subcategory"
-              label="Subcategory"
-              options={[
-                { value: "mobiles", label: "Mobiles" },
-                { value: "laptops", label: "Laptops" },
-              ]}
-            />
-            <SelectField
-              name="brand"
-              label="Brand"
-              options={[
-                { value: "apple", label: "Apple" },
-                { value: "samsung", label: "Samsung" },
-              ]}
-            />
-            <SelectField
-              name="warranty"
-              label="Warranty"
-              options={[
-                { value: "6_months", label: "6 Months" },
-                { value: "12_months", label: "12 Months" },
-              ]}
-            />
-            <InputField
-              name="alertQuantity"
-              label="Alert Quantity"
-              rules={validationRules.required("Alert Quantity")}
-            />
-            <InputField name="businessAccess" label="Business Access" />
-            <SelectField
-              name="stockType"
-              label="Stock Type"
-              options={[
-                { value: "manageable", label: "Manageable Stock" },
-                { value: "non_manageable", label: "Non-Manageable Stock" },
-              ]}
-            />
-            <SelectField
-              name="condition"
-              label="Condition"
-              options={[
-                { value: "new", label: "New" },
-                { value: "used", label: "Used" },
-              ]}
-            />
-          </FormCard>
-
-          {/* Pricing Section */}
-          <FormCard>
-            <SelectField
-              name="applicableTax"
-              label="Applicable Tax"
-              options={[
-                { value: "none", label: "None" },
-                { value: "exclusive", label: "Exclusive" },
-              ]}
-            />
-            <SelectField
-              name="taxApplicableFor"
-              label="Tax Applicable For"
-              options={[
-                { value: "selling_price", label: "For Selling Price" },
-                { value: "cost_price", label: "For Cost Price" },
-              ]}
-            />
-            <NumberField
-              name="unitCost"
-              label="Unit Cost (Exc. Tax)"
-              rules={validationRules.required("Unit Cost")}
-            />
-            <NumberField name="profitMargin" label="Profit Margin (%)" />
-            <NumberField
-              name="unitPrice"
-              label="Unit Price (Exc. Tax)"
-              rules={validationRules.required("Unit Price")}
-            />
-            <SelectField
-              name="hasMultipleUnit"
-              label="Has Multiple Unit?"
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-              ]}
-            />
-            <SelectField
-              name="hasVariant"
-              label="Has Variant?"
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-              ]}
-            />
-          </FormCard>
-
-          {/* Stock and E-commerce Section */}
-          <FormCard>
-            <SelectField
-              name="type"
-              label="Type"
-              options={[
-                { value: "general", label: "General" },
-                { value: "custom", label: "Custom" },
-              ]}
-            />
-            <InputField name="weight" label="Weight" />
-            <SelectField
-              name="displayedInEcom"
-              label="Displayed in E-com"
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-              ]}
-            />
-            <SelectField
-              name="isForSale"
-              label="Is For Sale"
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-              ]}
-            />
-            <SelectField
-              name="enableIMEI"
-              label="Enable IMEI/SL No"
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-              ]}
-            />
-            <SelectField
-              name="batchNoExpireDate"
-              label="Batch No/Expire Date"
-              options={[
-                { value: "yes", label: "Yes" },
-                { value: "no", label: "No" },
-              ]}
-            />
-          </FormCard>
-
-          {/* Thumbnail Upload */}
-          <FormCard>
-            <InputField
-              name="thumbnailPhoto"
-              label="Thumbnail Photo"
-              type="file"
-            />
-          </FormCard>
-
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <SubmitButton />
-          </div>
-        </ReusableForm>
+        <ReusableForm
+          onSubmit={handleSubmit}
+          content={
+            <>
+              {/* Product Details Section */}
+              <FormCard>
+                <InputField
+                  name="productName"
+                  label="Product Name"
+                  rules={validationRules.required("Product Name")}
+                />
+                <InputField
+                  name="productCode"
+                  label="Product Code"
+                  rules={validationRules.required("Product Code")}
+                />
+                <SelectField
+                  name="unit"
+                  label="Unit"
+                  options={[
+                    { value: "piece", label: "Piece" },
+                    { value: "box", label: "Box" },
+                  ]}
+                  rules={validationRules.required("Unit")}
+                />
+                <SelectField
+                  name="category"
+                  label="Category"
+                  options={[
+                    { value: "electronics", label: "Electronics" },
+                    { value: "clothing", label: "Clothing" },
+                  ]}
+                />
+                <SelectField
+                  name="subcategory"
+                  label="Subcategory"
+                  options={[
+                    { value: "mobiles", label: "Mobiles" },
+                    { value: "laptops", label: "Laptops" },
+                  ]}
+                />
+                <SelectField
+                  name="brand"
+                  label="Brand"
+                  options={[
+                    { value: "apple", label: "Apple" },
+                    { value: "samsung", label: "Samsung" },
+                  ]}
+                />
+                <SelectField
+                  name="warranty"
+                  label="Warranty"
+                  options={[
+                    { value: "6_months", label: "6 Months" },
+                    { value: "12_months", label: "12 Months" },
+                  ]}
+                />
+                <InputField
+                  name="alertQuantity"
+                  label="Alert Quantity"
+                  rules={validationRules.required("Alert Quantity")}
+                />
+                <InputField name="businessAccess" label="Business Access" />
+                <SelectField
+                  name="stockType"
+                  label="Stock Type"
+                  options={[
+                    { value: "manageable", label: "Manageable Stock" },
+                    { value: "non_manageable", label: "Non-Manageable Stock" },
+                  ]}
+                />
+                <SelectField
+                  name="condition"
+                  label="Condition"
+                  options={[
+                    { value: "new", label: "New" },
+                    { value: "used", label: "Used" },
+                  ]}
+                />
+              </FormCard>
+              {/* Pricing Section */}
+              <FormCard>
+                <SelectField
+                  name="applicableTax"
+                  label="Applicable Tax"
+                  options={[
+                    { value: "none", label: "None" },
+                    { value: "exclusive", label: "Exclusive" },
+                  ]}
+                />
+                <SelectField
+                  name="taxApplicableFor"
+                  label="Tax Applicable For"
+                  options={[
+                    { value: "selling_price", label: "For Selling Price" },
+                    { value: "cost_price", label: "For Cost Price" },
+                  ]}
+                />
+                <NumberField
+                  name="unitCost"
+                  label="Unit Cost (Exc. Tax)"
+                  rules={validationRules.required("Unit Cost")}
+                />
+                <NumberField name="profitMargin" label="Profit Margin (%)" />
+                <NumberField
+                  name="unitPrice"
+                  label="Unit Price (Exc. Tax)"
+                  rules={validationRules.required("Unit Price")}
+                />
+                <SelectField
+                  name="hasMultipleUnit"
+                  label="Has Multiple Unit?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+                <SelectField
+                  name="hasVariant"
+                  label="Has Variant?"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+              </FormCard>
+              {/* Stock and E-commerce Section */}
+              <FormCard>
+                <SelectField
+                  name="type"
+                  label="Type"
+                  options={[
+                    { value: "general", label: "General" },
+                    { value: "custom", label: "Custom" },
+                  ]}
+                />
+                <InputField name="weight" label="Weight" />
+                <SelectField
+                  name="displayedInEcom"
+                  label="Displayed in E-com"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+                <SelectField
+                  name="isForSale"
+                  label="Is For Sale"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+                <SelectField
+                  name="enableIMEI"
+                  label="Enable IMEI/SL No"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+                <SelectField
+                  name="batchNoExpireDate"
+                  label="Batch No/Expire Date"
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
+                  ]}
+                />
+              </FormCard>
+              {/* Thumbnail Upload */}
+              <FormCard>
+                <InputField
+                  name="thumbnailPhoto"
+                  label="Thumbnail Photo"
+                  type="file"
+                />
+              </FormCard>
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <SubmitButton />
+              </div>
+            </>
+          }
+        />
       </DefaultCard>
     </>
   );

@@ -22,6 +22,9 @@ import WarrentyList from "@/pages/Inventory/ProductMangement/WarrentyList";
 import AddStockIssue from "@/pages/Inventory/ManageStockIssue/AddStockIssue";
 import StockIssuedList from "@/pages/Inventory/ManageStockIssue/StockIssuedList";
 import StockIssues from "@/pages/Inventory/ManageStockIssue/StockIssues";
+import StockReports from "@/pages/Inventory/ProductReports/StockReport";
+import StockOutReports from "@/pages/Inventory/ProductReports/StockOutReport";
+import StockInOutReports from "@/pages/Inventory/ProductReports/StockInOutReport";
 
 const router = createBrowserRouter([
   {
@@ -118,16 +121,16 @@ const router = createBrowserRouter([
 
       /* product report */
       {
-        path: "/products/stock-report",
-        element: <CommingSoon />,
+        path: "/products/report/stock",
+        element: <StockReports />,
       },
       {
-        path: "/products/stock-out-report",
-        element: <CommingSoon />,
+        path: "/products/report/stock-out",
+        element: <StockOutReports />,
       },
       {
-        path: "/products/stock-in-out-report",
-        element: <CommingSoon />,
+        path: "/products/report/stock-in-out",
+        element: <StockInOutReports />,
       },
 
       /*================ Purchase routes ================= */

@@ -18,7 +18,7 @@ const DateField: React.FC<DateFieldProps> = ({
     label={label}
     name={name}
     rules={rules}
-    style={{ marginBottom: "0px" }}
+    style={{ marginBottom: "0px", width: "100%" }}
   >
     <DatePicker style={{ width: "100%" }} placeholder={placeholder} />
   </Form.Item>

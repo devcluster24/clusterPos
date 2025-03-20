@@ -15,7 +15,7 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
     name={name}
     valuePropName="checked"
     rules={rules}
-    style={{ marginBottom: "0px" }}
+    style={{ marginBottom: "0px", width: "100%" }}
   >
     <Checkbox>{label}</Checkbox>
   </Form.Item>

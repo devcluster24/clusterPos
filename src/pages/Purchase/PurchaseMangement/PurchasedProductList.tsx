@@ -21,13 +21,13 @@ import TextAreaField from "@/components/form/TextAreaField";
 import FileInputField from "@/components/form/FileInputField";
 import { UploadChangeParam } from "antd/es/upload";
 import {
-  useCreateBrandMutation,
-  useDeleteBrandMutation,
-  useGetAllBrandQuery,
-  useUpdateBrandMutation,
-} from "@/redux/features/admin/Inventory/brandApi";
+  useCreateProductMutation,
+  useDeleteProductMutation,
+  useGetAllProductQuery,
+  useUpdateProductMutation,
+} from "@/redux/features/admin/Inventory/productApi";
 
-const BrandList: React.FC = () => {
+const PurchasedProductList: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -58,12 +58,12 @@ const BrandList: React.FC = () => {
   };
 
   // api call
-  const { data: brands, isLoading } = useGetAllBrandQuery(query, {
+  const { data: products, isLoading } = useGetAllProductQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const [addBrand] = useCreateBrandMutation();
-  const [editBrand] = useUpdateBrandMutation();
-  const [deleteBrand] = useDeleteBrandMutation();
+  const [addProduct] = useCreateProductMutation();
+  const [editProduct] = useUpdateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
   // Add Modal Open
   const openAddModal = () => {
@@ -73,9 +73,9 @@ const BrandList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (Brand: any) => {
+  const openEditModal = (Product: any) => {
     setIsEdit(true);
-    setSelectedData(Brand);
+    setSelectedData(Product);
     setModalActive(true);
   };
 
@@ -83,11 +83,11 @@ const BrandList: React.FC = () => {
   const handleSubmit = async (values: any) => {
     try {
       if (isEdit) {
-        await editBrand({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Brand has been updated.", "success");
+        await editProduct({ id: selectedData?.id, ...values });
+        Swal.fire("Updated!", "Product has been updated.", "success");
       } else {
-        await addBrand(values);
-        Swal.fire("Added!", "Brand has been added.", "success");
+        await addProduct(values);
+        Swal.fire("Added!", "Product has been added.", "success");
       }
       setModalActive(false);
     } catch {
@@ -98,7 +98,7 @@ const BrandList: React.FC = () => {
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Brand ID",
+      title: "Product ID",
       dataIndex: "code",
       key: "code",
       width: 100,
@@ -118,7 +118,7 @@ const BrandList: React.FC = () => {
       ),
     },
     {
-      title: "Brand Name",
+      title: "Product Name",
       dataIndex: "name",
       key: "name",
     },
@@ -149,7 +149,11 @@ const BrandList: React.FC = () => {
         <EditDeleteButtons
           onEdit={() => openEditModal(record)}
           onDelete={() =>
-            handleDelete(record?.id, () => deleteBrand(record?.id), "Brand?")
+            handleDelete(
+              record?.id,
+              () => deleteProduct(record?.id),
+              "Product?"
+            )
           }
         />
       ),
@@ -159,17 +163,17 @@ const BrandList: React.FC = () => {
   return (
     <>
       <SummaryCard
-        pageTitle="Brands"
+        pageTitle="Product"
         backBtnActive={true}
-        addBtnActive
-        addBtnLabel="Add Brand"
+        filterBtnActive
+        addBtnLabel="Add Product"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
         <ReusableTable
           columns={columns}
-          data={brands?.data || []}
+          data={products?.data || []}
           loading={isLoading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -179,7 +183,7 @@ const BrandList: React.FC = () => {
       </DefaultCard>
 
       <ReusableModal
-        title={isEdit ? "Edit Brand" : "Add Brand"}
+        title={isEdit ? "Edit Product" : "Add Product"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
         content={
@@ -191,8 +195,8 @@ const BrandList: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <InputField
                   name="name"
-                  label="Brand Name"
-                  rules={validationRules.required("Brand Name")}
+                  label="Product Name"
+                  rules={validationRules.required("Product Name")}
                 />
                 <TextAreaField name="description" label="Description" />
                 <SelectField
@@ -227,4 +231,4 @@ const BrandList: React.FC = () => {
   );
 };
 
-export default BrandList;
+export default PurchasedProductList;

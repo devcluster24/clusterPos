@@ -11,12 +11,12 @@ const StockManagement = [
       {
         label: "Add Transfer Stock",
         icon: Plus,
-        link: "/add-transfer-stock",
+        link: "/transfer-stocks/create",
       },
       {
         label: "Transfer Stock List",
         icon: List,
-        link: "/transfer-stock-list",
+        link: "/transfer-stocks/list",
       },
     ],
   },
@@ -26,12 +26,12 @@ const StockManagement = [
       {
         label: "Receive From Warehouse",
         icon: Plus,
-        link: "/receive-from-warehouse",
+        link: "/transfer-stocks/receive-transferred-stocks/from-warehouse",
       },
       {
         label: "Receive From Business",
         icon: List,
-        link: "/receive-from-business",
+        link: "/transfer-stocks/receive-transferred-stocks/from-branch",
       },
     ],
   },

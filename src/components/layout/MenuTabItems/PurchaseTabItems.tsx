@@ -8,12 +8,12 @@ const InventoryItems = [
   {
     category: "PURCHASE MANAGEMENT",
     buttons: [
-      { label: "Add Purchase", icon: Plus, link: "/add-purchase" },
-      { label: "Purchase List", icon: List, link: "/purchase-list" },
+      { label: "Add Purchase", icon: Plus, link: "/purchase/create" },
+      { label: "Purchase List", icon: List, link: "/purchase/list" },
       {
         label: "Purchased Product List",
         icon: List,
-        link: "/purchased-product-list",
+        link: "/purchase/products",
       },
     ],
   },
@@ -23,40 +23,48 @@ const InventoryItems = [
       {
         label: "Add Purchase Return",
         icon: Plus,
-        link: "/add-purchase-return",
+        link: "/purchase/return/create",
       },
       {
         label: "Purchase Return List",
         icon: List,
-        link: "/purchase-return-list",
+        link: "/purchase/return/list",
       },
     ],
   },
   {
     category: "PURCHASE REPORTS",
     buttons: [
-      { label: "Purchase Report", icon: List, link: "/purchase-report" },
+      {
+        label: "Purchase Report",
+        icon: List,
+        link: "/purchase/reports/purchases",
+      },
       {
         label: "Purchased Products Report",
         icon: List,
-        link: "/purchased-products-report",
+        link: "/purchase/reports/purchased-product",
       },
       {
         label: "Purchase Return Report",
         icon: List,
-        link: "/purchase-return-report",
+        link: "/purchase/reports/purchase-return",
       },
       {
         label: "Purchase Returned Products Report",
         icon: List,
-        link: "/purchase-returned-products-report",
+        link: "/purchase/reports/purchase-return-products",
       },
       {
         label: "Payments Against Purchase Report",
         icon: List,
-        link: "/payments-against-purchase-report",
+        link: "/purchases/reports/payments-against-purchase",
       },
-      { label: "Sales Vs Purchase", icon: List, link: "/sales-vs-purchase" },
+      {
+        label: "Sales Vs Purchase",
+        icon: List,
+        link: "/purchases/reports/sales/purchase",
+      },
     ],
   },
 ];

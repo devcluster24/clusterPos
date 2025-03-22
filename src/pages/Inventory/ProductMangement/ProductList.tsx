@@ -26,15 +26,13 @@ interface FilterState {
 }
 
 const ProductList: React.FC = () => {
-  const [filterActive, setFilterActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
   const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
   const navigate = useNavigate();
+  const [filterActive, setFilterActive] = useState(false);
   const [filters, setFilters] = useState<FilterState>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  // const { handleDelete } = useDeleteConfirmation();
-  // const [deleteProduct] = useDeleteProductMutation();
 
   // Handle filter change
   const handleFilter = (key: keyof FilterState, value: string | undefined) => {
@@ -54,6 +52,9 @@ const ProductList: React.FC = () => {
     }),
     [pagination, debouncedTerm, filters]
   );
+
+  // const { handleDelete } = useDeleteConfirmation();
+  // const [deleteProduct] = useDeleteProductMutation();
 
   // Fetch products based on query
   const { data: products, isLoading } = useGetAllProductQuery(query, {

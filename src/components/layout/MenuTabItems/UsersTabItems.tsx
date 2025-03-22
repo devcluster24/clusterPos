@@ -11,12 +11,12 @@ const UserItems = [
       {
         label: "Add User",
         icon: Plus,
-        link: "/add-user",
+        link: "/users/create",
       },
       {
         label: "User List",
         icon: List,
-        link: "/user-list",
+        link: "/users/list",
       },
     ],
   },
@@ -26,12 +26,12 @@ const UserItems = [
       {
         label: "Add Role",
         icon: Plus,
-        link: "/add-role",
+        link: "/users/roles/create",
       },
       {
         label: "Role List",
         icon: List,
-        link: "/role-list",
+        link: "/users/roles",
       },
     ],
   },
@@ -41,7 +41,7 @@ const UserItems = [
       {
         label: "User Activities Log",
         icon: ChartBar,
-        link: "/user-activity-log",
+        link: "/users/reports/user-activities-log",
       },
     ],
   },

@@ -8,13 +8,13 @@ const TaskManageItems = [
   {
     category: "TASK MANAGEMENT",
     buttons: [
-      { label: "Todo", icon: ListTodo, link: "/todo" },
+      { label: "Todo", icon: ListTodo, link: "/task-management/todo" },
       {
         label: "Project Management",
         icon: LayoutGrid,
-        link: "/project-management",
+        link: "/task-management/workspaces",
       },
-      { label: "Message", icon: Mail, link: "/message" },
+      { label: "Message", icon: Mail, link: "/task-management/messages" },
     ],
   },
 ];

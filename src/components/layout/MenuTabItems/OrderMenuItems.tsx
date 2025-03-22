@@ -8,56 +8,80 @@ const OrderItems = [
   {
     category: "QUOTATION MANAGEMENT",
     buttons: [
-      { label: "Add Quotation", icon: Plus, link: "/add-quotation" },
-      { label: "Quotation List", icon: List, link: "/quotation-list" },
+      {
+        label: "Add Quotation",
+        icon: Plus,
+        link: "/orders/sales/quotations/create",
+      },
+      {
+        label: "Quotation List",
+        icon: List,
+        link: "/orders/sales/quotations/list",
+      },
     ],
   },
   {
     category: "SALES ORDER MANAGEMENT",
     buttons: [
-      { label: "Add Sales Order", icon: Plus, link: "/add-sales-order" },
-      { label: "Sales Order List", icon: List, link: "/sales-order-list" },
+      {
+        label: "Add Sales Order",
+        icon: Plus,
+        link: "/orders/sales/orders/create",
+      },
+      {
+        label: "Sales Order List",
+        icon: List,
+        link: "/orders/sales/orders/list",
+      },
       {
         label: "Sales Order to Invoice",
         icon: Plus,
-        link: "/sales-order-to-invoice",
+        link: "/orders/sales/order-to-invoice/create",
       },
     ],
   },
   {
     category: "PURCHASE ORDER MANAGEMENT",
     buttons: [
-      { label: "Add Purchase Order", icon: Plus, link: "/add-purchase-order" },
+      {
+        label: "Add Purchase Order",
+        icon: Plus,
+        link: "/orders/purchase/order/create",
+      },
       {
         label: "Purchase Order List",
         icon: List,
-        link: "/purchase-order-list",
+        link: "/orders/purchase/order/list",
       },
       {
         label: "Purchase Order to Invoice",
         icon: Plus,
-        link: "/purchase-order-to-invoice",
+        link: "/orders/sales/order-to-invoice/create",
       },
     ],
   },
   {
     category: "ORDER REPORTS",
     buttons: [
-      { label: "Sales Order Report", icon: List, link: "/sales-order-report" },
+      {
+        label: "Sales Order Report",
+        icon: List,
+        link: "/orders/reports/sales-orders",
+      },
       {
         label: "Sales Ordered Products Report",
         icon: List,
-        link: "/sales-ordered-products-report",
+        link: "/orders/reports/sales-ordered-products",
       },
       {
         label: "Purchase Order Report",
         icon: List,
-        link: "/purchase-order-report",
+        link: "/orders/reports/purchase-orders",
       },
       {
         label: "Purchase Ordered Products Report",
         icon: List,
-        link: "/purchase-ordered-products-report",
+        link: "/orders/reports/purchase-ordered-products",
       },
     ],
   },

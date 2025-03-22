@@ -8,10 +8,29 @@ import DefaultCard from "@/components/ui/card/DefaultCard";
 import FormCard from "@/components/ui/card/FormCard";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import ReusableForm from "@/components/form/ReusableForm";
+import FileInputField from "@/components/form/FileInputField";
+import { UploadFile } from "antd";
+import { useState } from "react";
+import { UploadChangeParam } from "antd/es/upload";
+import { useCreateProductMutation } from "@/redux/features/admin/Inventory/productApi";
 
 const CreateProduct = () => {
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  // Handle file selection
+  const handleUpload = (info: UploadChangeParam<UploadFile>) => {
+    setFileList(info.fileList);
+  };
+  // Handle remove file selection
+  const handleRemove = (file: UploadFile) => {
+    setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+    return true;
+  };
+  const [addProduct] = useCreateProductMutation();
+
   const handleSubmit = (values: any) => {
     console.log("Form Values: ", values);
+    addProduct(values);
   };
 
   return (
@@ -76,11 +95,12 @@ const CreateProduct = () => {
                     { value: "12_months", label: "12 Months" },
                   ]}
                 />
-                <InputField
+                <NumberField
                   name="alertQuantity"
                   label="Alert Quantity"
                   rules={validationRules.required("Alert Quantity")}
                 />
+
                 <InputField name="businessAccess" label="Business Access" />
                 <SelectField
                   name="stockType"
@@ -191,10 +211,14 @@ const CreateProduct = () => {
               </FormCard>
               {/* Thumbnail Upload */}
               <FormCard>
-                <InputField
-                  name="thumbnailPhoto"
-                  label="Thumbnail Photo"
-                  type="file"
+                <FileInputField
+                  label="Photo"
+                  allowedExtensions={["jpg", "png"]}
+                  fileSize="250px * 250px"
+                  name="file"
+                  fileList={fileList}
+                  handleUpload={handleUpload}
+                  handleRemove={handleRemove}
                 />
               </FormCard>
               {/* Submit Button */}

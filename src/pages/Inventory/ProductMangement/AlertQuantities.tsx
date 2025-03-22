@@ -7,22 +7,44 @@ import { Tag } from "antd";
 import noImage from "/noimage.png";
 import { AnyObject } from "antd/es/_util/type";
 import { useDebounced } from "@/redux/hooks";
-
 import { useGetAllProductQuery } from "@/redux/features/admin/Inventory/productApi";
+import FilterCard from "@/components/ui/card/FilterCard";
+import ReusableForm from "@/components/form/ReusableForm";
+import SelectField from "@/components/form/SelectField";
+
+// filter types
+interface FilterState {
+  category?: string;
+  brand?: string;
+  units?: string;
+  status?: string;
+}
 
 const AlertQuantities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
   const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+  const [filterActive, setFilterActive] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({});
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  // Query
+  // Handle filter change
+  const handleFilter = (key: keyof FilterState, value: string | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // Query parameters
   const query = useMemo(
     () => ({
       page: pagination.page,
       limit: pagination.pageSize,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters, // Apply selected filters dynamically
     }),
-    [pagination, debouncedTerm]
+    [pagination, debouncedTerm, filters]
   );
 
   // api call
@@ -83,10 +105,73 @@ const AlertQuantities: React.FC = () => {
         backBtnActive={true}
         filterBtnActive
         filterBtnLabel="Filter Options"
-        // filterBtnClick={openAddModal}
+        filterBtnClick={() => setFilterActive((prev) => !prev)}
       />
 
       <DefaultCard>
+        <FilterCard
+          visible={filterActive}
+          content={
+            <ReusableForm
+              layout="vertical"
+              content={
+                <div className="flex md:flex-row flex-col justify-between items-end gap-3 w-full">
+                  <SelectField
+                    name="category"
+                    label="Category"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "a", label: "A" },
+                      { value: "b", label: "B" },
+                    ]}
+                    value={filters.category || undefined}
+                    onChange={(value) => handleFilter("category", value)}
+                  />
+                  <SelectField
+                    name="brand"
+                    label="Brand"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "c", label: "C" },
+                      { value: "d", label: "D" },
+                    ]}
+                    value={filters.brand || undefined}
+                    onChange={(value) => handleFilter("brand", value)}
+                  />
+                  <SelectField
+                    name="units"
+                    label="Unit"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "kg", label: "Kilogram" },
+                      { value: "pc", label: "Piece" },
+                    ]}
+                    value={filters.units || undefined}
+                    onChange={(value) => handleFilter("units", value)}
+                  />
+                  <SelectField
+                    name="status"
+                    label="Status"
+                    options={[
+                      { value: "All", label: "All" },
+                      { value: "1", label: "Active" },
+                      { value: "0", label: "Inactive" },
+                    ]}
+                    value={filters.status || undefined}
+                    onChange={(value) => handleFilter("status", value)}
+                  />
+                  {/* <ReusableButton
+                    icon="reset"
+                    label="Reset"
+                    onClick={() => {
+                      setFilters({}); 
+                    }}
+                  /> */}
+                </div>
+              }
+            />
+          }
+        />
         <ReusableTable
           columns={columns}
           data={products?.data || []}
@@ -95,6 +180,8 @@ const AlertQuantities: React.FC = () => {
           setSearchTerm={setSearchTerm}
           pagination={pagination}
           setPagination={setPagination}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
         />
       </DefaultCard>
     </>

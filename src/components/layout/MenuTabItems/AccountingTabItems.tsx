@@ -8,33 +8,61 @@ const AccountingItems = [
   {
     category: "ACCOUNT MANAGEMENT",
     buttons: [
-      { label: "Banks", icon: Banknote, link: "/banks" },
-      { label: "Account Groups", icon: Banknote, link: "/account-groups" },
-      { label: "Accounts", icon: Banknote, link: "/accounts" },
-      { label: "Capital Accounts", icon: Banknote, link: "/capital-accounts" },
-      { label: "Duties And Taxes", icon: Banknote, link: "/duties-and-taxes" },
+      { label: "Banks", icon: Banknote, link: "/accounting/banks" },
+      // { label: "Account Groups", icon: Banknote, link: "/account-groups" },
+      { label: "Accounts", icon: Banknote, link: "/accounting/accounts" },
+      {
+        label: "Capital Accounts",
+        icon: Banknote,
+        link: "/accounting/accounts/capitals",
+      },
+      {
+        label: "Duties And Taxes",
+        icon: Banknote,
+        link: "/accounting/accounts/duties-and-taxes",
+      },
     ],
   },
   {
     category: "ACCOUNTING VOUCHERS",
     buttons: [
-      { label: "Receipts", icon: Receipt, link: "/receipts" },
-      { label: "Payments", icon: Banknote, link: "/payments" },
-      { label: "Expenses", icon: Banknote, link: "/expenses" },
-      { label: "Contras", icon: Contrast, link: "/contras" },
-      { label: "Journals", icon: Banknote, link: "/journals" },
+      { label: "Receipts", icon: Receipt, link: "/accounting/receipts" },
+      { label: "Payments", icon: Banknote, link: "/accounting/payments" },
+      { label: "Expenses", icon: Banknote, link: "/accounting/expenses" },
+      { label: "Contras", icon: Contrast, link: "/accounting/contras" },
+      { label: "Journals", icon: Banknote, link: "/accounting/journals" },
     ],
   },
   {
     category: "ACCOUNT REPORTS",
     buttons: [
-      { label: "Profit/Loss", icon: Banknote, link: "/profit-loss" },
-      { label: "Financial Report", icon: Banknote, link: "/financial-report" },
-      { label: "Trial Balance", icon: Banknote, link: "/trial-balance" },
-      { label: "Vat/Tax Report", icon: Banknote, link: "/vat-tax-report" },
-      { label: "Cash Flow", icon: Banknote, link: "/cash-flow" },
-      { label: "Day Book", icon: Book, link: "/day-book" },
-      { label: "Expense Report", icon: Banknote, link: "/expense-report" },
+      {
+        label: "Profit/Loss",
+        icon: Banknote,
+        link: "/accounting/reports/profit-loss",
+      },
+      {
+        label: "Financial Report",
+        icon: Banknote,
+        link: "/accounting/reports/financial",
+      },
+      {
+        label: "Trial Balance",
+        icon: Banknote,
+        link: "/accounting/reports/trial-balance",
+      },
+      {
+        label: "Vat/Tax Report",
+        icon: Banknote,
+        link: "/accounting/reports/vat-tax",
+      },
+      {
+        label: "Cash Flow",
+        icon: Banknote,
+        link: "/accounting/reports/cash-flow",
+      },
+      { label: "Day Book", icon: Book, link: "/reports/day-book" },
+      { label: "Expense Report", icon: Banknote, link: "/reports/expenses" },
     ],
   },
 ];

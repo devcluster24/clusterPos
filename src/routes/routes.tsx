@@ -25,6 +25,9 @@ import StockIssues from "@/pages/Inventory/ManageStockIssue/StockIssues";
 import StockReports from "@/pages/Inventory/ProductReports/StockReport";
 import StockOutReports from "@/pages/Inventory/ProductReports/StockOutReport";
 import StockInOutReports from "@/pages/Inventory/ProductReports/StockInOutReport";
+import CreatePurchase from "@/pages/Purchase/PurchaseMangement/CreatePurchase";
+import PurchaseList from "@/pages/Purchase/PurchaseMangement/PurchaseList";
+import PurchasedProductList from "@/pages/Purchase/PurchaseMangement/PurchasedProductList";
 
 const router = createBrowserRouter([
   {
@@ -49,7 +52,7 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
 
-      /*================ Inventory routes ================= */
+      /*================================= Inventory routes ===================================== */
 
       /* product management */
       {
@@ -133,19 +136,19 @@ const router = createBrowserRouter([
         element: <StockInOutReports />,
       },
 
-      /*================ Purchase routes ================= */
+      /*=================================== Purchase routes =============================== */
       /* PURCHASE MANAGEMENT */
       {
         path: "/purchase/create",
-        element: <CommingSoon />,
+        element: <CreatePurchase />,
       },
       {
         path: "/purchase/list",
-        element: <CommingSoon />,
+        element: <PurchaseList />,
       },
       {
         path: "/purchase/products",
-        element: <CommingSoon />,
+        element: <PurchasedProductList />,
       },
       /* PURCHASE RETURN MANAGEMENT */
       {
@@ -158,7 +161,11 @@ const router = createBrowserRouter([
       },
       /* PURCHASE REPORTS */
       {
-        path: "/purchase/reports/purchase-order",
+        path: "/purchase/reports/purchases",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/purchase/reports/purchased-product",
         element: <CommingSoon />,
       },
       {
@@ -166,36 +173,315 @@ const router = createBrowserRouter([
         element: <CommingSoon />,
       },
       {
-        path: "/purchase/reports/purchase-invoice",
+        path: "/purchase/reports/purchase-return-products",
         element: <CommingSoon />,
       },
-      /*================ Sales routes ================= */
+      {
+        path: "/purchases/reports/payments-against-purchase",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/purchases/reports/sales/purchase",
+        element: <CommingSoon />,
+      },
+      /*==================================== Sales routes =================================== */
       /* SALES MANAGEMENT */
       {
         path: "/sales/create",
         element: <CommingSoon />,
       },
       {
-        path: "/sales/list",
+        path: "/sales/pos/create",
         element: <CommingSoon />,
       },
       {
-        path: "/sales/products",
+        path: "/sales/add-sale",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/drafts",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/add-sale/products",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/shipments",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/cash-register",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/discounts",
         element: <CommingSoon />,
       },
       /* SALES RETURN MANAGEMENT */
       {
-        path: "/sales/return/create",
+        path: "/sales/returns/create",
         element: <CommingSoon />,
       },
-      /*================ Sales routes ================= */
-      /*================ Order routes ================= */
-      /*================ Transfer routes ================= */
-      /*================ Accounting routes ================= */
-      /*================ User routes ================= */
-      /*================ hrm routes ================= */
-      /*================ Task Management routes ================= */
-      /*================ Set up routes ================= */
+      {
+        path: "/sales/returns",
+        element: <CommingSoon />,
+      },
+      /* Sale Reports */
+      {
+        path: "/sales/reports/sales",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/reports/sold-products",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/reports/sales-return",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/reports/sales-returned-products",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/reports/received-against-sales-report",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/sales/reports/cash-register-report",
+        element: <CommingSoon />,
+      },
+
+      /*================================== Order routes ==================================== */
+      /* Quotation Management */
+      {
+        path: "/orders/sales/quotations/create",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/sales/quotations/list",
+        element: <CommingSoon />,
+      },
+      /* Sales Order Management */
+      {
+        path: "/orders/sales/orders/create",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/sales/orders/list",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/sales/order-to-invoice/create",
+        element: <CommingSoon />,
+      },
+      /* PURCHASE ORDER MANAGEMENT */
+      {
+        path: "/orders/purchase/order/create",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/purchase/order/list",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/sales/order-to-invoice/create",
+        element: <CommingSoon />,
+      },
+      /* ORDER REPORTS */
+      {
+        path: "/orders/reports/sales-orders",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/reports/sales-ordered-products",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/reports/purchase-orders",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/orders/reports/purchase-ordered-products",
+        element: <CommingSoon />,
+      },
+
+      /*================================= Transfer routes ==================================== */
+      /* Transfer Stock */
+      {
+        path: "/transfer-stocks/create",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/transfer-stocks/list",
+        element: <CommingSoon />,
+      },
+      /* Receive Transferred Stock */
+      {
+        path: "/transfer-stocks/receive-transferred-stocks/from-warehouse",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/transfer-stocks/receive-transferred-stocks/from-branch",
+        element: <CommingSoon />,
+      },
+
+      /*================================ Accounting routes ================================== */
+      /* ACCOUNT MANAGEMENT */
+      {
+        path: "/accounting/banks",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/accounts",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/accounts/capitals",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/accounts/duties-and-taxes",
+        element: <CommingSoon />,
+      },
+      /* ACCOUNTING VOUCHERS */
+      {
+        path: "/accounting/receipts",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/payments",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/expenses",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/contras",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/journals",
+        element: <CommingSoon />,
+      },
+      /* ACCOUNT REPORTS */
+      {
+        path: "/accounting/reports/profit-loss",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/reports/financial",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/reports/financial",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/reports/trial-balance",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/reports/vat-tax",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/accounting/reports/cash-flow",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/reports/day-book",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/reports/expenses",
+        element: <CommingSoon />,
+      },
+      /*=================================== User routes ===================================== */
+      /* Manage User */
+      {
+        path: "/users/create",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/users/list",
+        element: <CommingSoon />,
+      },
+      /* Manage Role */
+      {
+        path: "/users/roles/create",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/users/roles",
+        element: <CommingSoon />,
+      },
+      /* Log Report */
+      {
+        path: "/users/reports/user-activities-log",
+        element: <CommingSoon />,
+      },
+      /*=================================== hrm routes ======================================== */
+      /* Manage User */
+      {
+        path: "/hrm/leaves",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/shifts",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/attendances",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/holidays",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/departments",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/designations",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/payrolls",
+        element: <CommingSoon />,
+      },
+      /* HRM REPORTS */
+      {
+        path: "/hrm/reports/payrolls",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/reports/payroll/payments",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/hrm/reports/attendances",
+        element: <CommingSoon />,
+      },
+
+      /*============================= Task Management routes ================================= */
+      /* Task Management */
+      {
+        path: "/task-management/todo",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/task-management/workspaces",
+        element: <CommingSoon />,
+      },
+      {
+        path: "/task-management/messages",
+        element: <CommingSoon />,
+      },
+      /*================================== Set up routes =================================== */
 
       /* Stock routes */
       {

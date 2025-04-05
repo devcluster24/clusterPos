@@ -2,8 +2,8 @@
 import { Form, Select } from "antd";
 
 interface SelectFieldProps {
-  name: string;
-  label: string;
+  name?: string;
+  label?: string;
   rules?: Array<{ required?: boolean; message?: string }>;
   options: { value: string; label: string }[];
   placeholder?: string;

@@ -21,6 +21,9 @@ interface SummaryCardProps {
   deleteBtnActive?: boolean;
   deleteBtnLabel?: string;
   deleteBtnClick?: () => void;
+  resetBtnActive?: boolean;
+  resetBtnLabel?: string;
+  resetBtnClick?: () => void;
   pageTitle?: string;
 }
 
@@ -34,6 +37,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   filterBtnActive,
   filterBtnLabel,
   filterBtnClick,
+  resetBtnActive,
+  resetBtnLabel,
+  resetBtnClick,
   deleteBtnActive,
   deleteBtnLabel,
   deleteBtnClick,
@@ -61,6 +67,14 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
       <div className="flex gap-2 ml-auto">
         <div className="flex">
+          {resetBtnActive && (
+            <ReusableButton
+              label={resetBtnLabel || "Reset"}
+              type="primary"
+              icon="reset"
+              onClick={() => (resetBtnClick ? resetBtnClick() : null)}
+            />
+          )}
           {filterBtnActive && (
             <ReusableButton
               label={filterBtnLabel || "Filter"}

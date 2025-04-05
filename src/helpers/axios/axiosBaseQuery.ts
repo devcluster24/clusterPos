@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 import type { AxiosRequestConfig, AxiosError } from "axios";
 import { instance as axiosInstance } from "./axiosInstance";
@@ -20,7 +21,7 @@ export const axiosBaseQuery =
     unknown
   > =>
   async ({ url, method, data, params, headers, contentType }) => {
-    console.log({ baseUrl, url, method, data, params, headers, contentType });
+    // console.log({ baseUrl, url, method, data, params, headers, contentType });
     try {
       const result = await axiosInstance({
         url: baseUrl + url,
@@ -31,7 +32,7 @@ export const axiosBaseQuery =
           "Content-Type": contentType || "application/json",
         },
       });
-      console.log(result);
+      // console.log(result);
       return result;
       // return { data: result.data };
     } catch (axiosError) {

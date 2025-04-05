@@ -1,7 +1,7 @@
 import React from "react";
-import { Table, Input, Button, Dropdown, Menu, Select } from "antd";
+import { Table, Input, Button, Dropdown, Menu } from "antd";
 import { ColumnsType } from "antd/es/table/interface";
-import { DownOutlined, SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { AnyObject } from "antd/es/_util/type";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -13,8 +13,16 @@ interface ReusableTableProps {
   loading?: boolean;
   border?: boolean;
   searchTerm?: string;
-  setPagination?: (pagination: { page: number; pageSize: number }) => void;
+  setPagination?: (pagination: {
+    page?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => void;
   pagination?: { page: number; pageSize: number };
+  sortsBy?: { value: string; label: string }[];
+  sortsOrder?: { value: string; label: string }[];
+  limits?: { value: string; label: string }[];
   setSearchTerm?: (term: string) => void;
   selectedRowKeys?: React.Key[];
   setSelectedRowKeys?: (selectedRowKeys: React.Key[]) => void;
@@ -28,8 +36,19 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   selectedRowKeys = [],
   setSelectedRowKeys,
   setSearchTerm,
-  pagination = { page: 1, pageSize: 10 },
+  pagination = { page: 1, pageSize: 10, sortBy: "", sortOrder: "" },
   setPagination,
+  limits = [
+    { value: 10, label: "10 / page" },
+    { value: 25, label: "25 / page" },
+    { value: 50, label: "50 / page" },
+    { value: 100, label: "100 / page" },
+  ],
+  sortsBy,
+  sortsOrder = [
+    { value: "asc", label: "Ascending" },
+    { value: "desc", label: "Descending" },
+  ],
 }) => {
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     if (setSelectedRowKeys) {
@@ -104,23 +123,119 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
           />
         </div>
 
-        <div className="flex items-center gap-4 h-full">
-          <Select
-            value={pagination.pageSize}
-            onChange={(value) =>
-              setPagination && setPagination({ page: 1, pageSize: value })
+        <div className="flex items-center gap-1 h-full">
+          {/*================= pagination =====================*/}
+          <Dropdown
+            overlay={
+              <Menu
+                onClick={({ key }) =>
+                  setPagination &&
+                  setPagination({ page: 1, pageSize: Number(key) })
+                }
+              >
+                {limits.map((limit) => (
+                  <Menu.Item
+                    key={limit.value}
+                    className={
+                      "pageSize" in pagination &&
+                      pagination.pageSize === limit.value
+                        ? "bg-blue-100 font-semibold text-blue-700"
+                        : ""
+                    }
+                  >
+                    {limit.label}
+                  </Menu.Item>
+                ))}
+              </Menu>
             }
-            className="w-[66px] h-full"
+            trigger={["click"]}
           >
-            <Select.Option value={10}>10</Select.Option>
-            <Select.Option value={25}>25</Select.Option>
-            <Select.Option value={50}>50</Select.Option>
-            <Select.Option value={100}>100</Select.Option>
-          </Select>
-          <Dropdown overlay={exportMenu} trigger={["click"]}>
-            <Button type="primary">
-              Export <DownOutlined />
+            <Button className="h-full" type="default">
+              Page
             </Button>
+          </Dropdown>
+
+          {/* ============ sort =========== */}
+          {sortsBy && (
+            <Dropdown
+              overlay={
+                <Menu
+                  onClick={({ key }) => {
+                    const selected = sortsBy.find((item) => item.value === key);
+                    if (selected && setPagination) {
+                      setPagination({
+                        ...pagination,
+                        sortBy: selected.value,
+                      });
+                    }
+                  }}
+                >
+                  {sortsBy.map((sort) => (
+                    <Menu.Item
+                      key={sort.value}
+                      className={
+                        "sortBy" in pagination &&
+                        pagination.sortBy === sort.value
+                          ? "bg-blue-100 font-semibold text-blue-700"
+                          : ""
+                      }
+                    >
+                      {sort.label}
+                    </Menu.Item>
+                  ))}
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <Button className="h-full" type="default">
+                Sort
+              </Button>
+            </Dropdown>
+          )}
+
+          {/* ========== order  ======= */}
+          {sortsOrder && (
+            <Dropdown
+              overlay={
+                <Menu
+                  onClick={({ key }) => {
+                    const selected = sortsOrder.find(
+                      (item) => item.value === key
+                    );
+                    if (selected && setPagination) {
+                      setPagination({
+                        ...pagination,
+                        sortOrder: selected.value,
+                      });
+                    }
+                  }}
+                >
+                  {sortsOrder.map((order) => (
+                    <Menu.Item
+                      key={order.value}
+                      className={
+                        "sortOrder" in pagination &&
+                        pagination.sortOrder === order.value
+                          ? "bg-blue-100 font-semibold text-blue-700 "
+                          : ""
+                      }
+                    >
+                      {order.label}
+                    </Menu.Item>
+                  ))}
+                </Menu>
+              }
+              trigger={["click"]}
+            >
+              <Button className="h-full" type="default">
+                Order
+              </Button>
+            </Dropdown>
+          )}
+
+          {/*================ export ====================*/}
+          <Dropdown overlay={exportMenu} trigger={["click"]}>
+            <Button type="primary">Export</Button>
           </Dropdown>
         </div>
       </div>

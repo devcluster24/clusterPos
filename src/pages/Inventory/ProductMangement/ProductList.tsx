@@ -61,6 +61,7 @@ const ProductList: React.FC = () => {
     refetchOnMountOrArgChange: true,
   });
 
+  console.log("prod", products?.data);
   // Table columns with correct types
   const columns: ColumnsType<AnyObject> = [
     {

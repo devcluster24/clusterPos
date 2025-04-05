@@ -2,20 +2,20 @@
 import { baseApi } from "@/redux/api/baseApi";
 import { tagTypes } from "@/redux/tag-Types";
 
-const URL = "/brands";
+const URL = "/status";
 
-export const brandApi = baseApi.injectEndpoints({
+export const statusApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    createBrand: build.mutation({
+    createStatus: build.mutation({
       query: (data) => ({
         url: `${URL}`,
         method: "POST",
         data,
       }),
-      invalidatesTags: [tagTypes.brand],
+      invalidatesTags: [tagTypes.status],
     }),
 
-    getAllBrand: build.query({
+    getAllStatus: build.query({
       query: (arg: Record<string, any>) => ({
         url: `${URL}`,
         method: "GET",
@@ -27,41 +27,41 @@ export const brandApi = baseApi.injectEndpoints({
       //       meta,
       //     };
       //   },
-      providesTags: [tagTypes.brand],
+      providesTags: [tagTypes.status],
     }),
 
-    getBrandById: build.query({
+    getStatusById: build.query({
       query: (id) => ({
         url: `${URL}/${id}`,
         method: "GET",
       }),
 
-      providesTags: [tagTypes.brand],
+      providesTags: [tagTypes.status],
     }),
 
-    updateBrand: build.mutation({
+    updateStatus: build.mutation({
       query: ({ id, data }) => ({
         url: `${URL}/${id}`,
         method: "PATCH",
         data,
       }),
-      invalidatesTags: [tagTypes.brand],
+      invalidatesTags: [tagTypes.status],
     }),
 
-    deleteBrand: build.mutation({
+    deleteStatus: build.mutation({
       query: (id) => ({
         url: `${URL}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [tagTypes.brand],
+      invalidatesTags: [tagTypes.status],
     }),
   }),
 });
 
 export const {
-  useCreateBrandMutation,
-  useGetAllBrandQuery,
-  useGetBrandByIdQuery,
-  useUpdateBrandMutation,
-  useDeleteBrandMutation,
-} = brandApi;
+  useCreateStatusMutation,
+  useGetAllStatusQuery,
+  useGetStatusByIdQuery,
+  useUpdateStatusMutation,
+  useDeleteStatusMutation,
+} = statusApi;

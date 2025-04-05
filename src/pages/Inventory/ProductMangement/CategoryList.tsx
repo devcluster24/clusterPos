@@ -26,33 +26,55 @@ import { useDebounced } from "@/redux/hooks";
 import TextAreaField from "@/components/form/TextAreaField";
 import FileInputField from "@/components/form/FileInputField";
 import { UploadChangeParam } from "antd/es/upload";
+import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
+import { IStatus } from "@/types";
+import FilterCard from "@/components/ui/card/FilterCard";
+
+// filter types
+interface FilterState {
+  code?: string;
+  statusId?: string;
+}
 
 const CategoriesList: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [filterActive, setFilterActive] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({});
   const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
-  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 25,
+    sortOrder: "desc",
+    sortBy: "createdAt",
+  });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 600 });
 
   // Query
   const query = useMemo(
     () => ({
       page: pagination.page,
       limit: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters,
     }),
-    [pagination, debouncedTerm]
+    [pagination, debouncedTerm, filters]
   );
 
   // Mutation
   const { data: categories, isLoading } = useGetAllCategoryQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const [addCategory] = useCreateCategoryMutation();
-  const [editCategory] = useUpdateCategoryMutation();
+  const { data: statues } = useGetAllStatusQuery({});
+
+  const [addCategory, { isLoading: addLoading }] = useCreateCategoryMutation();
+  const [editCategory, { isLoading: editLoading }] =
+    useUpdateCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
 
   // Handle file selection
@@ -88,19 +110,62 @@ const CategoriesList: React.FC = () => {
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
+      let result;
       if (isEdit) {
-        await editCategory({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Category has been updated.", "success");
+        result = await editCategory({
+          id: selectedData?.id,
+          ...values,
+        }).unwrap();
+        Swal.fire(
+          "Updated!",
+          result?.data?.message || "Category has been updated.",
+          "success"
+        );
       } else {
-        await addCategory(values);
-        Swal.fire("Added!", "Category has been added.", "success");
+        result = await addCategory(values).unwrap();
+        Swal.fire(
+          "Added!",
+          result?.data?.message || "Category has been added.",
+          "success"
+        );
       }
-      setModalActive(false);
-    } catch {
-      Swal.fire("Error!", "Something went wrong.", "error");
+
+      if (result?.success) {
+        setModalActive(false);
+      }
+    } catch (error) {
+      Swal.fire(
+        "Error!",
+        (error as any)?.response?.data?.message || "Something went wrong.",
+        "error"
+      );
     }
   };
 
+  // Handle filter change
+  const handleFilter = (key: keyof FilterState, value: string | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // handle reset
+  const handleReset = () => {
+    setFilters({});
+    setSearchTerm("");
+    setFilterActive(false);
+    setFileList([]);
+    setModalActive(false);
+    setSelectedData(null);
+    setIsEdit(false);
+    setPagination({
+      page: 1,
+      pageSize: 25,
+      sortOrder: "desc",
+      sortBy: "createdAt",
+    });
+  };
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
@@ -132,18 +197,23 @@ const CategoriesList: React.FC = () => {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      render: (description) =>
+        description ? <p>{description}</p> : <p>-----</p>,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status) =>
-        status === "1" ? (
-          <Tag color="#87d068">Active</Tag>
-        ) : (
-          <Tag color="#f50">Inactive</Tag>
-        ),
+      render: (status) => {
+        if (status === "ACTIVE") {
+          return <Tag color="#87d068">{status}</Tag>;
+        } else if (status === "INACTIVE") {
+          return <Tag color="#f50">{status}</Tag>;
+        } else {
+          return <Tag color="#f50">{status}</Tag>;
+        }
+      },
     },
     {
       title: "Actions",
@@ -171,12 +241,47 @@ const CategoriesList: React.FC = () => {
       <SummaryCard
         pageTitle="Categories"
         backBtnActive={true}
+        resetBtnActive={true}
+        resetBtnClick={() => handleReset()}
+        filterBtnActive
+        filterBtnClick={() => setFilterActive((prev) => !prev)}
         addBtnActive
-        addBtnLabel="Add Category"
+        addBtnLabel="Add"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
+        <FilterCard
+          visible={filterActive}
+          content={
+            <ReusableForm
+              layout="vertical"
+              content={
+                <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
+                  <InputField
+                    name="code"
+                    label="Code"
+                    onChange={(e) => handleFilter("code", e.target.value)}
+                    placeholder="Search by code"
+                  />
+
+                  <SelectField
+                    name="statusId"
+                    placeholder="Select Status"
+                    label="Status"
+                    options={statues?.data?.map((status: IStatus) => ({
+                      value: status.id,
+                      label: status.value,
+                    }))}
+                    onChange={(value) => handleFilter("statusId", value)}
+                    showSearch
+                  />
+                </div>
+              }
+            />
+          }
+        />
+
         <ReusableTable
           columns={columns}
           data={categories?.data || []}
@@ -184,7 +289,17 @@ const CategoriesList: React.FC = () => {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           pagination={pagination}
-          setPagination={setPagination}
+          setPagination={(pagination) =>
+            setPagination((prev) => ({
+              ...prev,
+              ...pagination,
+            }))
+          }
+          sortsBy={[
+            { value: "code", label: "ID" },
+            { value: "statusId", label: "Status" },
+            { value: "name", label: "Name" },
+          ]}
         />
       </DefaultCard>
 
@@ -202,17 +317,26 @@ const CategoriesList: React.FC = () => {
                 <InputField
                   name="name"
                   label="Category Name"
-                  rules={validationRules.required("Category Name")}
+                  rules={
+                    isEdit
+                      ? [{ required: false }]
+                      : [validationRules.required("Category Name")]
+                  }
                 />
                 <TextAreaField name="description" label="Description" />
                 <SelectField
-                  name="status"
+                  name="statusId"
                   label="Status"
-                  options={[
-                    { value: "1", label: "Active" },
-                    { value: "0", label: "Inactive" },
-                  ]}
-                  rules={validationRules.required("Status")}
+                  options={statues?.data?.map((status: IStatus) => ({
+                    value: status.id,
+                    label: status.value,
+                  }))}
+                  rules={
+                    isEdit
+                      ? [{ required: false }]
+                      : validationRules.required("Status")
+                  }
+                  showSearch
                 />
                 <FileInputField
                   label="Photo"
@@ -224,7 +348,7 @@ const CategoriesList: React.FC = () => {
                   handleRemove={handleRemove}
                 />
                 <div className="flex justify-end">
-                  <SubmitButton />
+                  <SubmitButton loading={addLoading || editLoading} />
                 </div>
               </div>
             }

@@ -26,26 +26,61 @@ import {
   useGetAllSubcategoryQuery,
   useUpdateSubcategoryMutation,
 } from "@/redux/features/admin/Inventory/subCateogryApi";
+import imageUploadCloudinary from "@/utils/imageUploadCloudinary";
+import { TCategory, TStatus } from "@/types";
+import FilterCard from "@/components/ui/card/FilterCard";
+import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
+import { useGetAllCategoryQuery } from "@/redux/features/admin/Inventory/categoryApi";
+
+// filter types
+interface FilterState {
+  code?: string;
+  categoryId?: string;
+  statusId?: string;
+}
 
 const SubCategoryList: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
+  const [filterActive, setFilterActive] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({});
+  const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
-  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 25,
+    sortOrder: "desc",
+    sortBy: "createdAt",
+  });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 600 });
 
   // Query
   const query = useMemo(
     () => ({
       page: pagination.page,
       limit: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters,
     }),
-    [pagination, debouncedTerm]
+    [pagination, debouncedTerm, filters]
   );
+
+  // api call
+  const { data: subcategories, isLoading } = useGetAllSubcategoryQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [addSubategory, { isLoading: addLoading }] =
+    useCreateSubcategoryMutation();
+  const [editSubcategory, { isLoading: editLoading }] =
+    useUpdateSubcategoryMutation();
+  const [deleteSubcategory] = useDeleteSubcategoryMutation();
+
+  const { data: categories } = useGetAllCategoryQuery({});
+  const { data: statues } = useGetAllStatusQuery({});
 
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
@@ -57,48 +92,117 @@ const SubCategoryList: React.FC = () => {
     return true;
   };
 
-  // api call
-  const { data: subcategories, isLoading } = useGetAllSubcategoryQuery(query, {
-    refetchOnMountOrArgChange: true,
-  });
-  const [addSubategory] = useCreateSubcategoryMutation();
-  const [editSubcategory] = useUpdateSubcategoryMutation();
-  const [deleteSubcategory] = useDeleteSubcategoryMutation();
-
   // Add Modal Open
   const openAddModal = () => {
     setIsEdit(false);
     setSelectedData(null);
+    setFileList([]);
     setModalActive(true);
   };
 
   // Edit Modal Open
-  const openEditModal = (category: any) => {
+  const openEditModal = (category: AnyObject) => {
     setIsEdit(true);
     setSelectedData(category);
+    setFileList([]);
     setModalActive(true);
   };
 
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
+      let result;
+      let photo = selectedData?.photo || null;
       if (isEdit) {
-        await editSubcategory({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Subcategory has been updated.", "success");
+        if (fileList.length > 0) {
+          const url = await imageUploadCloudinary(fileList[0].originFileObj);
+          photo = url;
+        }
+        delete values.file;
+        values.photo = photo;
+
+        result = await editSubcategory({
+          id: selectedData?.id,
+          data: values,
+        }).unwrap();
+
+        if (result?.success) {
+          Swal.fire(
+            "Updated!",
+            result?.data?.message || "Category has been updated.",
+            "success"
+          );
+          handleReset();
+        } else {
+          Swal.fire(
+            "Failed!",
+            result?.data?.message || "Failed to update Category.",
+            "error"
+          );
+        }
       } else {
-        await addSubategory(values);
-        Swal.fire("Added!", "Subcategory has been added.", "success");
+        if (fileList.length > 0) {
+          const url = await imageUploadCloudinary(fileList[0].originFileObj);
+          photo = url;
+        }
+        delete values.file;
+        values.photo = photo;
+
+        result = await addSubategory(values).unwrap();
+        if (result?.success) {
+          Swal.fire(
+            "Added!",
+            result?.data?.message || "Category has been added.",
+            "success"
+          );
+          handleReset();
+        } else {
+          Swal.fire(
+            "Failed!",
+            result?.data?.message || "Failed to add new Category.",
+            "error"
+          );
+          handleReset();
+        }
       }
-      setModalActive(false);
-    } catch {
-      Swal.fire("Error!", "Something went wrong.", "error");
+    } catch (error) {
+      Swal.fire(
+        "Error!",
+        (error as any)?.response?.data?.message || "Something went wrong.",
+        "error"
+      );
     }
+  };
+
+  // Handle filter change
+  const handleFilter = (key: keyof FilterState, value: string | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // handle reset
+  const handleReset = () => {
+    setFilters({});
+    setSearchTerm("");
+    setFilterActive(false);
+    setFileList([]);
+    setModalActive(false);
+    setSelectedData(null);
+    setIsEdit(false);
+    setPagination({
+      page: 1,
+      pageSize: 25,
+      sortOrder: "desc",
+      sortBy: "createdAt",
+    });
   };
 
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Subcategory ID",
+      title: "ID",
       dataIndex: "code",
       key: "code",
       width: 100,
@@ -121,28 +225,43 @@ const SubCategoryList: React.FC = () => {
       title: "Subcategory Name",
       dataIndex: "name",
       key: "name",
+      minWidth: 100,
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      minWidth: 100,
+      render: (description) =>
+        description ? <p>{description}</p> : <p>---</p>,
     },
     {
       title: "Parent Category",
-      dataIndex: "parent_category_name",
-      key: "parent_category_name",
+      dataIndex: "category",
+      key: "category",
+      minWidth: 100,
+      render: (category) => {
+        if (category?.name) {
+          return <p>{category?.name}</p>;
+        } else {
+          return <p> --- </p>;
+        }
+      },
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status) =>
-        status === "1" ? (
-          <Tag color="#87d068">Active</Tag>
-        ) : (
-          <Tag color="#f50">Inactive</Tag>
-        ),
+      render: (status) => {
+        if (status?.value === "ACTIVE") {
+          return <Tag color="#87d068">{status?.value}</Tag>;
+        } else if (status?.value === "INACTIVE") {
+          return <Tag color="#f50">{status?.value}</Tag>;
+        } else {
+          return <Tag color="#f50">{status?.value}</Tag>;
+        }
+      },
     },
     {
       title: "Actions",
@@ -170,12 +289,58 @@ const SubCategoryList: React.FC = () => {
       <SummaryCard
         pageTitle="Subcategories"
         backBtnActive={true}
+        resetBtnActive={true}
+        resetBtnClick={() => handleReset()}
+        filterBtnActive
+        filterBtnClick={() => setFilterActive((prev) => !prev)}
         addBtnActive
-        addBtnLabel="Add Subcategory"
+        addBtnLabel="Add"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
+        <FilterCard
+          visible={filterActive}
+          content={
+            <ReusableForm
+              layout="vertical"
+              content={
+                <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
+                  <InputField
+                    name="code"
+                    label="Code"
+                    onChange={(e) => handleFilter("code", e.target.value)}
+                    placeholder="Search by code"
+                  />
+
+                  <SelectField
+                    name="categoryId"
+                    label="Category"
+                    options={categories?.data?.map((cat: TCategory) => ({
+                      value: cat.id,
+                      label: cat.name,
+                    }))}
+                    onChange={(value) => handleFilter("categoryId", value)}
+                    placeholder="Select Category"
+                    showSearch
+                  />
+
+                  <SelectField
+                    name="statusId"
+                    placeholder="Select Status"
+                    label="Status"
+                    options={statues?.data?.map((status: TStatus) => ({
+                      value: status.id,
+                      label: status.value,
+                    }))}
+                    onChange={(value) => handleFilter("statusId", value)}
+                  />
+                </div>
+              }
+            />
+          }
+        />
+
         <ReusableTable
           columns={columns}
           data={subcategories?.data || []}
@@ -183,11 +348,23 @@ const SubCategoryList: React.FC = () => {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           pagination={pagination}
-          setPagination={setPagination}
+          setPagination={(pagination) =>
+            setPagination((prev) => ({
+              ...prev,
+              ...pagination,
+            }))
+          }
+          sortsBy={[
+            { value: "code", label: "ID" },
+            { value: "name", label: "Name" },
+            { value: "categoryId", label: "Category" },
+            { value: "statusId", label: "Status" },
+          ]}
         />
       </DefaultCard>
 
       <ReusableModal
+        key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Subcategory" : "Add Subcategory"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
@@ -195,7 +372,15 @@ const SubCategoryList: React.FC = () => {
           <ReusableForm
             onSubmit={handleSubmit}
             layout="vertical"
-            initialValues={isEdit && selectedData ? selectedData : {}}
+            initialValues={
+              isEdit && selectedData
+                ? {
+                    ...selectedData,
+                    statusId: selectedData.status?.id,
+                    categoryId: selectedData.category?.id,
+                  }
+                : {}
+            }
             content={
               <div className="flex flex-col gap-3">
                 <InputField
@@ -204,24 +389,26 @@ const SubCategoryList: React.FC = () => {
                   rules={validationRules.required("Subcategory Name")}
                 />
                 <SelectField
-                  name="parentCategory"
+                  name="categoryId"
                   label="Parent Category"
-                  options={[
-                    { value: "1", label: "Cat A" },
-                    { value: "2", label: "Cat B" },
-                  ]}
-                  rules={validationRules.required("Parent Category")}
-                  showSearch={true}
+                  options={categories?.data?.map((cat: TCategory) => ({
+                    value: cat.id,
+                    label: cat.name,
+                  }))}
+                  rules={validationRules.required("Status")}
+                  showSearch
                 />
+
                 <TextAreaField name="description" label="Description" />
                 <SelectField
-                  name="status"
+                  name="statusId"
                   label="Status"
-                  options={[
-                    { value: "1", label: "Active" },
-                    { value: "0", label: "Inactive" },
-                  ]}
+                  options={statues?.data?.map((status: TStatus) => ({
+                    value: status.id,
+                    label: status.value,
+                  }))}
                   rules={validationRules.required("Status")}
+                  showSearch
                 />
                 <FileInputField
                   label="Photo"
@@ -231,11 +418,10 @@ const SubCategoryList: React.FC = () => {
                   fileList={fileList}
                   handleUpload={handleUpload}
                   handleRemove={handleRemove}
-                  multiple={true}
                 />
 
                 <div className="flex justify-end">
-                  <SubmitButton />
+                  <SubmitButton loading={addLoading || editLoading} />
                 </div>
               </div>
             }

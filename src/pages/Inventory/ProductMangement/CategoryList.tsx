@@ -27,8 +27,9 @@ import TextAreaField from "@/components/form/TextAreaField";
 import FileInputField from "@/components/form/FileInputField";
 import { UploadChangeParam } from "antd/es/upload";
 import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
-import { IStatus } from "@/types";
+import { TStatus } from "@/types";
 import FilterCard from "@/components/ui/card/FilterCard";
+import imageUploadCloudinary from "@/utils/imageUploadCloudinary";
 
 // filter types
 interface FilterState {
@@ -37,12 +38,12 @@ interface FilterState {
 }
 
 const CategoriesList: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
   const [filters, setFilters] = useState<FilterState>({});
-  const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
+  const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
@@ -70,12 +71,12 @@ const CategoriesList: React.FC = () => {
   const { data: categories, isLoading } = useGetAllCategoryQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const { data: statues } = useGetAllStatusQuery({});
-
   const [addCategory, { isLoading: addLoading }] = useCreateCategoryMutation();
   const [editCategory, { isLoading: editLoading }] =
     useUpdateCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
+
+  const { data: statues } = useGetAllStatusQuery({});
 
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
@@ -96,14 +97,10 @@ const CategoriesList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (category: any) => {
+  const openEditModal = (category: AnyObject) => {
     setIsEdit(true);
     setSelectedData(category);
-    setFileList(
-      category.photo
-        ? [{ uid: "-1", url: category.photo, name: "Existing Photo" }]
-        : []
-    );
+    setFileList([]);
     setModalActive(true);
   };
 
@@ -111,27 +108,58 @@ const CategoriesList: React.FC = () => {
   const handleSubmit = async (values: any) => {
     try {
       let result;
+      let photo = selectedData?.photo || null;
       if (isEdit) {
+        if (fileList.length > 0) {
+          const url = await imageUploadCloudinary(fileList[0].originFileObj);
+          photo = url;
+        }
+        delete values.file;
+        values.photo = photo;
+
         result = await editCategory({
           id: selectedData?.id,
-          ...values,
+          data: values,
         }).unwrap();
-        Swal.fire(
-          "Updated!",
-          result?.data?.message || "Category has been updated.",
-          "success"
-        );
-      } else {
-        result = await addCategory(values).unwrap();
-        Swal.fire(
-          "Added!",
-          result?.data?.message || "Category has been added.",
-          "success"
-        );
-      }
 
-      if (result?.success) {
-        setModalActive(false);
+        if (result?.success) {
+          Swal.fire(
+            "Updated!",
+            result?.data?.message || "Category has been updated.",
+            "success"
+          );
+          handleReset();
+        } else {
+          Swal.fire(
+            "Failed!",
+            result?.data?.message || "Failed to update Category.",
+            "error"
+          );
+        }
+      } else {
+        if (fileList.length > 0) {
+          const url = await imageUploadCloudinary(fileList[0].originFileObj);
+          photo = url;
+        }
+        delete values.file;
+        values.photo = photo;
+
+        result = await addCategory(values).unwrap();
+        if (result?.success) {
+          Swal.fire(
+            "Added!",
+            result?.data?.message || "Category has been added.",
+            "success"
+          );
+          handleReset();
+        } else {
+          Swal.fire(
+            "Failed!",
+            result?.data?.message || "Failed to add new Category.",
+            "error"
+          );
+          handleReset();
+        }
       }
     } catch (error) {
       Swal.fire(
@@ -166,6 +194,7 @@ const CategoriesList: React.FC = () => {
       sortBy: "createdAt",
     });
   };
+
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
@@ -182,7 +211,7 @@ const CategoriesList: React.FC = () => {
       render: (_, record) => (
         <img
           src={record.photo ? record.photo : noImage}
-          alt={record?.name}
+          alt={record?.name || "image"}
           width={40}
           height={30}
         />
@@ -206,12 +235,12 @@ const CategoriesList: React.FC = () => {
       key: "status",
       width: 100,
       render: (status) => {
-        if (status === "ACTIVE") {
-          return <Tag color="#87d068">{status}</Tag>;
-        } else if (status === "INACTIVE") {
-          return <Tag color="#f50">{status}</Tag>;
+        if (status?.value === "ACTIVE") {
+          return <Tag color="#87d068">{status?.value}</Tag>;
+        } else if (status?.value === "INACTIVE") {
+          return <Tag color="#f50">{status?.value}</Tag>;
         } else {
-          return <Tag color="#f50">{status}</Tag>;
+          return <Tag color="#f50">{status?.value}</Tag>;
         }
       },
     },
@@ -269,12 +298,11 @@ const CategoriesList: React.FC = () => {
                     name="statusId"
                     placeholder="Select Status"
                     label="Status"
-                    options={statues?.data?.map((status: IStatus) => ({
+                    options={statues?.data?.map((status: TStatus) => ({
                       value: status.id,
                       label: status.value,
                     }))}
                     onChange={(value) => handleFilter("statusId", value)}
-                    showSearch
                   />
                 </div>
               }
@@ -297,45 +325,45 @@ const CategoriesList: React.FC = () => {
           }
           sortsBy={[
             { value: "code", label: "ID" },
-            { value: "statusId", label: "Status" },
             { value: "name", label: "Name" },
+            { value: "statusId", label: "Status" },
           ]}
         />
       </DefaultCard>
 
       <ReusableModal
+        key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Category" : "Add Category"}
         visible={modalActive}
-        onClose={() => setModalActive(false)}
+        onClose={() => handleReset()}
         content={
           <ReusableForm
             onSubmit={handleSubmit}
             layout="vertical"
-            initialValues={isEdit && selectedData ? selectedData : {}}
+            initialValues={
+              isEdit && selectedData
+                ? {
+                    ...selectedData,
+                    statusId: selectedData.status?.id,
+                  }
+                : {}
+            }
             content={
               <div className="flex flex-col gap-3">
                 <InputField
                   name="name"
                   label="Category Name"
-                  rules={
-                    isEdit
-                      ? [{ required: false }]
-                      : [validationRules.required("Category Name")]
-                  }
+                  rules={[validationRules.required("Category Name")]}
                 />
                 <TextAreaField name="description" label="Description" />
                 <SelectField
                   name="statusId"
                   label="Status"
-                  options={statues?.data?.map((status: IStatus) => ({
+                  options={statues?.data?.map((status: TStatus) => ({
                     value: status.id,
                     label: status.value,
                   }))}
-                  rules={
-                    isEdit
-                      ? [{ required: false }]
-                      : validationRules.required("Status")
-                  }
+                  rules={validationRules.required("Status")}
                   showSearch
                 />
                 <FileInputField

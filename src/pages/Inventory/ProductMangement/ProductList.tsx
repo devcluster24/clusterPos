@@ -48,7 +48,7 @@ const ProductList: React.FC = () => {
       page: pagination.page,
       limit: pagination.pageSize,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
-      ...filters, // Apply selected filters dynamically
+      ...filters,
     }),
     [pagination, debouncedTerm, filters]
   );

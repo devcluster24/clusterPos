@@ -27,9 +27,22 @@ const useDeleteConfirmation = () => {
           const response = await deleteFunction(ids);
 
           if (response) {
-            Swal.fire("Deleted!", `${titleText} has been deleted.`, "success");
+            Swal.fire({
+              title: "Deleted!",
+              text: `${titleText} has been deleted.`,
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: true,
+            });
           }
         } catch {
+          Swal.fire({
+            title: "Failed!",
+            text: `Failed to delete ${titleText}.`,
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
           Swal.fire("Error!", "Something went wrong.", "error");
         }
       }

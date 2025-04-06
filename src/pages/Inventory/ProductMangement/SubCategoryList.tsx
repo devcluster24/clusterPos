@@ -4,7 +4,7 @@ import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import { ColumnsType } from "antd/es/table";
-import { Tag, UploadFile } from "antd";
+import { Form, Tag, UploadFile } from "antd";
 import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
 import ReusableModal from "@/components/ui/modal/ReusableModal";
 import ReusableForm from "@/components/form/ReusableForm";
@@ -40,6 +40,7 @@ interface FilterState {
 }
 
 const SubCategoryList: React.FC = () => {
+  const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -127,18 +128,22 @@ const SubCategoryList: React.FC = () => {
         }).unwrap();
 
         if (result?.success) {
-          Swal.fire(
-            "Updated!",
-            result?.data?.message || "Category has been updated.",
-            "success"
-          );
+          Swal.fire({
+            title: "Updated!",
+            text: result?.data?.message || "SubCategory has been updated.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: true,
+          });
           handleReset();
         } else {
-          Swal.fire(
-            "Failed!",
-            result?.data?.message || "Failed to update Category.",
-            "error"
-          );
+          Swal.fire({
+            title: "Failed!",
+            text: result?.data?.message || "Failed to update SubCategory.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
         }
       } else {
         if (fileList.length > 0) {
@@ -150,27 +155,34 @@ const SubCategoryList: React.FC = () => {
 
         result = await addSubategory(values).unwrap();
         if (result?.success) {
-          Swal.fire(
-            "Added!",
-            result?.data?.message || "Category has been added.",
-            "success"
-          );
+          Swal.fire({
+            title: "Added!",
+            text: result?.data?.message || "SubCategory has been added.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: true,
+          });
           handleReset();
         } else {
-          Swal.fire(
-            "Failed!",
-            result?.data?.message || "Failed to add new Category.",
-            "error"
-          );
-          handleReset();
+          Swal.fire({
+            title: "Failed!",
+            text: result?.data?.message || "Failed to add new SubCategory.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
         }
       }
     } catch (error) {
-      Swal.fire(
-        "Error!",
-        (error as any)?.response?.data?.message || "Something went wrong.",
-        "error"
-      );
+      Swal.fire({
+        title: "Error!",
+        text:
+          (error as any)?.response?.data?.message || "Something went wrong.",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: true,
+      });
+      handleReset();
     }
   };
 
@@ -185,6 +197,7 @@ const SubCategoryList: React.FC = () => {
   // handle reset
   const handleReset = () => {
     setFilters({});
+    form.resetFields();
     setSearchTerm("");
     setFilterActive(false);
     setFileList([]);
@@ -370,6 +383,7 @@ const SubCategoryList: React.FC = () => {
         onClose={() => setModalActive(false)}
         content={
           <ReusableForm
+            form={form}
             onSubmit={handleSubmit}
             layout="vertical"
             initialValues={
@@ -421,7 +435,10 @@ const SubCategoryList: React.FC = () => {
                 />
 
                 <div className="flex justify-end">
-                  <SubmitButton loading={addLoading || editLoading} />
+                  <SubmitButton
+                    loading={addLoading || editLoading}
+                    selectedRecord={selectedData}
+                  />
                 </div>
               </div>
             }

@@ -10,7 +10,7 @@ import NumberField from "./NumberField";
 import PasswordField from "./PasswordField";
 import DateField from "./DateField";
 import SubmitButton from "./SubmitButton";
-import { FormLayout } from "antd/es/form/Form";
+import { FormInstance, FormLayout } from "antd/es/form/Form";
 
 export interface FormField {
   name: string;
@@ -31,6 +31,7 @@ export interface FormField {
 }
 
 interface ReusableFormProps {
+  form?: FormInstance;
   formFields?: FormField[];
   content: React.ReactNode;
   onSubmit?: (values: any) => void;
@@ -41,6 +42,7 @@ interface ReusableFormProps {
 }
 
 const ReusableForm: React.FC<ReusableFormProps> = ({
+  form,
   formFields,
   content,
   onSubmit,
@@ -49,8 +51,6 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
   initialValues = {},
   layout = "horizontal",
 }) => {
-  const [form] = Form.useForm();
-
   const computedFormItemLayout =
     layout === "vertical"
       ? { labelCol: { span: 24 }, wrapperCol: { span: 24 } }

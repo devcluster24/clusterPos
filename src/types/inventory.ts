@@ -1,4 +1,4 @@
-export type TStatus = { id: number | string; value: string };
+export type TStatus = { id: number | string; value?: string; name?: string };
 
 export type TCategory = {
   id: number;

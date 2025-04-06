@@ -4,7 +4,7 @@ import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import { ColumnsType } from "antd/es/table";
-import { Tag, UploadFile } from "antd";
+import { Form, Tag } from "antd";
 import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
 import ReusableModal from "@/components/ui/modal/ReusableModal";
 import ReusableForm from "@/components/form/ReusableForm";
@@ -17,53 +17,65 @@ import noImage from "/noimage.png";
 import { AnyObject } from "antd/es/_util/type";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
-import TextAreaField from "@/components/form/TextAreaField";
-import FileInputField from "@/components/form/FileInputField";
-import { UploadChangeParam } from "antd/es/upload";
 import {
   useCreateUnitsMutation,
   useDeleteUnitsMutation,
   useGetAllUnitsQuery,
   useUpdateUnitsMutation,
 } from "@/redux/features/admin/Inventory/unitsApi";
+import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
+import { TStatus } from "@/types";
+import FilterCard from "@/components/ui/card/FilterCard";
+import { useGetAllUnitTypeQuery } from "@/redux/features/admin/Inventory/unitTypeApi";
+import NumberField from "@/components/form/NumberField";
+
+// filter types
+interface FilterState {
+  code?: string;
+  statusId?: string;
+}
 
 const UnitList: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [form] = Form.useForm();
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
+  const [filterActive, setFilterActive] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({});
+  const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
+  const [isMultiplier, setMultiplier] = useState<boolean>(false);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
-  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 25,
+    sortOrder: "desc",
+    sortBy: "createdAt",
+  });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 600 });
 
   // Query
   const query = useMemo(
     () => ({
       page: pagination.page,
       limit: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters,
     }),
-    [pagination, debouncedTerm]
+    [pagination, debouncedTerm, filters]
   );
-
-  // Handle file selection
-  const handleUpload = (info: UploadChangeParam<UploadFile>) => {
-    setFileList(info.fileList);
-  };
-  // Handle remove file selection
-  const handleRemove = (file: UploadFile) => {
-    setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
-    return true;
-  };
 
   // api call
   const { data: unitsList, isLoading } = useGetAllUnitsQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const [addUnit] = useCreateUnitsMutation();
-  const [editUnit] = useUpdateUnitsMutation();
+  const [addUnit, { isLoading: addLoading }] = useCreateUnitsMutation();
+  const [editUnit, { isLoading: editLoading }] = useUpdateUnitsMutation();
   const [deleteUnit] = useDeleteUnitsMutation();
+
+  const { data: statues } = useGetAllStatusQuery({});
+  const { data: unitTypes } = useGetAllUnitTypeQuery({});
 
   // Add Modal Open
   const openAddModal = () => {
@@ -73,26 +85,112 @@ const UnitList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (Units: any) => {
+  const openEditModal = (category: AnyObject) => {
     setIsEdit(true);
-    setSelectedData(Units);
+    setSelectedData(category);
     setModalActive(true);
+    setMultiplier(!!category?.multiplier);
   };
 
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
-      if (isEdit) {
-        await editUnit({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Unit has been updated.", "success");
-      } else {
-        await addUnit(values);
-        Swal.fire("Added!", "Unit has been added.", "success");
+      let result;
+      if (!isMultiplier) {
+        delete values.multiplier;
       }
-      setModalActive(false);
-    } catch {
-      Swal.fire("Error!", "Something went wrong.", "error");
+      if (isEdit) {
+        result = await editUnit({
+          id: selectedData?.id,
+          data: values,
+        }).unwrap();
+
+        if (result?.success) {
+          Swal.fire({
+            title: "Updated!",
+            text: result?.data?.message || "Brand has been updated.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+          handleReset();
+        } else {
+          Swal.fire({
+            title: "Failed!",
+            text: result?.data?.message || "Failed to update Brand.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+        }
+      } else {
+        result = await addUnit(values).unwrap();
+        if (result?.success) {
+          Swal.fire({
+            title: "Added!",
+            text: result?.data?.message || "Brand has been added.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+          handleReset();
+        } else {
+          Swal.fire({
+            title: "Failed!",
+            text: result?.data?.message || "Failed to added Brand.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+        }
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text:
+          (error as any)?.response?.data?.message || "Something went wrong.",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: true,
+      });
     }
+  };
+
+  // Handle filter change
+  const handleFilter = (key: keyof FilterState, value: string | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // Handle multiplier change
+  const handleMultiplier = (
+    key: keyof FilterState,
+    value: string | undefined
+  ) => {
+    if (value === "yes") {
+      setMultiplier(true);
+    } else {
+      setMultiplier(false);
+    }
+  };
+
+  // handle reset
+  const handleReset = () => {
+    setFilters({});
+    form.resetFields();
+    setSearchTerm("");
+    setFilterActive(false);
+    setModalActive(false);
+    setSelectedData(null);
+    setIsEdit(false);
+    setPagination({
+      page: 1,
+      pageSize: 25,
+      sortOrder: "desc",
+      sortBy: "createdAt",
+    });
   };
 
   // Table Column
@@ -118,31 +216,68 @@ const UnitList: React.FC = () => {
       ),
     },
     {
-      title: "Units Name",
+      title: "Unit Name",
       dataIndex: "name",
       key: "name",
+      minWidth: 100,
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Short Name",
+      dataIndex: "codeName",
+      key: "codeName",
+      minWidth: 80,
     },
+    {
+      title: "Unit Type",
+      dataIndex: "unitTypeId",
+      key: "unitTypeId",
+      minWidth: 100,
+      render: (unitTypeId) => {
+        const unitType = unitTypes?.data?.find(
+          (item: TStatus) => item.id === unitTypeId
+        );
+        return <p>{unitType?.value || "---"}</p>;
+      },
+    },
+    {
+      title: "Base Unit",
+      dataIndex: "baseUnitId",
+      key: "baseUnitId",
+      minWidth: 100,
+      render: (baseUnitId) => {
+        const unitType = unitsList?.data?.find(
+          (item: TStatus) => item.id === baseUnitId
+        );
+        return <p>{unitType?.value || "---"}</p>;
+      },
+    },
+    {
+      title: "Multiplier",
+      dataIndex: "multiplier",
+      key: "multiplier",
+      render: (multiplier) => (multiplier ? <p>{multiplier}</p> : <p>---</p>),
+      minWidth: 100,
+    },
+
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status) =>
-        status === "1" ? (
-          <Tag color="#87d068">Active</Tag>
-        ) : (
-          <Tag color="#f50">Inactive</Tag>
-        ),
+      render: (status) => {
+        if (status?.value === "ACTIVE") {
+          return <Tag color="#87d068">{status?.value}</Tag>;
+        } else if (status?.value === "INACTIVE") {
+          return <Tag color="#f50">{status?.value}</Tag>;
+        } else {
+          return <Tag color="#f50">{status?.value}</Tag>;
+        }
+      },
     },
     {
       title: "Actions",
       key: "actions",
-      width: 120,
+      width: 100,
       fixed: "right",
       align: "center",
       render: (_, record) => (
@@ -161,12 +296,56 @@ const UnitList: React.FC = () => {
       <SummaryCard
         pageTitle="Units"
         backBtnActive={true}
+        resetBtnActive={true}
+        resetBtnClick={() => handleReset()}
+        filterBtnActive
+        filterBtnClick={() => setFilterActive((prev) => !prev)}
         addBtnActive
-        addBtnLabel="Add Unit"
+        addBtnLabel="Add"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
+        <FilterCard
+          visible={filterActive}
+          content={
+            <ReusableForm
+              form={form}
+              layout="vertical"
+              content={
+                <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
+                  <InputField
+                    name="code"
+                    label="Code"
+                    onChange={(e) => handleFilter("code", e.target.value)}
+                    placeholder="Filter by ID"
+                  />
+                  <SelectField
+                    name="unitTypeId"
+                    label="Unit Type"
+                    placeholder="Filter by Unit Type"
+                    options={unitTypes?.data?.map((item: TStatus) => ({
+                      value: item.id,
+                      label: item.value,
+                    }))}
+                    showSearch
+                  />
+                  <SelectField
+                    name="statusId"
+                    placeholder="Filter by Status"
+                    label="Status"
+                    options={statues?.data?.map((status: TStatus) => ({
+                      value: status.id,
+                      label: status.value,
+                    }))}
+                    onChange={(value) => handleFilter("statusId", value)}
+                  />
+                </div>
+              }
+            />
+          }
+        />
+
         <ReusableTable
           columns={columns}
           data={unitsList?.data || []}
@@ -174,16 +353,29 @@ const UnitList: React.FC = () => {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           pagination={pagination}
-          setPagination={setPagination}
+          setPagination={(pagination) =>
+            setPagination((prev) => ({
+              ...prev,
+              ...pagination,
+            }))
+          }
+          sortsBy={[
+            { value: "code", label: "ID" },
+            { value: "name", label: "Name" },
+            { value: "statusId", label: "Status" },
+            { value: "unitTypeId", label: "Unit Type" },
+          ]}
         />
       </DefaultCard>
 
       <ReusableModal
+        key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Unit" : "Add Unit"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
         content={
           <ReusableForm
+            form={form}
             onSubmit={handleSubmit}
             layout="vertical"
             initialValues={isEdit && selectedData ? selectedData : {}}
@@ -194,29 +386,82 @@ const UnitList: React.FC = () => {
                   label="Unit Name"
                   rules={validationRules.required("Unit Name")}
                 />
-                <TextAreaField name="description" label="Description" />
-                <SelectField
-                  name="status"
-                  label="Status"
-                  options={[
-                    { value: "1", label: "Active" },
-                    { value: "0", label: "Inactive" },
-                  ]}
-                  rules={validationRules.required("Status")}
+                <InputField
+                  name="codeName"
+                  label="Unit Short Name"
+                  rules={validationRules.required("Unit Short Name")}
                 />
-                <FileInputField
-                  label="Photo"
-                  allowedExtensions={["jpg", "png", "pdf"]}
-                  fileSize="250px * 250px"
-                  name="file"
-                  fileList={fileList}
-                  handleUpload={handleUpload}
-                  handleRemove={handleRemove}
-                  multiple={true}
+                <SelectField
+                  name="unitTypeId"
+                  label="Unit Type"
+                  options={unitTypes?.data?.map((item: TStatus) => ({
+                    value: item.id,
+                    label: item.value,
+                  }))}
+                  rules={validationRules.required("Unit Type")}
+                  showSearch
                 />
 
+                <SelectField
+                  name="statusId"
+                  label="Status"
+                  options={statues?.data?.map((item: TStatus) => ({
+                    value: item.id,
+                    label: item.value,
+                  }))}
+                  rules={validationRules.required("Status")}
+                  showSearch
+                />
+
+                <SelectField
+                  name="hasMultiplier"
+                  label="Has Multiplier?"
+                  options={[
+                    { label: "Yes", value: "yes" },
+                    { label: "No", value: "no" },
+                  ]}
+                  onChange={(value) => handleMultiplier("code", value)}
+                />
+
+                {isMultiplier && (
+                  <Form.Item shouldUpdate>
+                    {() => {
+                      const nameValue = form.getFieldValue("name");
+
+                      return (
+                        <div className="grid grid-cols-3 gap-2 justify-between items-end mt-4 mb-2">
+                          <h4 className="text-lg font-semibold mb-1 flex flex-wrap">
+                            <span className="px-2">
+                              1 {nameValue || "Unit"}
+                            </span>
+                            <span> =</span>
+                          </h4>
+
+                          <NumberField
+                            name="multiplier"
+                            placeholder="Amount of Base Unit"
+                          />
+
+                          <SelectField
+                            name="baseUnitId"
+                            placeholder="Select Base Unit"
+                            options={unitsList?.data?.map((item: TStatus) => ({
+                              value: item.id,
+                              label: item.name,
+                            }))}
+                            showSearch
+                          />
+                        </div>
+                      );
+                    }}
+                  </Form.Item>
+                )}
+
                 <div className="flex justify-end">
-                  <SubmitButton />
+                  <SubmitButton
+                    loading={addLoading || editLoading}
+                    selectedRecord={selectedData}
+                  />
                 </div>
               </div>
             }

@@ -279,7 +279,7 @@ const SubCategoryList: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      width: 120,
+      width: 100,
       fixed: "right",
       align: "center",
       render: (_, record) => (
@@ -316,6 +316,7 @@ const SubCategoryList: React.FC = () => {
           visible={filterActive}
           content={
             <ReusableForm
+              form={form}
               layout="vertical"
               content={
                 <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
@@ -323,24 +324,24 @@ const SubCategoryList: React.FC = () => {
                     name="code"
                     label="Code"
                     onChange={(e) => handleFilter("code", e.target.value)}
-                    placeholder="Search by code"
+                    placeholder="Filter by ID"
                   />
 
                   <SelectField
                     name="categoryId"
                     label="Category"
+                    placeholder="Filter by Category"
                     options={categories?.data?.map((cat: TCategory) => ({
                       value: cat.id,
                       label: cat.name,
                     }))}
                     onChange={(value) => handleFilter("categoryId", value)}
-                    placeholder="Select Category"
                     showSearch
                   />
 
                   <SelectField
                     name="statusId"
-                    placeholder="Select Status"
+                    placeholder="Filter by Status"
                     label="Status"
                     options={statues?.data?.map((status: TStatus) => ({
                       value: status.id,

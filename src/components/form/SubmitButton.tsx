@@ -13,7 +13,6 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   label = "Submit",
   loading = false,
 }) => {
-  console.log(loading);
   return (
     <Form.Item>
       <Button

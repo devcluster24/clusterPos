@@ -12,7 +12,7 @@ export const unitsApi = baseApi.injectEndpoints({
         method: "POST",
         data,
       }),
-      invalidatesTags: [tagTypes.productBrand],
+      invalidatesTags: [tagTypes.units],
     }),
 
     getAllUnits: build.query({
@@ -27,7 +27,7 @@ export const unitsApi = baseApi.injectEndpoints({
       //       meta,
       //     };
       //   },
-      providesTags: [tagTypes.productBrand],
+      providesTags: [tagTypes.units],
     }),
 
     getUnitsById: build.query({
@@ -36,7 +36,7 @@ export const unitsApi = baseApi.injectEndpoints({
         method: "GET",
       }),
 
-      providesTags: [tagTypes.productBrand],
+      providesTags: [tagTypes.units],
     }),
 
     updateUnits: build.mutation({
@@ -45,7 +45,7 @@ export const unitsApi = baseApi.injectEndpoints({
         method: "PATCH",
         data,
       }),
-      invalidatesTags: [tagTypes.productBrand],
+      invalidatesTags: [tagTypes.units],
     }),
 
     deleteUnits: build.mutation({
@@ -53,7 +53,7 @@ export const unitsApi = baseApi.injectEndpoints({
         url: `${URL}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [tagTypes.productBrand],
+      invalidatesTags: [tagTypes.units],
     }),
   }),
 });

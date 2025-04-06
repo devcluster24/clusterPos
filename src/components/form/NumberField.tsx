@@ -2,7 +2,7 @@ import { Form, InputNumber } from "antd";
 
 interface NumberFieldProps {
   name: string;
-  label: string;
+  label?: string;
   rules?: Array<{ required?: boolean; message?: string }>;
   placeholder?: string;
 }

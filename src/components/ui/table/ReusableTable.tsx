@@ -113,17 +113,17 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
       id="table-container"
       className="bg-white dark:bg-gray-900 shadow-md rounded-md h-full"
     >
-      <div className="flex justify-between items-center p-2">
+      <div className="flex md:flex-row flex-col justify-between items-center gap-2 p-2 bg-blue-light-100">
         <div className="flex gap-4 justify-start items-center">
           <p className="text-sm font-semibold">Search:</p>
           <Input
-            addonBefore={<SearchOutlined />}
+            addonBefore={<SearchOutlined className="" />}
             onChange={(e) => setSearchTerm && setSearchTerm(e.target.value)}
-            className="max-w-96"
+            style={{ width: "100%" }}
           />
         </div>
 
-        <div className="flex items-center gap-1 h-full">
+        <div className="flex justify-between items-center gap-1 h-full">
           {/*================= pagination =====================*/}
           <Dropdown
             overlay={
@@ -235,7 +235,9 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
 
           {/*================ export ====================*/}
           <Dropdown overlay={exportMenu} trigger={["click"]}>
-            <Button type="primary">Export</Button>
+            <Button type="primary" style={{ width: "100%" }}>
+              Export
+            </Button>
           </Dropdown>
         </div>
       </div>

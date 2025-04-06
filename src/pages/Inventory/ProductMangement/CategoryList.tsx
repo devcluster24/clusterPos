@@ -259,7 +259,7 @@ const CategoriesList: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      width: 120,
+      width: 100,
       fixed: "right",
       align: "center",
       render: (_, record) => (
@@ -296,6 +296,7 @@ const CategoriesList: React.FC = () => {
           visible={filterActive}
           content={
             <ReusableForm
+              form={form}
               layout="vertical"
               content={
                 <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
@@ -303,12 +304,12 @@ const CategoriesList: React.FC = () => {
                     name="code"
                     label="Code"
                     onChange={(e) => handleFilter("code", e.target.value)}
-                    placeholder="Search by code"
+                    placeholder="Filter by ID"
                   />
 
                   <SelectField
                     name="statusId"
-                    placeholder="Select Status"
+                    placeholder="Filter by Status"
                     label="Status"
                     options={statues?.data?.map((status: TStatus) => ({
                       value: status.id,

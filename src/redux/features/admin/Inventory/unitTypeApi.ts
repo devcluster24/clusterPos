@@ -2,20 +2,20 @@
 import { baseApi } from "@/redux/api/baseApi";
 import { tagTypes } from "@/redux/tag-Types";
 
-const URL = "/products";
+const URL = "/units/unit-type";
 
-export const productApi = baseApi.injectEndpoints({
+export const unitTypeApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    createProduct: build.mutation({
+    createUnitType: build.mutation({
       query: (data) => ({
         url: `${URL}`,
         method: "POST",
         data,
       }),
-      invalidatesTags: [tagTypes.product],
+      invalidatesTags: [tagTypes.unitType],
     }),
 
-    getAllProduct: build.query({
+    getAllUnitType: build.query({
       query: (arg: Record<string, any>) => ({
         url: `${URL}`,
         method: "GET",
@@ -27,41 +27,41 @@ export const productApi = baseApi.injectEndpoints({
       //       meta,
       //     };
       //   },
-      providesTags: [tagTypes.product],
+      providesTags: [tagTypes.unitType],
     }),
 
-    getProductById: build.query({
+    getUnitTypeById: build.query({
       query: (id) => ({
         url: `${URL}/${id}`,
         method: "GET",
       }),
 
-      providesTags: [tagTypes.product],
+      providesTags: [tagTypes.unitType],
     }),
 
-    updateProduct: build.mutation({
+    updateUnitType: build.mutation({
       query: ({ id, data }) => ({
         url: `${URL}/${id}`,
         method: "PATCH",
         data,
       }),
-      invalidatesTags: [tagTypes.product],
+      invalidatesTags: [tagTypes.unitType],
     }),
 
-    deleteProduct: build.mutation({
+    deleteUnitType: build.mutation({
       query: (id) => ({
         url: `${URL}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [tagTypes.product],
+      invalidatesTags: [tagTypes.unitType],
     }),
   }),
 });
 
 export const {
-  useCreateProductMutation,
-  useGetAllProductQuery,
-  useGetProductByIdQuery,
-  useUpdateProductMutation,
-  useDeleteProductMutation,
-} = productApi;
+  useCreateUnitTypeMutation,
+  useGetAllUnitTypeQuery,
+  useGetUnitTypeByIdQuery,
+  useUpdateUnitTypeMutation,
+  useDeleteUnitTypeMutation,
+} = unitTypeApi;

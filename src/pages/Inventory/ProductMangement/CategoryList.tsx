@@ -157,7 +157,7 @@ const CategoriesList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Added!",
-            text: result?.message || "SubCategory has been added.",
+            text: result?.message || "Category has been added.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -166,7 +166,7 @@ const CategoriesList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.message || "Failed to added SubCategory.",
+            text: result?.message || "Failed to added Category.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,

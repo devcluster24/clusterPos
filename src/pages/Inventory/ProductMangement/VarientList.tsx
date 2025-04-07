@@ -4,7 +4,7 @@ import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import { ColumnsType } from "antd/es/table";
-import { Tag, UploadFile } from "antd";
+import { Form, Tag, UploadFile } from "antd";
 import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
 import ReusableModal from "@/components/ui/modal/ReusableModal";
 import ReusableForm from "@/components/form/ReusableForm";
@@ -26,26 +26,57 @@ import {
   useGetAllVarientsQuery,
   useUpdateVarientsMutation,
 } from "@/redux/features/admin/Inventory/varientsApi";
+import { TStatus } from "@/types";
+import FilterCard from "@/components/ui/card/FilterCard";
+import imageUploadCloudinary from "@/utils/imageUploadCloudinary";
+import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
+
+// filter types
+interface FilterState {
+  code?: string;
+  statusId?: string;
+}
 
 const VarientList: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<any[]>([]);
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedData, setSelectedData] = useState<{ id: number } | null>(null);
+  const [filterActive, setFilterActive] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({});
+  const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
-  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 25,
+    sortOrder: "desc",
+    sortBy: "createdAt",
+  });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 600 });
 
   // Query
   const query = useMemo(
     () => ({
       page: pagination.page,
       limit: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
       ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters,
     }),
-    [pagination, debouncedTerm]
+    [pagination, debouncedTerm, filters]
   );
+
+  // api call
+  const { data: varients, isLoading } = useGetAllVarientsQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [addVarient, { isLoading: addLoading }] = useCreateVarientsMutation();
+  const [editVarient, { isLoading: editLoading }] = useUpdateVarientsMutation();
+  const [deleteVarient] = useDeleteVarientsMutation();
+
+  const { data: statues } = useGetAllStatusQuery({});
 
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
@@ -57,42 +88,126 @@ const VarientList: React.FC = () => {
     return true;
   };
 
-  // api call
-  const { data: varients, isLoading } = useGetAllVarientsQuery(query, {
-    refetchOnMountOrArgChange: true,
-  });
-  const [addVarient] = useCreateVarientsMutation();
-  const [editVarient] = useUpdateVarientsMutation();
-  const [deleteVarient] = useDeleteVarientsMutation();
-
   // Add Modal Open
   const openAddModal = () => {
+    form.resetFields();
     setIsEdit(false);
     setSelectedData(null);
+    setFileList([]);
     setModalActive(true);
   };
 
   // Edit Modal Open
-  const openEditModal = (Varient: any) => {
+  const openEditModal = (data: AnyObject) => {
     setIsEdit(true);
-    setSelectedData(Varient);
+    setSelectedData(data);
+    form.setFieldsValue({
+      ...data,
+      statusId: data?.status?.id,
+    });
+    setFileList([]);
     setModalActive(true);
   };
 
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
+      let result;
+      let photo = selectedData?.photo || null;
       if (isEdit) {
-        await editVarient({ id: selectedData?.id, ...values });
-        Swal.fire("Updated!", "Unit has been updated.", "success");
+        if (fileList.length > 0) {
+          const url = await imageUploadCloudinary(fileList[0].originFileObj);
+          photo = url;
+        }
+        delete values.file;
+        values.photo = photo;
+
+        result = await editVarient({
+          id: selectedData?.id,
+          data: values,
+        }).unwrap();
+        if (result?.success) {
+          Swal.fire({
+            title: "Updated!",
+            text: result?.message || "Varient has been updated.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+          handleReset();
+        } else {
+          Swal.fire({
+            title: "Failed!",
+            text: result?.message || "Failed to update Varient.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+        }
       } else {
-        await addVarient(values);
-        Swal.fire("Added!", "Unit has been added.", "success");
+        if (fileList.length > 0) {
+          const url = await imageUploadCloudinary(fileList[0].originFileObj);
+          photo = url;
+        }
+        delete values.file;
+        values.photo = photo;
+
+        result = await addVarient(values).unwrap();
+        if (result?.success) {
+          Swal.fire({
+            title: "Added!",
+            text: result?.message || "Varient has been added.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+          handleReset();
+        } else {
+          Swal.fire({
+            title: "Failed!",
+            text: result?.message || "Failed to added Varient.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: true,
+          });
+        }
       }
-      setModalActive(false);
-    } catch {
-      Swal.fire("Error!", "Something went wrong.", "error");
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: (error as any)?.message || "Something went wrong.",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: true,
+      });
+      handleReset();
     }
+  };
+
+  // Handle filter change
+  const handleFilter = (key: keyof FilterState, value: string | undefined) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // handle reset
+  const handleReset = () => {
+    setFilters({});
+    form.resetFields();
+    setSearchTerm("");
+    setFilterActive(false);
+    setFileList([]);
+    setModalActive(false);
+    setSelectedData(null);
+    setIsEdit(false);
+    setPagination({
+      page: 1,
+      pageSize: 25,
+      sortOrder: "desc",
+      sortBy: "createdAt",
+    });
   };
 
   // Table Column
@@ -107,7 +222,7 @@ const VarientList: React.FC = () => {
       title: "Photo",
       dataIndex: "photo",
       key: "photo",
-      width: 100,
+      width: 60,
       render: (_, record) => (
         <img
           src={record.photo ? record.photo : noImage}
@@ -118,7 +233,7 @@ const VarientList: React.FC = () => {
       ),
     },
     {
-      title: "Varient Name",
+      title: "Name",
       dataIndex: "name",
       key: "name",
     },
@@ -126,18 +241,23 @@ const VarientList: React.FC = () => {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      render: (description) =>
+        description ? <p>{description}</p> : <p>-----</p>,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status) =>
-        status === "1" ? (
-          <Tag color="#87d068">Active</Tag>
-        ) : (
-          <Tag color="#f50">Inactive</Tag>
-        ),
+      render: (status) => {
+        if (status?.value === "ACTIVE") {
+          return <Tag color="#87d068">{status?.value}</Tag>;
+        } else if (status?.value === "INACTIVE") {
+          return <Tag color="#f50">{status?.value}</Tag>;
+        } else {
+          return <Tag color="#f50">{status?.value}</Tag>;
+        }
+      },
     },
     {
       title: "Actions",
@@ -165,12 +285,50 @@ const VarientList: React.FC = () => {
       <SummaryCard
         pageTitle="Varitents"
         backBtnActive={true}
+        resetBtnActive={true}
+        resetBtnClick={() => handleReset()}
+        filterBtnActive
+        filterBtnClick={() => setFilterActive((prev) => !prev)}
         addBtnActive
-        addBtnLabel="Add Varient"
+        addBtnLabel="Add"
         addBtnClick={openAddModal}
       />
 
       <DefaultCard>
+        <FilterCard
+          visible={filterActive}
+          content={
+            <ReusableForm
+              form={form}
+              layout="vertical"
+              content={
+                <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
+                  <InputField
+                    name="code"
+                    label="Code"
+                    onChange={(e) => handleFilter("code", e.target.value)}
+                    placeholder="Filter by ID"
+                  />
+
+                  <SelectField
+                    name="statusId"
+                    placeholder="Filter by Status"
+                    label="Status"
+                    options={[
+                      { value: "", label: "ALL" },
+                      ...(statues?.data?.map((status: TStatus) => ({
+                        value: status.id,
+                        label: status.value,
+                      })) || []),
+                    ]}
+                    onChange={(value) => handleFilter("statusId", value)}
+                  />
+                </div>
+              }
+            />
+          }
+        />
+
         <ReusableTable
           columns={columns}
           data={varients?.data || []}
@@ -184,18 +342,24 @@ const VarientList: React.FC = () => {
               ...pagination,
             }))
           }
+          sortsBy={[
+            { value: "code", label: "ID" },
+            { value: "name", label: "Name" },
+            { value: "statusId", label: "Status" },
+          ]}
         />
       </DefaultCard>
 
       <ReusableModal
+        key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Varient" : "Add Varient"}
         visible={modalActive}
         onClose={() => setModalActive(false)}
         content={
           <ReusableForm
+            form={form}
             onSubmit={handleSubmit}
             layout="vertical"
-            initialValues={isEdit && selectedData ? selectedData : {}}
             content={
               <div className="flex flex-col gap-3">
                 <InputField
@@ -205,13 +369,14 @@ const VarientList: React.FC = () => {
                 />
                 <TextAreaField name="description" label="Description" />
                 <SelectField
-                  name="status"
+                  name="statusId"
                   label="Status"
-                  options={[
-                    { value: "1", label: "Active" },
-                    { value: "0", label: "Inactive" },
-                  ]}
+                  options={statues?.data?.map((status: TStatus) => ({
+                    value: status.id,
+                    label: status.value,
+                  }))}
                   rules={validationRules.required("Status")}
+                  showSearch
                 />
                 <FileInputField
                   label="Photo"
@@ -221,11 +386,13 @@ const VarientList: React.FC = () => {
                   fileList={fileList}
                   handleUpload={handleUpload}
                   handleRemove={handleRemove}
-                  multiple={true}
                 />
 
                 <div className="flex justify-end">
-                  <SubmitButton />
+                  <SubmitButton
+                    loading={addLoading || editLoading}
+                    selectedRecord={selectedData}
+                  />
                 </div>
               </div>
             }

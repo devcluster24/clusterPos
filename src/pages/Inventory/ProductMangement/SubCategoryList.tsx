@@ -95,6 +95,7 @@ const SubCategoryList: React.FC = () => {
 
   // Add Modal Open
   const openAddModal = () => {
+    form.resetFields();
     setIsEdit(false);
     setSelectedData(null);
     setFileList([]);
@@ -102,11 +103,16 @@ const SubCategoryList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (category: AnyObject) => {
+  const openEditModal = (data: AnyObject) => {
     setIsEdit(true);
-    setSelectedData(category);
+    setSelectedData(data);
     setFileList([]);
     setModalActive(true);
+    form.setFieldsValue({
+      ...data,
+      categoryId: data?.category?.id,
+      statusId: data?.status?.id,
+    });
   };
 
   // Handle Submit for add or edit
@@ -130,7 +136,7 @@ const SubCategoryList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Updated!",
-            text: result?.data?.message || "SubCategory has been updated.",
+            text: result?.message || "SubCategory has been updated.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -139,7 +145,7 @@ const SubCategoryList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.data?.message || "Failed to update SubCategory.",
+            text: result?.message || "Failed to update SubCategory.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -157,7 +163,7 @@ const SubCategoryList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Added!",
-            text: result?.data?.message || "SubCategory has been added.",
+            text: result?.message || "SubCategory has been added.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -166,7 +172,7 @@ const SubCategoryList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.data?.message || "Failed to add new SubCategory.",
+            text: result?.message || "Failed to add new SubCategory.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -176,8 +182,7 @@ const SubCategoryList: React.FC = () => {
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text:
-          (error as any)?.response?.data?.message || "Something went wrong.",
+        text: (error as any)?.message || "Something went wrong.",
         icon: "error",
         timer: 2000,
         showConfirmButton: true,
@@ -381,21 +386,12 @@ const SubCategoryList: React.FC = () => {
         key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Subcategory" : "Add Subcategory"}
         visible={modalActive}
-        onClose={() => setModalActive(false)}
+        onClose={handleReset}
         content={
           <ReusableForm
             form={form}
             onSubmit={handleSubmit}
             layout="vertical"
-            initialValues={
-              isEdit && selectedData
-                ? {
-                    ...selectedData,
-                    statusId: selectedData.status?.id,
-                    categoryId: selectedData.category?.id,
-                  }
-                : {}
-            }
             content={
               <div className="flex flex-col gap-3">
                 <InputField

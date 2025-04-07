@@ -37,12 +37,11 @@ export const axiosBaseQuery =
       // return { data: result.data };
     } catch (axiosError) {
       const err = axiosError as AxiosError;
-
-      // Ensure the error matches the expected shape
+      console.log(err);
       return {
         error: {
-          status: err.response?.status || 500,
-          data: err.response?.data || err.message || "Something went wrong!",
+          status: err.response?.status || err.status || 500,
+          message: err.response?.data || err.message || "Something went wrong!",
         },
       };
     }

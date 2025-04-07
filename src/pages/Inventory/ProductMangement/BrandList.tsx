@@ -90,6 +90,7 @@ const BrandList: React.FC = () => {
 
   // Add Modal Open
   const openAddModal = () => {
+    form.resetFields();
     setIsEdit(false);
     setSelectedData(null);
     setFileList([]);
@@ -97,9 +98,12 @@ const BrandList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (category: AnyObject) => {
+  const openEditModal = (data: AnyObject) => {
     setIsEdit(true);
-    setSelectedData(category);
+    setSelectedData(data);
+    form.setFieldsValue({
+      ...data,
+    });
     setFileList([]);
     setModalActive(true);
   };
@@ -109,6 +113,8 @@ const BrandList: React.FC = () => {
     try {
       let result;
       let photo = selectedData?.photo || null;
+
+      /* edit */
       if (isEdit) {
         if (fileList.length > 0) {
           const url = await imageUploadCloudinary(fileList[0].originFileObj);
@@ -125,20 +131,12 @@ const BrandList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Updated!",
-            text: result?.data?.message || "Brand has been updated.",
+            text: result?.message || "Brand has been updated.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
           });
           handleReset();
-        } else {
-          Swal.fire({
-            title: "Failed!",
-            text: result?.data?.message || "Failed to update Brand.",
-            icon: "error",
-            timer: 2000,
-            showConfirmButton: true,
-          });
         }
       } else {
         if (fileList.length > 0) {
@@ -158,21 +156,13 @@ const BrandList: React.FC = () => {
             showConfirmButton: true,
           });
           handleReset();
-        } else {
-          Swal.fire({
-            title: "Failed!",
-            text: result?.data?.message || "Failed to added Brand.",
-            icon: "error",
-            timer: 2000,
-            showConfirmButton: true,
-          });
         }
       }
     } catch (error) {
+      console.error(error);
       Swal.fire({
         title: "Error!",
-        text:
-          (error as any)?.response?.data?.message || "Something went wrong.",
+        text: (error as any)?.message || "Something went wrong.",
         icon: "error",
         timer: 2000,
         showConfirmButton: true,
@@ -191,8 +181,8 @@ const BrandList: React.FC = () => {
 
   // handle reset
   const handleReset = () => {
-    setFilters({});
     form.resetFields();
+    setFilters({});
     setSearchTerm("");
     setFilterActive(false);
     setFileList([]);
@@ -344,13 +334,12 @@ const BrandList: React.FC = () => {
         key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Brand" : "Add Brand"}
         visible={modalActive}
-        onClose={() => setModalActive(false)}
+        onClose={() => handleReset()}
         content={
           <ReusableForm
             form={form}
             onSubmit={handleSubmit}
             layout="vertical"
-            initialValues={isEdit && selectedData ? selectedData : {}}
             content={
               <div className="flex flex-col gap-3">
                 <InputField

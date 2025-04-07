@@ -13,7 +13,6 @@ import SelectField from "@/components/form/SelectField";
 import { validationRules } from "@/components/form/Validation";
 import SubmitButton from "@/components/form/SubmitButton";
 import Swal from "sweetalert2";
-import noImage from "/noimage.png";
 import { AnyObject } from "antd/es/_util/type";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
@@ -24,7 +23,7 @@ import {
   useUpdateUnitsMutation,
 } from "@/redux/features/admin/Inventory/unitsApi";
 import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
-import { TStatus } from "@/types";
+import { TStatus, TUnit } from "@/types";
 import FilterCard from "@/components/ui/card/FilterCard";
 import { useGetAllUnitTypeQuery } from "@/redux/features/admin/Inventory/unitTypeApi";
 import NumberField from "@/components/form/NumberField";
@@ -33,6 +32,7 @@ import NumberField from "@/components/form/NumberField";
 interface FilterState {
   code?: string;
   statusId?: string;
+  hasMultiplier?: boolean | string;
 }
 
 const UnitList: React.FC = () => {
@@ -79,26 +79,31 @@ const UnitList: React.FC = () => {
 
   // Add Modal Open
   const openAddModal = () => {
+    form.resetFields();
     setIsEdit(false);
     setSelectedData(null);
     setModalActive(true);
   };
 
   // Edit Modal Open
-  const openEditModal = (category: AnyObject) => {
+  const openEditModal = (data: AnyObject) => {
     setIsEdit(true);
-    setSelectedData(category);
+    setSelectedData(data);
+    form.setFieldsValue({
+      ...data,
+      statusId: data?.status?.id,
+    });
     setModalActive(true);
-    setMultiplier(!!category?.multiplier);
+    setMultiplier(!!data?.multiplier);
   };
 
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
       let result;
-      if (!isMultiplier) {
-        delete values.multiplier;
-      }
+      values.hasMultiplier = Number(values.hasMultiplier) || 0;
+      delete values.code;
+
       if (isEdit) {
         result = await editUnit({
           id: selectedData?.id,
@@ -108,7 +113,7 @@ const UnitList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Updated!",
-            text: result?.data?.message || "Brand has been updated.",
+            text: result?.message || "Brand has been updated.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -117,7 +122,7 @@ const UnitList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.data?.message || "Failed to update Brand.",
+            text: result?.message || "Failed to update Brand.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -125,10 +130,11 @@ const UnitList: React.FC = () => {
         }
       } else {
         result = await addUnit(values).unwrap();
+
         if (result?.success) {
           Swal.fire({
             title: "Added!",
-            text: result?.data?.message || "Brand has been added.",
+            text: result?.message || "Brand has been added.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -137,7 +143,7 @@ const UnitList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.data?.message || "Failed to added Brand.",
+            text: result?.message || "Failed to added Brand.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -147,8 +153,7 @@ const UnitList: React.FC = () => {
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text:
-          (error as any)?.response?.data?.message || "Something went wrong.",
+        text: (error as any)?.message || "Something went wrong.",
         icon: "error",
         timer: 2000,
         showConfirmButton: true,
@@ -164,23 +169,12 @@ const UnitList: React.FC = () => {
     }));
   };
 
-  // Handle multiplier change
-  const handleMultiplier = (
-    key: keyof FilterState,
-    value: string | undefined
-  ) => {
-    if (value === "yes") {
-      setMultiplier(true);
-    } else {
-      setMultiplier(false);
-    }
-  };
-
   // handle reset
   const handleReset = () => {
     setFilters({});
     form.resetFields();
     setSearchTerm("");
+    setMultiplier(false);
     setFilterActive(false);
     setModalActive(false);
     setSelectedData(null);
@@ -201,22 +195,9 @@ const UnitList: React.FC = () => {
       key: "code",
       width: 100,
     },
+
     {
-      title: "Photo",
-      dataIndex: "photo",
-      key: "photo",
-      width: 100,
-      render: (_, record) => (
-        <img
-          src={record.photo ? record.photo : noImage}
-          alt={record?.name}
-          width={40}
-          height={30}
-        />
-      ),
-    },
-    {
-      title: "Unit Name",
+      title: "Name",
       dataIndex: "name",
       key: "name",
       minWidth: 100,
@@ -246,16 +227,19 @@ const UnitList: React.FC = () => {
       minWidth: 100,
       render: (baseUnitId) => {
         const unitType = unitsList?.data?.find(
-          (item: TStatus) => item.id === baseUnitId
+          (item: TUnit) => item.id === baseUnitId
         );
-        return <p>{unitType?.value || "---"}</p>;
+        return (
+          <p>{unitType ? `${unitType.name} (${unitType.codeName})` : "---"}</p>
+        );
       },
     },
     {
-      title: "Multiplier",
-      dataIndex: "multiplier",
-      key: "multiplier",
-      render: (multiplier) => (multiplier ? <p>{multiplier}</p> : <p>---</p>),
+      title: "Multiplier Details",
+      dataIndex: "multiplierUnitDetails",
+      key: "multiplierUnitDetails",
+      render: (multiplierUnitDetails) =>
+        multiplierUnitDetails ? <p>{multiplierUnitDetails}</p> : <p>---</p>,
       minWidth: 100,
     },
 
@@ -417,10 +401,16 @@ const UnitList: React.FC = () => {
                   name="hasMultiplier"
                   label="Has Multiplier?"
                   options={[
-                    { label: "Yes", value: "yes" },
-                    { label: "No", value: "no" },
+                    { label: "No", value: "0" },
+                    { label: "Yes", value: "1" },
                   ]}
-                  onChange={(value) => handleMultiplier("code", value)}
+                  onChange={(value) => {
+                    if (value === "0") {
+                      setMultiplier(false);
+                    } else {
+                      setMultiplier(true);
+                    }
+                  }}
                 />
 
                 {isMultiplier && (
@@ -447,7 +437,7 @@ const UnitList: React.FC = () => {
                             placeholder="Select Base Unit"
                             options={unitsList?.data?.map((item: TStatus) => ({
                               value: item.id,
-                              label: item.name,
+                              label: `${item.name} (${item.codeName})`,
                             }))}
                             showSearch
                           />

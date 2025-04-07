@@ -91,6 +91,7 @@ const CategoriesList: React.FC = () => {
 
   // Add Modal Open
   const openAddModal = () => {
+    form.resetFields();
     setIsEdit(false);
     setSelectedData(null);
     setFileList([]);
@@ -98,9 +99,13 @@ const CategoriesList: React.FC = () => {
   };
 
   // Edit Modal Open
-  const openEditModal = (category: AnyObject) => {
+  const openEditModal = (data: AnyObject) => {
     setIsEdit(true);
-    setSelectedData(category);
+    setSelectedData(data);
+    form.setFieldsValue({
+      ...data,
+      statusId: data?.status?.id,
+    });
     setFileList([]);
     setModalActive(true);
   };
@@ -125,7 +130,7 @@ const CategoriesList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Updated!",
-            text: result?.data?.message || "Category has been updated.",
+            text: result?.message || "Category has been updated.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -134,7 +139,7 @@ const CategoriesList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.data?.message || "Failed to update Category.",
+            text: result?.message || "Failed to update Category.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -152,7 +157,7 @@ const CategoriesList: React.FC = () => {
         if (result?.success) {
           Swal.fire({
             title: "Added!",
-            text: result?.data?.message || "SubCategory has been added.",
+            text: result?.message || "SubCategory has been added.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -161,7 +166,7 @@ const CategoriesList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.data?.message || "Failed to added SubCategory.",
+            text: result?.message || "Failed to added SubCategory.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -171,8 +176,7 @@ const CategoriesList: React.FC = () => {
     } catch (error) {
       Swal.fire({
         title: "Error!",
-        text:
-          (error as any)?.response?.data?.message || "Something went wrong.",
+        text: (error as any)?.message || "Something went wrong.",
         icon: "error",
         timer: 2000,
         showConfirmButton: true,
@@ -219,13 +223,13 @@ const CategoriesList: React.FC = () => {
       title: "Photo",
       dataIndex: "photo",
       key: "photo",
-      width: 100,
+      width: 60,
       render: (_, record) => (
         <img
           src={record.photo ? record.photo : noImage}
           alt={record?.name || "image"}
           width={40}
-          height={30}
+          height={20}
         />
       ),
     },
@@ -354,14 +358,6 @@ const CategoriesList: React.FC = () => {
             form={form}
             onSubmit={handleSubmit}
             layout="vertical"
-            initialValues={
-              isEdit && selectedData
-                ? {
-                    ...selectedData,
-                    statusId: selectedData.status?.id,
-                  }
-                : {}
-            }
             content={
               <div className="flex flex-col gap-3">
                 <InputField

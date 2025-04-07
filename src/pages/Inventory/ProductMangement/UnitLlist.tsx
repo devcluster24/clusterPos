@@ -33,6 +33,7 @@ interface FilterState {
   code?: string;
   statusId?: string;
   hasMultiplier?: boolean | string;
+  unitTypeId?: string;
 }
 
 const UnitList: React.FC = () => {
@@ -308,20 +309,27 @@ const UnitList: React.FC = () => {
                     name="unitTypeId"
                     label="Unit Type"
                     placeholder="Filter by Unit Type"
-                    options={unitTypes?.data?.map((item: TStatus) => ({
-                      value: item.id,
-                      label: item.value,
-                    }))}
+                    options={[
+                      { value: "", label: "ALL" },
+                      ...(unitTypes?.data?.map((item: TStatus) => ({
+                        value: item.id,
+                        label: item.value,
+                      })) || []),
+                    ]}
+                    onChange={(value) => handleFilter("unitTypeId", value)}
                     showSearch
                   />
                   <SelectField
                     name="statusId"
                     placeholder="Filter by Status"
                     label="Status"
-                    options={statues?.data?.map((status: TStatus) => ({
-                      value: status.id,
-                      label: status.value,
-                    }))}
+                    options={[
+                      { value: "", label: "ALL" },
+                      ...(statues?.data?.map((status: TStatus) => ({
+                        value: status.id,
+                        label: status.value,
+                      })) || []),
+                    ]}
                     onChange={(value) => handleFilter("statusId", value)}
                   />
                 </div>

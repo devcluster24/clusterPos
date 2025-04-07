@@ -336,10 +336,13 @@ const SubCategoryList: React.FC = () => {
                     name="categoryId"
                     label="Category"
                     placeholder="Filter by Category"
-                    options={categories?.data?.map((cat: TCategory) => ({
-                      value: cat.id,
-                      label: cat.name,
-                    }))}
+                    options={[
+                      { value: "", label: "ALL" },
+                      ...(categories?.data?.map((cat: TCategory) => ({
+                        value: cat.id,
+                        label: cat.name,
+                      })) || []),
+                    ]}
                     onChange={(value) => handleFilter("categoryId", value)}
                     showSearch
                   />
@@ -348,10 +351,13 @@ const SubCategoryList: React.FC = () => {
                     name="statusId"
                     placeholder="Filter by Status"
                     label="Status"
-                    options={statues?.data?.map((status: TStatus) => ({
-                      value: status.id,
-                      label: status.value,
-                    }))}
+                    options={[
+                      { value: "", label: "ALL" },
+                      ...(statues?.data?.map((status: TStatus) => ({
+                        value: status.id,
+                        label: status.value,
+                      })) || []),
+                    ]}
                     onChange={(value) => handleFilter("statusId", value)}
                   />
                 </div>

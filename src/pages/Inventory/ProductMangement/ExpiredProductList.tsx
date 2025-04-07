@@ -179,7 +179,12 @@ const ExpiredProductList: React.FC = () => {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           pagination={pagination}
-          setPagination={setPagination}
+          setPagination={(pagination) =>
+            setPagination((prev) => ({
+              ...prev,
+              ...pagination,
+            }))
+          }
           selectedRowKeys={selectedRowKeys}
           setSelectedRowKeys={setSelectedRowKeys}
         />

@@ -178,7 +178,12 @@ const PurchasedProductList: React.FC = () => {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           pagination={pagination}
-          setPagination={setPagination}
+          setPagination={(pagination) =>
+            setPagination((prev) => ({
+              ...prev,
+              ...pagination,
+            }))
+          }
         />
       </DefaultCard>
 

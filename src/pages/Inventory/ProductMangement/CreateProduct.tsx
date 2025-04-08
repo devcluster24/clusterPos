@@ -13,6 +13,12 @@ import { UploadFile } from "antd";
 import { useState } from "react";
 import { UploadChangeParam } from "antd/es/upload";
 import { useCreateProductMutation } from "@/redux/features/admin/Inventory/productApi";
+import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
+import { useGetAllUnitsQuery } from "@/redux/features/admin/Inventory/unitsApi";
+import { useGetAllCategoryQuery } from "@/redux/features/admin/Inventory/categoryApi";
+import { useGetAllSubcategoryQuery } from "@/redux/features/admin/Inventory/subCateogryApi";
+import { useGetAllBrandQuery } from "@/redux/features/admin/Inventory/brandApi";
+import { TCategory } from "@/types";
 
 const CreateProduct = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -26,7 +32,14 @@ const CreateProduct = () => {
     setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
     return true;
   };
+
   const [addProduct] = useCreateProductMutation();
+
+  const { data: categories } = useGetAllCategoryQuery({});
+  const { data: subcategories } = useGetAllSubcategoryQuery({});
+  const { data: brands } = useGetAllBrandQuery({});
+  const { data: units } = useGetAllUnitsQuery({});
+  const { data: statues } = useGetAllStatusQuery({});
 
   const handleSubmit = (values: any) => {
     console.log("Form Values: ", values);
@@ -49,11 +62,11 @@ const CreateProduct = () => {
                   label="Product Name"
                   rules={validationRules.required("Product Name")}
                 />
-                <InputField
+                {/* <InputField
                   name="productCode"
                   label="Product Code"
                   rules={validationRules.required("Product Code")}
-                />
+                /> */}
                 <SelectField
                   name="unit"
                   label="Unit"
@@ -66,27 +79,31 @@ const CreateProduct = () => {
                 <SelectField
                   name="category"
                   label="Category"
-                  options={[
-                    { value: "electronics", label: "Electronics" },
-                    { value: "clothing", label: "Clothing" },
-                  ]}
+                  options={categories?.data?.map((item: TCategory) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  showSearch
                 />
                 <SelectField
                   name="subcategory"
                   label="Subcategory"
-                  options={[
-                    { value: "mobiles", label: "Mobiles" },
-                    { value: "laptops", label: "Laptops" },
-                  ]}
+                  options={subcategories?.data?.map((item: TCategory) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  showSearch
                 />
                 <SelectField
                   name="brand"
                   label="Brand"
-                  options={[
-                    { value: "apple", label: "Apple" },
-                    { value: "samsung", label: "Samsung" },
-                  ]}
+                  options={brands?.data?.map((item: TCategory) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  showSearch
                 />
+
                 <SelectField
                   name="warranty"
                   label="Warranty"

@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from "react";
 import ReusableTable from "@/components/ui/table/ReusableTable";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import DefaultCard from "@/components/ui/card/DefaultCard";
 import { ColumnsType } from "antd/es/table";
-import { Tag } from "antd";
+import { Form, Tag } from "antd";
 import SelectField from "@/components/form/SelectField";
 import { AnyObject } from "antd/es/_util/type";
 import { useDebounced } from "@/redux/hooks";
 import {
+  useDeleteProductMutation,
   // useDeleteProductMutation,
   useGetAllProductQuery,
 } from "@/redux/features/admin/Inventory/productApi";
@@ -15,24 +17,147 @@ import { useNavigate } from "react-router-dom";
 import FilterCard from "@/components/ui/card/FilterCard";
 import ReusableForm from "@/components/form/ReusableForm";
 import noImage from "/noimage.png";
+import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
+// import imageUploadCloudinary from "@/utils/imageUploadCloudinary";
+// import Swal from "sweetalert2";
+import { TStatus } from "@/types";
+import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
+import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
 // import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 
 // filter types
 interface FilterState {
-  category?: string;
-  brand?: string;
-  units?: string;
-  status?: string;
+  categoryId?: string;
+  code?: string;
+  statusId?: string;
 }
 
 const ProductList: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 25 });
-  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 500 });
-  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  // const [fileList, setFileList] = useState<any[]>([]);
+  // const [modalActive, setModalActive] = useState(false);
+  // const [isEdit, setIsEdit] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
   const [filters, setFilters] = useState<FilterState>({});
+  // const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
+  const { handleDelete } = useDeleteConfirmation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pageSize: 25,
+    sortOrder: "desc",
+    sortBy: "createdAt",
+  });
+  const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 600 });
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  // Query
+  const query = useMemo(
+    () => ({
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
+      ...(debouncedTerm && { searchTerm: debouncedTerm }),
+      ...filters,
+    }),
+    [pagination, debouncedTerm, filters]
+  );
+
+  const navigate = useNavigate();
+  // Mutation
+  const [deleteProduct] = useDeleteProductMutation();
+
+  const { data: products, isLoading } = useGetAllProductQuery(query, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const { data: statues } = useGetAllStatusQuery({});
+
+  // Handle file selection
+  // const handleUpload = (info: UploadChangeParam<UploadFile>) => {
+  //   setFileList(info.fileList);
+  // };
+  // // Handle remove file selection
+  // const handleRemove = (file: UploadFile) => {
+  //   setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+  //   return true;
+  // };
+
+  // Handle Submit for add or edit
+  // const handleSubmit = async (values: any) => {
+  //   try {
+  //     let result;
+  //     let photo = selectedData?.photo || null;
+  //     if (isEdit) {
+  //       if (fileList.length > 0) {
+  //         const url = await imageUploadCloudinary(fileList[0].originFileObj);
+  //         photo = url;
+  //       }
+  //       delete values.file;
+  //       values.photo = photo;
+
+  //       result = await editCategory({
+  //         id: selectedData?.id,
+  //         data: values,
+  //       }).unwrap();
+  //       if (result?.success) {
+  //         Swal.fire({
+  //           title: "Updated!",
+  //           text: result?.message || "Category has been updated.",
+  //           icon: "success",
+  //           timer: 2000,
+  //           showConfirmButton: true,
+  //         });
+  //         handleReset();
+  //       } else {
+  //         Swal.fire({
+  //           title: "Failed!",
+  //           text: result?.message || "Failed to update Category.",
+  //           icon: "error",
+  //           timer: 2000,
+  //           showConfirmButton: true,
+  //         });
+  //       }
+  //     } else {
+  //       if (fileList.length > 0) {
+  //         const url = await imageUploadCloudinary(fileList[0].originFileObj);
+  //         photo = url;
+  //       }
+  //       delete values.file;
+  //       values.photo = photo;
+
+  //       result = await addCategory(values).unwrap();
+  //       if (result?.success) {
+  //         Swal.fire({
+  //           title: "Added!",
+  //           text: result?.message || "Category has been added.",
+  //           icon: "success",
+  //           timer: 2000,
+  //           showConfirmButton: true,
+  //         });
+  //         handleReset();
+  //       } else {
+  //         Swal.fire({
+  //           title: "Failed!",
+  //           text: result?.message || "Failed to added Category.",
+  //           icon: "error",
+  //           timer: 2000,
+  //           showConfirmButton: true,
+  //         });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     Swal.fire({
+  //       title: "Error!",
+  //       text: (error as any)?.message || "Something went wrong.",
+  //       icon: "error",
+  //       timer: 2000,
+  //       showConfirmButton: true,
+  //     });
+  //     handleReset();
+  //   }
+  // };
 
   // Handle filter change
   const handleFilter = (key: keyof FilterState, value: string | undefined) => {
@@ -42,26 +167,24 @@ const ProductList: React.FC = () => {
     }));
   };
 
-  // Query parameters
-  const query = useMemo(
-    () => ({
-      page: pagination.page,
-      limit: pagination.pageSize,
-      ...(debouncedTerm && { searchTerm: debouncedTerm }),
-      ...filters,
-    }),
-    [pagination, debouncedTerm, filters]
-  );
+  // handle reset
+  // const handleReset = () => {
+  //   setFilters({});
+  //   form.resetFields();
+  //   setSearchTerm("");
+  //   setFilterActive(false);
+  //   setFileList([]);
+  //   setModalActive(false);
+  //   setSelectedData(null);
+  //   setIsEdit(false);
+  //   setPagination({
+  //     page: 1,
+  //     pageSize: 25,
+  //     sortOrder: "desc",
+  //     sortBy: "createdAt",
+  //   });
+  // };
 
-  // const { handleDelete } = useDeleteConfirmation();
-  // const [deleteProduct] = useDeleteProductMutation();
-
-  // Fetch products based on query
-  const { data: products, isLoading } = useGetAllProductQuery(query, {
-    refetchOnMountOrArgChange: true,
-  });
-
-  console.log("prod", products?.data);
   // Table columns with correct types
   const columns: ColumnsType<AnyObject> = [
     {
@@ -106,6 +229,25 @@ const ProductList: React.FC = () => {
           <Tag color="#f50">Inactive</Tag>
         ),
     },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 100,
+      fixed: "right",
+      align: "center",
+      render: (_, record) => (
+        <EditDeleteButtons
+          // onEdit={() => openEditModal(record)}
+          onDelete={() =>
+            handleDelete(
+              record?.id,
+              () => deleteProduct(record?.id),
+              "Product?"
+            )
+          }
+        />
+      ),
+    },
   ];
 
   console.log(selectedRowKeys);
@@ -128,60 +270,23 @@ const ProductList: React.FC = () => {
           visible={filterActive}
           content={
             <ReusableForm
+              form={form}
               layout="vertical"
               content={
                 <div className="flex md:flex-row flex-col justify-between items-end gap-3 w-full">
                   <SelectField
-                    name="category"
-                    label="Category"
-                    options={[
-                      { value: "All", label: "All" },
-                      { value: "a", label: "A" },
-                      { value: "b", label: "B" },
-                    ]}
-                    value={filters.category || undefined}
-                    onChange={(value) => handleFilter("category", value)}
-                  />
-                  <SelectField
-                    name="brand"
-                    label="Brand"
-                    options={[
-                      { value: "All", label: "All" },
-                      { value: "c", label: "C" },
-                      { value: "d", label: "D" },
-                    ]}
-                    value={filters.brand || undefined}
-                    onChange={(value) => handleFilter("brand", value)}
-                  />
-                  <SelectField
-                    name="units"
-                    label="Unit"
-                    options={[
-                      { value: "All", label: "All" },
-                      { value: "kg", label: "Kilogram" },
-                      { value: "pc", label: "Piece" },
-                    ]}
-                    value={filters.units || undefined}
-                    onChange={(value) => handleFilter("units", value)}
-                  />
-                  <SelectField
-                    name="status"
+                    name="statusId"
+                    placeholder="Filter by Status"
                     label="Status"
                     options={[
-                      { value: "All", label: "All" },
-                      { value: "1", label: "Active" },
-                      { value: "0", label: "Inactive" },
+                      { value: "", label: "ALL" },
+                      ...(statues?.data?.map((status: TStatus) => ({
+                        value: status.id,
+                        label: status.value,
+                      })) || []),
                     ]}
-                    value={filters.status || undefined}
-                    onChange={(value) => handleFilter("status", value)}
+                    onChange={(value) => handleFilter("statusId", value)}
                   />
-                  {/* <ReusableButton
-                    icon="reset"
-                    label="Reset"
-                    onClick={() => {
-                      setFilters({}); 
-                    }}
-                  /> */}
                 </div>
               }
             />
@@ -201,6 +306,11 @@ const ProductList: React.FC = () => {
               ...pagination,
             }))
           }
+          sortsBy={[
+            { value: "code", label: "ID" },
+            { value: "name", label: "Name" },
+            { value: "statusId", label: "Status" },
+          ]}
           selectedRowKeys={selectedRowKeys}
           setSelectedRowKeys={setSelectedRowKeys}
         />

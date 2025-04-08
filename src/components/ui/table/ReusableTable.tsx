@@ -111,7 +111,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   return (
     <div
       id="table-container"
-      className="bg-white dark:bg-gray-900 shadow-md rounded-md h-full"
+      className="bg-white dark:bg-gray-900 shadow-md h-full border rounded border-gray-300 dark:border-gray-700"
     >
       <div className="flex md:flex-row flex-col justify-between items-center gap-2 p-2 bg-blue-light-100">
         <div className="flex gap-4 justify-start items-center">

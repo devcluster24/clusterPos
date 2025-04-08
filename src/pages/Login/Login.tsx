@@ -8,6 +8,7 @@ import { setUser } from "@/redux/features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { TUser } from "@/utils/tokenHelper";
+import { setCookie } from "@/utils/cookieHelper";
 
 const Login = () => {
   const [loginUser, { isLoading }] = useUserLoginMutation();
@@ -42,6 +43,8 @@ const Login = () => {
 
         // Store user in Redux correctly
         dispatch(setUser({ user: decodedToken, token: accessToken }));
+        setCookie(result?.data?.accessToken, "1h");
+        setCookie(result?.data?.refreshToken, "1h");
 
         // Reset form & Navigate
         form.resetFields();

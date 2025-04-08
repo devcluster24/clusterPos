@@ -2,20 +2,20 @@
 import { baseApi } from "@/redux/api/baseApi";
 import { tagTypes } from "@/redux/tag-Types";
 
-const URL = "/variants";
+const URL = "/variants/variant-type";
 
-export const variantsApi = baseApi.injectEndpoints({
+export const variantTypeApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    createVarients: build.mutation({
+    createVarientType: build.mutation({
       query: (data) => ({
         url: `${URL}`,
         method: "POST",
         data,
       }),
-      invalidatesTags: [tagTypes.varients],
+      invalidatesTags: [tagTypes.varientType],
     }),
 
-    getAllVarients: build.query({
+    getAllVarientType: build.query({
       query: (arg: Record<string, any>) => ({
         url: `${URL}`,
         method: "GET",
@@ -27,41 +27,41 @@ export const variantsApi = baseApi.injectEndpoints({
       //       meta,
       //     };
       //   },
-      providesTags: [tagTypes.varients],
+      providesTags: [tagTypes.varientType],
     }),
 
-    getVarientsById: build.query({
+    getVarientTypeById: build.query({
       query: (id) => ({
         url: `${URL}/${id}`,
         method: "GET",
       }),
 
-      providesTags: [tagTypes.varients],
+      providesTags: [tagTypes.varientType],
     }),
 
-    updateVarients: build.mutation({
+    updateVarientType: build.mutation({
       query: ({ id, data }) => ({
         url: `${URL}/${id}`,
         method: "PATCH",
         data,
       }),
-      invalidatesTags: [tagTypes.varients],
+      invalidatesTags: [tagTypes.varientType],
     }),
 
-    deleteVarients: build.mutation({
+    deleteVarientType: build.mutation({
       query: (id) => ({
         url: `${URL}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: [tagTypes.varients],
+      invalidatesTags: [tagTypes.varientType],
     }),
   }),
 });
 
 export const {
-  useCreateVarientsMutation,
-  useGetAllVarientsQuery,
-  useGetVarientsByIdQuery,
-  useUpdateVarientsMutation,
-  useDeleteVarientsMutation,
-} = variantsApi;
+  useCreateVarientTypeMutation,
+  useGetAllVarientTypeQuery,
+  useGetVarientTypeByIdQuery,
+  useUpdateVarientTypeMutation,
+  useDeleteVarientTypeMutation,
+} = variantTypeApi;

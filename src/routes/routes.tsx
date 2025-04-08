@@ -17,7 +17,7 @@ import ImportProduct from "@/pages/Inventory/ProductMangement/ImportProduct";
 import AlertQuantities from "@/pages/Inventory/ProductMangement/AlertQuantities";
 import BrandList from "@/pages/Inventory/ProductMangement/BrandList";
 import UnitList from "@/pages/Inventory/ProductMangement/UnitLlist";
-import VarientList from "@/pages/Inventory/ProductMangement/VarientList";
+import VariantList from "@/pages/Inventory/ProductMangement/VariantList";
 import WarrentyList from "@/pages/Inventory/ProductMangement/WarrentyList";
 import AddStockIssue from "@/pages/Inventory/ManageStockIssue/AddStockIssue";
 import StockIssuedList from "@/pages/Inventory/ManageStockIssue/StockIssuedList";
@@ -93,7 +93,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/products/varients",
-        element: <VarientList />,
+        element: <VariantList />,
       },
       {
         path: "/products/warranties",

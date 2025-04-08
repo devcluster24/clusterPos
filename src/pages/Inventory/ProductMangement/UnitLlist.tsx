@@ -364,7 +364,7 @@ const UnitList: React.FC = () => {
         key={isEdit ? selectedData?.id : "add-form"}
         title={isEdit ? "Edit Unit" : "Add Unit"}
         visible={modalActive}
-        onClose={() => setModalActive(false)}
+        onClose={() => handleReset()}
         content={
           <ReusableForm
             form={form}

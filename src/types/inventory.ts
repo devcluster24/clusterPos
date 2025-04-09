@@ -1,6 +1,6 @@
 export type TStatus = {
   id: number | string;
-  value?: string;
+  value: "ACTIVE" | "INACTIVE" | string;
   name?: string;
   codeName?: string;
   description?: string;
@@ -15,6 +15,34 @@ export type TCategory = {
   statusId: number;
   createdAt: string;
   updatedAt: string;
+  enumValueId: number | null;
+  status: TStatus;
+};
+
+export type TSubcategory = {
+  id: number;
+  name: string;
+  code: string;
+  description: string | null;
+  photo: string;
+  status: TStatus;
+  category: {
+    id: number;
+    name: string;
+    code: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TBrand = {
+  id: number;
+  name: string;
+  code: string;
+  photo: string;
+  statusId: number;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   enumValueId: number | null;
   status: TStatus;
 };

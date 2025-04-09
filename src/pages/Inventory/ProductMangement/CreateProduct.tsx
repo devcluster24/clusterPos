@@ -18,10 +18,14 @@ import { useGetAllUnitsQuery } from "@/redux/features/admin/Inventory/unitsApi";
 import { useGetAllCategoryQuery } from "@/redux/features/admin/Inventory/categoryApi";
 import { useGetAllSubcategoryQuery } from "@/redux/features/admin/Inventory/subCateogryApi";
 import { useGetAllBrandQuery } from "@/redux/features/admin/Inventory/brandApi";
-import { TCategory } from "@/types";
+import { TBrand, TCategory, TStatus, TSubcategory, TUnit } from "@/types";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const CreateProduct = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [value, setValue] = useState("");
 
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
@@ -36,7 +40,9 @@ const CreateProduct = () => {
   const [addProduct] = useCreateProductMutation();
 
   const { data: categories } = useGetAllCategoryQuery({});
-  const { data: subcategories } = useGetAllSubcategoryQuery({});
+  const { data: subcategories } = useGetAllSubcategoryQuery({
+    categoryId: selectedCategory,
+  });
   const { data: brands } = useGetAllBrandQuery({});
   const { data: units } = useGetAllUnitsQuery({});
   const { data: statues } = useGetAllStatusQuery({});
@@ -58,54 +64,100 @@ const CreateProduct = () => {
               {/* Product Details Section */}
               <FormCard>
                 <InputField
-                  name="productName"
+                  name="name"
                   label="Product Name"
                   rules={validationRules.required("Product Name")}
                 />
-                {/* <InputField
-                  name="productCode"
-                  label="Product Code"
-                  rules={validationRules.required("Product Code")}
-                /> */}
+                <InputField name="productCode" label="Product Code" />
                 <SelectField
-                  name="unit"
+                  name="unitId"
                   label="Unit"
                   options={[
-                    { value: "piece", label: "Piece" },
-                    { value: "box", label: "Box" },
+                    { value: "", label: "Select Unit" },
+                    ...(units?.data?.map((item: TUnit) => ({
+                      value: item.id,
+                      label: item.name,
+                    })) || []),
                   ]}
+                  showSearch
                   rules={validationRules.required("Unit")}
                 />
                 <SelectField
-                  name="category"
+                  name="barcodeId"
+                  label="Barcode Type"
+                  options={[
+                    { value: "", label: "Select Barcode Type" },
+                    // ...(units?.data?.map((item: TUnit) => ({
+                    //   value: item.id,
+                    //   label: item.name,
+                    // })) || []),
+                  ]}
+                  showSearch
+                  rules={validationRules.required("Unit")}
+                />
+                <SelectField
+                  name="categoryId"
                   label="Category"
-                  options={categories?.data?.map((item: TCategory) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))}
+                  options={[
+                    { value: "", label: "Select Category" },
+                    ...(categories?.data?.map((item: TCategory) => ({
+                      value: item.id,
+                      label: item.name,
+                    })) || []),
+                  ]}
+                  onChange={(value) => setSelectedCategory(value)}
                   showSearch
                 />
                 <SelectField
-                  name="subcategory"
+                  name="subCategoryId"
                   label="Subcategory"
-                  options={subcategories?.data?.map((item: TCategory) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))}
+                  placeholder={
+                    selectedCategory
+                      ? "Select Subcategory"
+                      : "Select Category First"
+                  }
+                  options={
+                    selectedCategory
+                      ? [
+                          { value: "", label: "Select Subcategory" },
+                          ...(subcategories?.data?.map(
+                            (item: TSubcategory) => ({
+                              value: item.id,
+                              label: item.name,
+                            })
+                          ) || []),
+                        ]
+                      : [{ value: "", label: "Select Category First" }]
+                  }
                   showSearch
                 />
                 <SelectField
-                  name="brand"
+                  name="brandId"
                   label="Brand"
-                  options={brands?.data?.map((item: TCategory) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))}
+                  options={[
+                    { value: "", label: "Select Brand" },
+                    ...(brands?.data?.map((item: TBrand) => ({
+                      value: item.id,
+                      label: item.name,
+                    })) || []),
+                  ]}
+                  showSearch
+                />
+                <SelectField
+                  name="statusId"
+                  label="Status"
+                  options={[
+                    { value: "", label: "Select Status" },
+                    ...(statues?.data?.map((item: TStatus) => ({
+                      value: item.id,
+                      label: item.value,
+                    })) || []),
+                  ]}
                   showSearch
                 />
 
                 <SelectField
-                  name="warranty"
+                  name="warrantyId"
                   label="Warranty"
                   options={[
                     { value: "6_months", label: "6 Months" },
@@ -117,14 +169,18 @@ const CreateProduct = () => {
                   label="Alert Quantity"
                   rules={validationRules.required("Alert Quantity")}
                 />
-
-                <InputField name="businessAccess" label="Business Access" />
                 <SelectField
-                  name="stockType"
-                  label="Stock Type"
+                  name="businessAccessId"
+                  label="Business Access"
+                  options={[]}
+                />
+                <SelectField
+                  name="productType"
+                  label="Product Type"
                   options={[
-                    { value: "manageable", label: "Manageable Stock" },
-                    { value: "non_manageable", label: "Non-Manageable Stock" },
+                    { value: "PHYSICAL", label: "Physical" },
+                    { value: "DIGITAL", label: "Digital" },
+                    { value: "SERVICE", label: "Service" },
                   ]}
                 />
                 <SelectField
@@ -138,22 +194,6 @@ const CreateProduct = () => {
               </FormCard>
               {/* Pricing Section */}
               <FormCard>
-                <SelectField
-                  name="applicableTax"
-                  label="Applicable Tax"
-                  options={[
-                    { value: "none", label: "None" },
-                    { value: "exclusive", label: "Exclusive" },
-                  ]}
-                />
-                <SelectField
-                  name="taxApplicableFor"
-                  label="Tax Applicable For"
-                  options={[
-                    { value: "selling_price", label: "For Selling Price" },
-                    { value: "cost_price", label: "For Cost Price" },
-                  ]}
-                />
                 <NumberField
                   name="unitCost"
                   label="Unit Cost (Exc. Tax)"
@@ -227,7 +267,7 @@ const CreateProduct = () => {
                 />
               </FormCard>
               {/* Thumbnail Upload */}
-              <FormCard>
+              <div className="border rounded border-gray-300 dark:border-gray-700 p-4 mb-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow grid grid-cols-1 gap-2 box-border">
                 <FileInputField
                   label="Photo"
                   allowedExtensions={["jpg", "png"]}
@@ -237,7 +277,19 @@ const CreateProduct = () => {
                   handleUpload={handleUpload}
                   handleRemove={handleRemove}
                 />
-              </FormCard>
+                <div className="flex md:flex-row flex-col md:justify-end justify-start items-start md:gap-5 gap-2 mt-2  min-h-40">
+                  <p className="md:w-[20%] w-full md:text-end text-start font-semibold">
+                    Description:{" "}
+                  </p>
+                  <div className="md:w-[80%] w-full h-full">
+                    <ReactQuill
+                      theme="snow"
+                      value={value}
+                      onChange={setValue}
+                    />
+                  </div>
+                </div>
+              </div>
               {/* Submit Button */}
               <div className="flex justify-end">
                 <SubmitButton />

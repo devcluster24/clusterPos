@@ -16,41 +16,36 @@ import Swal from "sweetalert2";
 import { AnyObject } from "antd/es/_util/type";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import { useDebounced } from "@/redux/hooks";
+import TextAreaField from "@/components/form/TextAreaField";
 import {
-  useCreateUnitsMutation,
-  useDeleteUnitsMutation,
-  useGetAllUnitsQuery,
-  useUpdateUnitsMutation,
-} from "@/redux/features/admin/Inventory/unitsApi";
+  useCreateWarrentyMutation,
+  useDeleteWarrentyMutation,
+  useGetAllWarrentyQuery,
+  useUpdateWarrentyMutation,
+} from "@/redux/features/admin/Inventory/warrantyApi";
 import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
-import { TStatus, TUnit } from "@/types";
+import { TStatus } from "@/types";
 import FilterCard from "@/components/ui/card/FilterCard";
-import { useGetAllUnitTypeQuery } from "@/redux/features/admin/Inventory/unitTypeApi";
-import NumberField from "@/components/form/NumberField";
 
 // filter types
 interface FilterState {
   code?: string;
   statusId?: string;
-  hasMultiplier?: boolean | string;
-  unitTypeId?: string;
 }
-
-const UnitList: React.FC = () => {
+const WarrantyList: React.FC = () => {
   const [form] = Form.useForm();
   const [modalActive, setModalActive] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
   const [filters, setFilters] = useState<FilterState>({});
   const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
-  const [isMultiplier, setMultiplier] = useState<boolean>(false);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 25,
-    sortOrder: "desc",
-    sortBy: "createdAt",
+    sortOrder: "",
+    sortBy: "",
   });
   const debouncedTerm = useDebounced({ searchQuery: searchTerm, delay: 600 });
 
@@ -67,16 +62,16 @@ const UnitList: React.FC = () => {
     [pagination, debouncedTerm, filters]
   );
 
-  // api call
-  const { data: unitsList, isLoading } = useGetAllUnitsQuery(query, {
+  // Mutation
+  const { data: warranties, isLoading } = useGetAllWarrentyQuery(query, {
     refetchOnMountOrArgChange: true,
   });
-  const [addUnit, { isLoading: addLoading }] = useCreateUnitsMutation();
-  const [editUnit, { isLoading: editLoading }] = useUpdateUnitsMutation();
-  const [deleteUnit] = useDeleteUnitsMutation();
+  const [addWarranty, { isLoading: addLoading }] = useCreateWarrentyMutation();
+  const [editWarranty, { isLoading: editLoading }] =
+    useUpdateWarrentyMutation();
+  const [deleteWarranty] = useDeleteWarrentyMutation();
 
   const { data: statues } = useGetAllStatusQuery({});
-  const { data: unitTypes } = useGetAllUnitTypeQuery({});
 
   // Add Modal Open
   const openAddModal = () => {
@@ -95,25 +90,21 @@ const UnitList: React.FC = () => {
       statusId: data?.Status?.id,
     });
     setModalActive(true);
-    setMultiplier(!!data?.multiplier);
   };
 
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     try {
       let result;
-      delete values.code;
-
       if (isEdit) {
-        result = await editUnit({
+        result = await editWarranty({
           id: selectedData?.id,
           data: values,
         }).unwrap();
-
         if (result?.success) {
           Swal.fire({
             title: "Updated!",
-            text: result?.message || "Brand has been updated.",
+            text: result?.message || "Category has been updated.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -122,19 +113,18 @@ const UnitList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.message || "Failed to update Brand.",
+            text: result?.message || "Failed to update Category.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
           });
         }
       } else {
-        result = await addUnit(values).unwrap();
-
+        result = await addWarranty(values).unwrap();
         if (result?.success) {
           Swal.fire({
             title: "Added!",
-            text: result?.message || "Brand has been added.",
+            text: result?.message || "Category has been added.",
             icon: "success",
             timer: 2000,
             showConfirmButton: true,
@@ -143,7 +133,7 @@ const UnitList: React.FC = () => {
         } else {
           Swal.fire({
             title: "Failed!",
-            text: result?.message || "Failed to added Brand.",
+            text: result?.message || "Failed to added Category.",
             icon: "error",
             timer: 2000,
             showConfirmButton: true,
@@ -158,6 +148,7 @@ const UnitList: React.FC = () => {
         timer: 2000,
         showConfirmButton: true,
       });
+      handleReset();
     }
   };
 
@@ -174,7 +165,6 @@ const UnitList: React.FC = () => {
     setFilters({});
     form.resetFields();
     setSearchTerm("");
-    setMultiplier(false);
     setFilterActive(false);
     setModalActive(false);
     setSelectedData(null);
@@ -182,64 +172,29 @@ const UnitList: React.FC = () => {
     setPagination({
       page: 1,
       pageSize: 25,
-      sortOrder: "desc",
-      sortBy: "createdAt",
+      sortOrder: "",
+      sortBy: "",
     });
   };
 
   // Table Column
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Units ID",
-      dataIndex: "code",
-      key: "code",
-      width: 100,
-    },
-
-    {
-      title: "Name",
+      title: "Warranty Name",
       dataIndex: "name",
       key: "name",
       minWidth: 100,
     },
     {
-      title: "Short Name",
-      dataIndex: "codeName",
-      key: "codeName",
-      minWidth: 80,
-    },
-    {
-      title: "Unit Type",
-      dataIndex: "unitTypeId",
-      key: "unitTypeId",
+      title: "Duration",
+      dataIndex: "duration",
+      key: "duration",
       minWidth: 100,
-      render: (unitTypeId) => {
-        const unitType = unitTypes?.data?.find(
-          (item: TStatus) => item.id === unitTypeId
-        );
-        return <p>{unitType?.value || "---"}</p>;
-      },
     },
     {
-      title: "Base Unit",
-      dataIndex: "baseUnitId",
-      key: "baseUnitId",
-      minWidth: 100,
-      render: (baseUnitId) => {
-        const unitType = unitsList?.data?.find(
-          (item: TUnit) => item.id === baseUnitId
-        );
-        return (
-          <p>{unitType ? `${unitType.name} (${unitType.codeName})` : "---"}</p>
-        );
-      },
-    },
-    {
-      title: "Multiplier Details",
-      dataIndex: "multiplierUnitDetails",
-      key: "multiplierUnitDetails",
-      render: (multiplierUnitDetails) =>
-        multiplierUnitDetails ? <p>{multiplierUnitDetails}</p> : <p>---</p>,
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
       minWidth: 100,
     },
     {
@@ -267,7 +222,11 @@ const UnitList: React.FC = () => {
         <EditDeleteButtons
           onEdit={() => openEditModal(record)}
           onDelete={() =>
-            handleDelete(record?.id, () => deleteUnit(record?.id), "Units?")
+            handleDelete(
+              record?.id,
+              () => deleteWarranty(record?.id),
+              "Category?"
+            )
           }
         />
       ),
@@ -277,7 +236,7 @@ const UnitList: React.FC = () => {
   return (
     <>
       <SummaryCard
-        pageTitle="Units"
+        pageTitle="Warranty"
         backBtnActive={true}
         resetBtnActive={true}
         resetBtnClick={() => handleReset()}
@@ -297,26 +256,6 @@ const UnitList: React.FC = () => {
               layout="vertical"
               content={
                 <div className="grid md:grid-cols-4 grid-cols-1 justify-between items-end gap-3">
-                  <InputField
-                    name="code"
-                    label="Code"
-                    onChange={(e) => handleFilter("code", e.target.value)}
-                    placeholder="Filter by ID"
-                  />
-                  <SelectField
-                    name="unitTypeId"
-                    label="Unit Type"
-                    placeholder="Filter by Unit Type"
-                    options={[
-                      { value: "", label: "ALL" },
-                      ...(unitTypes?.data?.map((item: TStatus) => ({
-                        value: item.id,
-                        label: item.value,
-                      })) || []),
-                    ]}
-                    onChange={(value) => handleFilter("unitTypeId", value)}
-                    showSearch
-                  />
                   <SelectField
                     name="statusId"
                     placeholder="Filter by Status"
@@ -335,10 +274,9 @@ const UnitList: React.FC = () => {
             />
           }
         />
-
         <ReusableTable
           columns={columns}
-          data={unitsList?.data || []}
+          data={warranties?.data || []}
           loading={isLoading}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -350,19 +288,17 @@ const UnitList: React.FC = () => {
             }))
           }
           sortsBy={[
-            { value: "code", label: "ID" },
             { value: "name", label: "Name" },
             { value: "statusId", label: "Status" },
-            { value: "unitTypeId", label: "Unit Type" },
           ]}
         />
       </DefaultCard>
 
       <ReusableModal
         key={isEdit ? selectedData?.id : "add-form"}
-        title={isEdit ? "Edit Unit" : "Add Unit"}
+        title={isEdit ? "Edit Warranty" : "Add Warranty"}
         visible={modalActive}
-        onClose={() => handleReset()}
+        onClose={() => setModalActive(false)}
         content={
           <ReusableForm
             form={form}
@@ -373,25 +309,15 @@ const UnitList: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <InputField
                   name="name"
-                  label="Unit Name"
-                  rules={validationRules.required("Unit Name")}
+                  label="Warranty Name"
+                  rules={validationRules.required("Warranty Name")}
                 />
                 <InputField
-                  name="codeName"
-                  label="Unit Short Name"
-                  rules={validationRules.required("Unit Short Name")}
+                  name="duration"
+                  label="Duration"
+                  rules={validationRules.required("Duration")}
                 />
-                <SelectField
-                  name="unitTypeId"
-                  label="Unit Type"
-                  options={unitTypes?.data?.map((item: TStatus) => ({
-                    value: item.id,
-                    label: item.value,
-                  }))}
-                  rules={validationRules.required("Unit Type")}
-                  showSearch
-                />
-
+                <TextAreaField name="description" label="Description" />
                 <SelectField
                   name="statusId"
                   label="Status"
@@ -402,52 +328,6 @@ const UnitList: React.FC = () => {
                   rules={validationRules.required("Status")}
                   showSearch
                 />
-
-                <SelectField
-                  name="hasMultiplier"
-                  label="Has Multiplier?"
-                  options={[
-                    { label: "No", value: false },
-                    { label: "Yes", value: true },
-                  ]}
-                  onChange={(value) => {
-                    setMultiplier(value);
-                  }}
-                />
-
-                {isMultiplier && (
-                  <Form.Item shouldUpdate>
-                    {() => {
-                      const nameValue = form.getFieldValue("name");
-
-                      return (
-                        <div className="grid grid-cols-3 gap-2 justify-between items-end mt-4 mb-2">
-                          <h4 className="text-lg font-semibold mb-1 flex flex-wrap">
-                            <span className="px-2">
-                              1 {nameValue || "Unit"}
-                            </span>
-                            <span> =</span>
-                          </h4>
-
-                          <NumberField
-                            name="multiplier"
-                            placeholder="Amount of Base Unit"
-                          />
-
-                          <SelectField
-                            name="baseUnitId"
-                            placeholder="Select Base Unit"
-                            options={unitsList?.data?.map((item: TStatus) => ({
-                              value: item.id,
-                              label: `${item.name} (${item.codeName})`,
-                            }))}
-                            showSearch
-                          />
-                        </div>
-                      );
-                    }}
-                  </Form.Item>
-                )}
 
                 <div className="flex justify-end">
                   <SubmitButton
@@ -464,4 +344,4 @@ const UnitList: React.FC = () => {
   );
 };
 
-export default UnitList;
+export default WarrantyList;

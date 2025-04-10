@@ -10,7 +10,6 @@ import { AnyObject } from "antd/es/_util/type";
 import { useDebounced } from "@/redux/hooks";
 import {
   useDeleteProductMutation,
-  // useDeleteProductMutation,
   useGetAllProductQuery,
 } from "@/redux/features/admin/Inventory/productApi";
 import { useNavigate } from "react-router-dom";
@@ -18,12 +17,9 @@ import FilterCard from "@/components/ui/card/FilterCard";
 import ReusableForm from "@/components/form/ReusableForm";
 import noImage from "/noimage.png";
 import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
-// import imageUploadCloudinary from "@/utils/imageUploadCloudinary";
-// import Swal from "sweetalert2";
 import { TStatus } from "@/types";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
-import EditDeleteButtons from "@/components/ui/button/EditDeleteButtons";
-// import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
+import ActionButtons from "@/components/ui/button/ActionButton";
 
 // filter types
 interface FilterState {
@@ -188,16 +184,16 @@ const ProductList: React.FC = () => {
   // Table columns with correct types
   const columns: ColumnsType<AnyObject> = [
     {
-      title: "Product ID",
+      title: "ID",
       dataIndex: "code",
       key: "code",
-      width: 100,
+      width: 70,
     },
     {
       title: "Photo",
       dataIndex: "photo",
       key: "photo",
-      width: 100,
+      width: 60,
       render: (_, record) => (
         <img
           src={record.photo ? record.photo : noImage}
@@ -208,15 +204,82 @@ const ProductList: React.FC = () => {
       ),
     },
     {
-      title: "Product Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Actions",
+      key: "actions",
+      width: 80,
+      align: "center",
+      render: (_, record) => (
+        <ActionButtons
+          onEdit={() => navigate(`/products/edit/${record.id}`)}
+          onDelete={() =>
+            handleDelete(
+              record?.id,
+              () => deleteProduct(record?.id),
+              "Product?"
+            )
+          }
+        />
+      ),
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      minWidth: 70,
     },
+    {
+      title: "Category",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      minWidth: 100,
+      render: (Category) => {
+        if (Category?.name) {
+          return <p>{Category?.name}</p>;
+        } else {
+          return <p> --- </p>;
+        }
+      },
+    },
+    {
+      title: "Brand",
+      dataIndex: "brandId",
+      key: "brandId",
+      minWidth: 100,
+      render: (Category) => {
+        if (Category?.name) {
+          return <p>{Category?.name}</p>;
+        } else {
+          return <p> --- </p>;
+        }
+      },
+    },
+    {
+      title: "Unit",
+      dataIndex: "unitId",
+      key: "unitId",
+      minWidth: 100,
+      render: (Category) => {
+        if (Category?.name) {
+          return <p>{Category?.name}</p>;
+        } else {
+          return <p> --- </p>;
+        }
+      },
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      minWidth: 100,
+      render: (Category) => {
+        if (Category?.name) {
+          return <p>{Category?.name}</p>;
+        } else {
+          return <p> --- </p>;
+        }
+      },
+    },
+
     {
       title: "Status",
       dataIndex: "Status",
@@ -231,25 +294,6 @@ const ProductList: React.FC = () => {
           return <Tag color="#f50">{Status?.name}</Tag>;
         }
       },
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 100,
-      fixed: "right",
-      align: "center",
-      render: (_, record) => (
-        <EditDeleteButtons
-          // onEdit={() => openEditModal(record)}
-          onDelete={() =>
-            handleDelete(
-              record?.id,
-              () => deleteProduct(record?.id),
-              "Product?"
-            )
-          }
-        />
-      ),
     },
   ];
 

@@ -16,7 +16,7 @@ export type TCategory = {
   createdAt: string;
   updatedAt: string;
   enumValueId: number | null;
-  status: TStatus;
+  Status: TStatus;
 };
 
 export type TSubcategory = {
@@ -25,7 +25,7 @@ export type TSubcategory = {
   code: string;
   description: string | null;
   photo: string;
-  status: TStatus;
+  Status: TStatus;
   category: {
     id: number;
     name: string;
@@ -44,7 +44,7 @@ export type TBrand = {
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   enumValueId: number | null;
-  status: TStatus;
+  Status: TStatus;
 };
 
 export type TUnit = {
@@ -61,8 +61,14 @@ export type TUnit = {
   updatedAt: string;
   enumValueId: number | null;
   unitId: number | null;
-  status: {
-    id: number;
-    value: string;
-  };
+  Status: TStatus;
+};
+
+export type TWarranty = {
+  id: number;
+  name: string;
+  description: string;
+  duration: string;
+  statusId: number;
+  Status: TStatus;
 };

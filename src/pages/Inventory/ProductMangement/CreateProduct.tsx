@@ -9,7 +9,7 @@ import FormCard from "@/components/ui/card/FormCard";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import ReusableForm from "@/components/form/ReusableForm";
 import FileInputField from "@/components/form/FileInputField";
-import { UploadFile } from "antd";
+import { Form, UploadFile } from "antd";
 import { useState } from "react";
 import { UploadChangeParam } from "antd/es/upload";
 import { useCreateProductMutation } from "@/redux/features/admin/Inventory/productApi";
@@ -18,38 +18,77 @@ import { useGetAllUnitsQuery } from "@/redux/features/admin/Inventory/unitsApi";
 import { useGetAllCategoryQuery } from "@/redux/features/admin/Inventory/categoryApi";
 import { useGetAllSubcategoryQuery } from "@/redux/features/admin/Inventory/subCateogryApi";
 import { useGetAllBrandQuery } from "@/redux/features/admin/Inventory/brandApi";
-import { TBrand, TCategory, TStatus, TSubcategory, TUnit } from "@/types";
+import {
+  TBrand,
+  TCategory,
+  TStatus,
+  TSubcategory,
+  TUnit,
+  TWarranty,
+} from "@/types";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
+import { useGetAllWarrentyQuery } from "@/redux/features/admin/Inventory/warrantyApi";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const CreateProduct = () => {
+  const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [value, setValue] = useState("");
+  const navigate = useNavigate();
 
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
     setFileList(info.fileList);
   };
+
   // Handle remove file selection
   const handleRemove = (file: UploadFile) => {
     setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
     return true;
   };
 
-  const [addProduct] = useCreateProductMutation();
+  const [addProduct, { isLoading: addLoading }] = useCreateProductMutation();
 
+  const { data: statues } = useGetAllStatusQuery({});
   const { data: categories } = useGetAllCategoryQuery({});
   const { data: subcategories } = useGetAllSubcategoryQuery({
     categoryId: selectedCategory,
   });
   const { data: brands } = useGetAllBrandQuery({});
   const { data: units } = useGetAllUnitsQuery({});
-  const { data: statues } = useGetAllStatusQuery({});
+  const { data: warranties } = useGetAllWarrentyQuery({});
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = async (values: any) => {
     console.log("Form Values: ", values);
-    addProduct(values);
+    const result = await addProduct(values).unwrap();
+    if (result?.success) {
+      Swal.fire({
+        title: "Added!",
+        text: result?.message || "Category has been added.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: true,
+      });
+      handleReset();
+    } else {
+      Swal.fire({
+        title: "Failed!",
+        text: result?.message || "Failed to added Category.",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: true,
+      });
+    }
+  };
+
+  // handle reset
+  const handleReset = () => {
+    form.resetFields();
+    setFileList([]);
+    navigate("/products/list");
   };
 
   return (
@@ -58,7 +97,40 @@ const CreateProduct = () => {
 
       <DefaultCard>
         <ReusableForm
+          form={form}
           onSubmit={handleSubmit}
+          onValuesChange={(changedValues, allValues) => {
+            const { unitCost, profitMargin, unitPrice } = allValues;
+
+            if (
+              changedValues.unitCost !== undefined ||
+              changedValues.profitMargin !== undefined
+            ) {
+              if (unitCost !== undefined && profitMargin !== undefined) {
+                const price =
+                  parseFloat(unitCost) +
+                    (parseFloat(unitCost) * parseFloat(profitMargin)) / 100 ||
+                  0;
+                form.setFieldsValue({
+                  unitPrice: parseFloat(price.toFixed(2)),
+                });
+              }
+            }
+
+            if (
+              changedValues.unitPrice !== undefined &&
+              unitCost !== undefined &&
+              unitPrice !== undefined
+            ) {
+              const profit =
+                ((parseFloat(unitPrice) - parseFloat(unitCost)) /
+                  parseFloat(unitCost)) *
+                  100 || 0;
+              form.setFieldsValue({
+                profitMargin: parseFloat(profit.toFixed(2)),
+              });
+            }
+          }}
           content={
             <>
               {/* Product Details Section */}
@@ -74,10 +146,12 @@ const CreateProduct = () => {
                   label="Unit"
                   options={[
                     { value: "", label: "Select Unit" },
-                    ...(units?.data?.map((item: TUnit) => ({
-                      value: item.id,
-                      label: item.name,
-                    })) || []),
+                    ...(units?.data
+                      ?.filter((item: TUnit) => item.Status?.name === "ACTIVE")
+                      ?.map((item: TUnit) => ({
+                        value: item.id,
+                        label: `${item.name} (${item.codeName})`,
+                      })) || []),
                   ]}
                   showSearch
                   rules={validationRules.required("Unit")}
@@ -85,25 +159,30 @@ const CreateProduct = () => {
                 <SelectField
                   name="barcodeId"
                   label="Barcode Type"
-                  options={[
-                    { value: "", label: "Select Barcode Type" },
-                    // ...(units?.data?.map((item: TUnit) => ({
-                    //   value: item.id,
-                    //   label: item.name,
-                    // })) || []),
-                  ]}
+                  options={
+                    [
+                      // { value: null, label: "Select Barcode Type" },
+                      // ...(units?.data?.map((item: TUnit) => ({
+                      //   value: item.id,
+                      //   label: item.name,
+                      // })) || []),
+                    ]
+                  }
                   showSearch
-                  rules={validationRules.required("Unit")}
                 />
                 <SelectField
                   name="categoryId"
                   label="Category"
                   options={[
                     { value: "", label: "Select Category" },
-                    ...(categories?.data?.map((item: TCategory) => ({
-                      value: item.id,
-                      label: item.name,
-                    })) || []),
+                    ...(categories?.data
+                      ?.filter(
+                        (item: TCategory) => item.Status?.name === "ACTIVE"
+                      )
+                      ?.map((item: TCategory) => ({
+                        value: item.id,
+                        label: item.name,
+                      })) || []),
                   ]}
                   onChange={(value) => setSelectedCategory(value)}
                   showSearch
@@ -120,12 +199,15 @@ const CreateProduct = () => {
                     selectedCategory
                       ? [
                           { value: "", label: "Select Subcategory" },
-                          ...(subcategories?.data?.map(
-                            (item: TSubcategory) => ({
+                          ...(subcategories?.data
+                            ?.filter(
+                              (item: TSubcategory) =>
+                                item.Status?.name === "ACTIVE"
+                            )
+                            ?.map((item: TSubcategory) => ({
                               value: item.id,
                               label: item.name,
-                            })
-                          ) || []),
+                            })) || []),
                         ]
                       : [{ value: "", label: "Select Category First" }]
                   }
@@ -136,10 +218,12 @@ const CreateProduct = () => {
                   label="Brand"
                   options={[
                     { value: "", label: "Select Brand" },
-                    ...(brands?.data?.map((item: TBrand) => ({
-                      value: item.id,
-                      label: item.name,
-                    })) || []),
+                    ...(brands?.data
+                      ?.filter((item: TBrand) => item.Status?.name === "ACTIVE")
+                      ?.map((item: TBrand) => ({
+                        value: item.id,
+                        label: item.name,
+                      })) || []),
                   ]}
                   showSearch
                 />
@@ -150,20 +234,29 @@ const CreateProduct = () => {
                     { value: "", label: "Select Status" },
                     ...(statues?.data?.map((item: TStatus) => ({
                       value: item.id,
-                      label: item.value,
+                      label: item.name,
                     })) || []),
                   ]}
+                  rules={validationRules.required("Status")}
                   showSearch
                 />
-
                 <SelectField
                   name="warrantyId"
                   label="Warranty"
                   options={[
-                    { value: "6_months", label: "6 Months" },
-                    { value: "12_months", label: "12 Months" },
+                    { value: "", label: "Select Warranty" },
+                    ...(warranties?.data
+                      ?.filter(
+                        (item: TWarranty) => item.Status?.name === "ACTIVE"
+                      )
+                      ?.map((item: TWarranty) => ({
+                        value: item.id,
+                        label: item.duration,
+                      })) || []),
                   ]}
+                  showSearch
                 />
+
                 <NumberField
                   name="alertQuantity"
                   label="Alert Quantity"
@@ -194,17 +287,9 @@ const CreateProduct = () => {
               </FormCard>
               {/* Pricing Section */}
               <FormCard>
-                <NumberField
-                  name="unitCost"
-                  label="Unit Cost (Exc. Tax)"
-                  rules={validationRules.required("Unit Cost")}
-                />
+                <NumberField name="unitCost" label="Unit Cost (Exc. Tax)" />
                 <NumberField name="profitMargin" label="Profit Margin (%)" />
-                <NumberField
-                  name="unitPrice"
-                  label="Unit Price (Exc. Tax)"
-                  rules={validationRules.required("Unit Price")}
-                />
+                <NumberField name="unitPrice" label="Unit Price (Exc. Tax)" />
                 <SelectField
                   name="hasMultipleUnit"
                   label="Has Multiple Unit?"
@@ -292,7 +377,7 @@ const CreateProduct = () => {
               </div>
               {/* Submit Button */}
               <div className="flex justify-end">
-                <SubmitButton />
+                <SubmitButton loading={addLoading} />
               </div>
             </>
           }

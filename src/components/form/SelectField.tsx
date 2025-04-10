@@ -5,7 +5,7 @@ interface SelectFieldProps {
   name?: string;
   label?: string;
   rules?: Array<{ required?: boolean; message?: string }>;
-  options: { value: string; label: string }[];
+  options: { value: string | number | boolean | null; label: string }[];
   placeholder?: string;
   showSearch?: boolean;
   value?: any;

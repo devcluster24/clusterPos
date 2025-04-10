@@ -35,6 +35,7 @@ interface ReusableFormProps {
   formFields?: FormField[];
   content: React.ReactNode;
   onSubmit?: (values: any) => void;
+  onValuesChange?: (changedValues: any, allValues: any) => void;
   loading?: boolean;
   submitLabel?: string;
   initialValues?: Record<string, any>;
@@ -46,6 +47,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
   formFields,
   content,
   onSubmit,
+  onValuesChange,
   loading = false,
   submitLabel,
   initialValues = {},
@@ -63,6 +65,7 @@ const ReusableForm: React.FC<ReusableFormProps> = ({
       labelCol={computedFormItemLayout.labelCol}
       wrapperCol={computedFormItemLayout.wrapperCol}
       onFinish={onSubmit}
+      onValuesChange={onValuesChange}
       initialValues={initialValues}
       style={{ margin: 0, padding: 0 }}
     >

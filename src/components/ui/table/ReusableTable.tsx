@@ -95,14 +95,26 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   };
 
   const exportMenu = (
-    <Menu>
-      <Menu.Item key="pdf" onClick={exportToPDF}>
+    <Menu style={{ padding: "0px", border: "1px solid lightgray" }}>
+      <Menu.Item
+        key="pdf"
+        onClick={exportToPDF}
+        style={{ borderBottom: "1px solid lightgray" }}
+      >
         PDF
       </Menu.Item>
-      <Menu.Item key="excel" onClick={exportToExcel}>
+      <Menu.Item
+        key="excel"
+        onClick={exportToExcel}
+        style={{ borderBottom: "1px solid lightgray" }}
+      >
         Excel
       </Menu.Item>
-      <Menu.Item key="print" onClick={printTable}>
+      <Menu.Item
+        key="print"
+        onClick={printTable}
+        style={{ borderBottom: "1px solid lightgray" }}
+      >
         Print
       </Menu.Item>
     </Menu>
@@ -128,6 +140,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
           <Dropdown
             overlay={
               <Menu
+                style={{ padding: "0px", border: "1px solid lightgray" }}
                 onClick={({ key }) =>
                   setPagination &&
                   setPagination({ page: 1, pageSize: Number(key) })
@@ -135,6 +148,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
               >
                 {limits.map((limit) => (
                   <Menu.Item
+                    style={{ borderBottom: "1px solid lightgray" }}
                     key={limit.value}
                     className={
                       "pageSize" in pagination &&
@@ -160,6 +174,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             <Dropdown
               overlay={
                 <Menu
+                  style={{ padding: "0px", border: "1px solid lightgray" }}
                   onClick={({ key }) => {
                     const selected = sortsBy.find((item) => item.value === key);
                     if (selected && setPagination) {
@@ -172,6 +187,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                 >
                   {sortsBy.map((sort) => (
                     <Menu.Item
+                      style={{ borderBottom: "1px solid lightgray" }}
                       key={sort.value}
                       className={
                         "sortBy" in pagination &&
@@ -198,6 +214,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             <Dropdown
               overlay={
                 <Menu
+                  style={{ padding: "0px", border: "1px solid lightgray" }}
                   onClick={({ key }) => {
                     const selected = sortsOrder.find(
                       (item) => item.value === key
@@ -212,6 +229,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                 >
                   {sortsOrder.map((order) => (
                     <Menu.Item
+                      style={{ borderBottom: "1px solid lightgray" }}
                       key={order.value}
                       className={
                         "sortOrder" in pagination &&

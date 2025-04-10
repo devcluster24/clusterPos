@@ -18,7 +18,7 @@ import AlertQuantities from "@/pages/Inventory/ProductMangement/AlertQuantities"
 import BrandList from "@/pages/Inventory/ProductMangement/BrandList";
 import UnitList from "@/pages/Inventory/ProductMangement/UnitLlist";
 import VariantList from "@/pages/Inventory/ProductMangement/VariantList";
-import WarrentyList from "@/pages/Inventory/ProductMangement/WarrentyList";
+import WarrantyList from "@/pages/Inventory/ProductMangement/WarrantyList";
 import AddStockIssue from "@/pages/Inventory/ManageStockIssue/AddStockIssue";
 import StockIssuedList from "@/pages/Inventory/ManageStockIssue/StockIssuedList";
 import StockIssues from "@/pages/Inventory/ManageStockIssue/StockIssues";
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/products/warranties",
-        element: <WarrentyList />,
+        element: <WarrantyList />,
       },
       {
         path: "/products/generate-qrcode",

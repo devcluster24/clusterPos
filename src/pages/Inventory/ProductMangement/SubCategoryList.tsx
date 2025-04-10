@@ -110,8 +110,8 @@ const SubCategoryList: React.FC = () => {
     setModalActive(true);
     form.setFieldsValue({
       ...data,
-      categoryId: data?.category?.id,
-      statusId: data?.status?.id,
+      categoryId: data?.Category?.id,
+      statusId: data?.Status?.id,
     });
   };
 
@@ -255,12 +255,12 @@ const SubCategoryList: React.FC = () => {
     },
     {
       title: "Parent Category",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "Category",
+      key: "Category",
       minWidth: 100,
-      render: (category) => {
-        if (category?.name) {
-          return <p>{category?.name}</p>;
+      render: (Category) => {
+        if (Category?.name) {
+          return <p>{Category?.name}</p>;
         } else {
           return <p> --- </p>;
         }
@@ -268,16 +268,16 @@ const SubCategoryList: React.FC = () => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "Status",
+      key: "Status",
       width: 100,
-      render: (status) => {
-        if (status?.value === "ACTIVE") {
-          return <Tag color="#87d068">{status?.value}</Tag>;
-        } else if (status?.value === "INACTIVE") {
-          return <Tag color="#f50">{status?.value}</Tag>;
+      render: (Status) => {
+        if (Status?.name === "ACTIVE") {
+          return <Tag color="#87d068">{Status?.name}</Tag>;
+        } else if (Status?.name === "INACTIVE") {
+          return <Tag color="#f50">{Status?.name}</Tag>;
         } else {
-          return <Tag color="#f50">{status?.value}</Tag>;
+          return <Tag color="#f50">{Status?.name}</Tag>;
         }
       },
     },
@@ -355,7 +355,7 @@ const SubCategoryList: React.FC = () => {
                       { value: "", label: "ALL" },
                       ...(statues?.data?.map((status: TStatus) => ({
                         value: status.id,
-                        label: status.value,
+                        label: status.name,
                       })) || []),
                     ]}
                     onChange={(value) => handleFilter("statusId", value)}
@@ -422,7 +422,7 @@ const SubCategoryList: React.FC = () => {
                   label="Status"
                   options={statues?.data?.map((status: TStatus) => ({
                     value: status.id,
-                    label: status.value,
+                    label: status.name,
                   }))}
                   rules={validationRules.required("Status")}
                   showSearch

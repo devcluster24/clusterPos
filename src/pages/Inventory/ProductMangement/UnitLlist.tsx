@@ -92,7 +92,7 @@ const UnitList: React.FC = () => {
     setSelectedData(data);
     form.setFieldsValue({
       ...data,
-      statusId: data?.status?.id,
+      statusId: data?.Status?.id,
     });
     setModalActive(true);
     setMultiplier(!!data?.multiplier);
@@ -243,19 +243,18 @@ const UnitList: React.FC = () => {
         multiplierUnitDetails ? <p>{multiplierUnitDetails}</p> : <p>---</p>,
       minWidth: 100,
     },
-
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "Status",
+      key: "Status",
       width: 100,
-      render: (status) => {
-        if (status?.value === "ACTIVE") {
-          return <Tag color="#87d068">{status?.value}</Tag>;
-        } else if (status?.value === "INACTIVE") {
-          return <Tag color="#f50">{status?.value}</Tag>;
+      render: (Status) => {
+        if (Status?.name === "ACTIVE") {
+          return <Tag color="#87d068">{Status?.name}</Tag>;
+        } else if (Status?.name === "INACTIVE") {
+          return <Tag color="#f50">{Status?.name}</Tag>;
         } else {
-          return <Tag color="#f50">{status?.value}</Tag>;
+          return <Tag color="#f50">{Status?.name}</Tag>;
         }
       },
     },
@@ -327,7 +326,7 @@ const UnitList: React.FC = () => {
                       { value: "", label: "ALL" },
                       ...(statues?.data?.map((status: TStatus) => ({
                         value: status.id,
-                        label: status.value,
+                        label: status.name,
                       })) || []),
                     ]}
                     onChange={(value) => handleFilter("statusId", value)}
@@ -397,9 +396,9 @@ const UnitList: React.FC = () => {
                 <SelectField
                   name="statusId"
                   label="Status"
-                  options={statues?.data?.map((item: TStatus) => ({
-                    value: item.id,
-                    label: item.value,
+                  options={statues?.data?.map((status: TStatus) => ({
+                    value: status.id,
+                    label: status.name,
                   }))}
                   rules={validationRules.required("Status")}
                   showSearch

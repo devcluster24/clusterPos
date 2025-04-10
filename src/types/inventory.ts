@@ -1,7 +1,7 @@
 export type TStatus = {
   id: number | string;
-  value: "ACTIVE" | "INACTIVE" | string;
-  name?: string;
+  value?: "ACTIVE" | "INACTIVE" | string;
+  name?: "ACTIVE" | "INACTIVE" | string;
   codeName?: string;
   description?: string;
 };

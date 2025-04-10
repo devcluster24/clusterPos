@@ -84,21 +84,20 @@ const VariantList: React.FC = () => {
     setIsEdit(true);
     setSelectedData(data);
 
-    const variantNames = data?.variants?.map((variant: any) => variant.name);
+    const variantNames = data?.Variants?.map((variant: any) => variant.name);
 
     form.setFieldsValue({
       ...data,
       name: variantNames,
     });
 
-    setVariantNames(data?.variants);
+    setVariantNames(data?.Variants);
     setModalActive(true);
   };
 
   // Handle Submit for add or edit
   const handleSubmit = async (values: any) => {
     delete values.code;
-    console.log("values", values);
     try {
       let result;
       interface VariantPayload {
@@ -204,8 +203,8 @@ const VariantList: React.FC = () => {
     },
     {
       title: "Variant Child",
-      dataIndex: "variants",
-      key: "variants",
+      dataIndex: "Variants",
+      key: "Variants",
       minWidth: 100,
       render: (variants) => {
         return (

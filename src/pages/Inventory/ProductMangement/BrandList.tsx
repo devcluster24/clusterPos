@@ -233,16 +233,16 @@ const BrandList: React.FC = () => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "Status",
+      key: "Status",
       width: 100,
-      render: (status) => {
-        if (status?.value === "ACTIVE") {
-          return <Tag color="#87d068">{status?.value}</Tag>;
-        } else if (status?.value === "INACTIVE") {
-          return <Tag color="#f50">{status?.value}</Tag>;
+      render: (Status) => {
+        if (Status?.name === "ACTIVE") {
+          return <Tag color="#87d068">{Status?.name}</Tag>;
+        } else if (Status?.name === "INACTIVE") {
+          return <Tag color="#f50">{Status?.name}</Tag>;
         } else {
-          return <Tag color="#f50">{status?.value}</Tag>;
+          return <Tag color="#f50">{Status?.name}</Tag>;
         }
       },
     },
@@ -301,7 +301,7 @@ const BrandList: React.FC = () => {
                       { value: "", label: "ALL" },
                       ...(statues?.data?.map((status: TStatus) => ({
                         value: status.id,
-                        label: status.value,
+                        label: status.name,
                       })) || []),
                     ]}
                     onChange={(value) => handleFilter("statusId", value)}
@@ -353,14 +353,19 @@ const BrandList: React.FC = () => {
                 <TextAreaField name="description" label="Description" />
                 <SelectField
                   name="statusId"
+                  placeholder="Filter by Status"
                   label="Status"
-                  options={statues?.data?.map((status: TStatus) => ({
-                    value: status.id,
-                    label: status.value,
-                  }))}
-                  rules={validationRules.required("Status")}
                   showSearch
+                  rules={validationRules.required("Status")}
+                  options={[
+                    { value: "", label: "ALL" },
+                    ...(statues?.data?.map((status: TStatus) => ({
+                      value: status.id,
+                      label: status.name,
+                    })) || []),
+                  ]}
                 />
+
                 <FileInputField
                   label="Photo"
                   allowedExtensions={["jpg", "png", "pdf"]}

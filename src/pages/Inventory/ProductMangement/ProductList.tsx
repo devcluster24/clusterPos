@@ -219,15 +219,18 @@ const ProductList: React.FC = () => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "Status",
+      key: "Status",
       width: 100,
-      render: (status: string) =>
-        status === "1" ? (
-          <Tag color="#87d068">Active</Tag>
-        ) : (
-          <Tag color="#f50">Inactive</Tag>
-        ),
+      render: (Status) => {
+        if (Status?.name === "ACTIVE") {
+          return <Tag color="#87d068">{Status?.name}</Tag>;
+        } else if (Status?.name === "INACTIVE") {
+          return <Tag color="#f50">{Status?.name}</Tag>;
+        } else {
+          return <Tag color="#f50">{Status?.name}</Tag>;
+        }
+      },
     },
     {
       title: "Actions",

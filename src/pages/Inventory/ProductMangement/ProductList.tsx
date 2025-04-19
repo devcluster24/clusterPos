@@ -17,9 +17,13 @@ import FilterCard from "@/components/ui/card/FilterCard";
 import ReusableForm from "@/components/form/ReusableForm";
 import noImage from "/noimage.png";
 import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
-import { TStatus } from "@/types";
+import { TBrand, TCategory, TStatus, TUnit } from "@/types";
 import useDeleteConfirmation from "@/hooks/useDeleteConfirmation";
 import ActionButtons from "@/components/ui/button/ActionButton";
+import { useGetAllCategoryQuery } from "@/redux/features/admin/Inventory/categoryApi";
+import { useGetAllBrandQuery } from "@/redux/features/admin/Inventory/brandApi";
+import { useGetAllUnitsQuery } from "@/redux/features/admin/Inventory/unitsApi";
+import ReusableModal from "@/components/ui/modal/ReusableModal";
 
 // filter types
 interface FilterState {
@@ -30,12 +34,10 @@ interface FilterState {
 
 const ProductList: React.FC = () => {
   const [form] = Form.useForm();
-  // const [fileList, setFileList] = useState<any[]>([]);
-  // const [modalActive, setModalActive] = useState(false);
-  // const [isEdit, setIsEdit] = useState(false);
   const [filterActive, setFilterActive] = useState(false);
   const [filters, setFilters] = useState<FilterState>({});
-  // const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
+  const [modalActive, setModalActive] = useState(false);
+  const [selectedData, setSelectedData] = useState<AnyObject | null>(null);
   const { handleDelete } = useDeleteConfirmation();
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
@@ -69,16 +71,9 @@ const ProductList: React.FC = () => {
   });
 
   const { data: statues } = useGetAllStatusQuery({});
-
-  // Handle file selection
-  // const handleUpload = (info: UploadChangeParam<UploadFile>) => {
-  //   setFileList(info.fileList);
-  // };
-  // // Handle remove file selection
-  // const handleRemove = (file: UploadFile) => {
-  //   setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
-  //   return true;
-  // };
+  const { data: categories } = useGetAllCategoryQuery({});
+  const { data: brands } = useGetAllBrandQuery({});
+  const { data: units } = useGetAllUnitsQuery({});
 
   // Handle Submit for add or edit
   // const handleSubmit = async (values: any) => {
@@ -164,22 +159,14 @@ const ProductList: React.FC = () => {
   };
 
   // handle reset
-  // const handleReset = () => {
-  //   setFilters({});
-  //   form.resetFields();
-  //   setSearchTerm("");
-  //   setFilterActive(false);
-  //   setFileList([]);
-  //   setModalActive(false);
-  //   setSelectedData(null);
-  //   setIsEdit(false);
-  //   setPagination({
-  //     page: 1,
-  //     pageSize: 25,
-  //     sortOrder: "desc",
-  //     sortBy: "createdAt",
-  //   });
-  // };
+  const handleReset = () => {
+    form.resetFields();
+    setFilters({});
+    setSearchTerm("");
+    setFilterActive(false);
+    setModalActive(false);
+    setSelectedData(null);
+  };
 
   // Table columns with correct types
   const columns: ColumnsType<AnyObject> = [
@@ -210,6 +197,10 @@ const ProductList: React.FC = () => {
       align: "center",
       render: (_, record) => (
         <ActionButtons
+          onView={() => {
+            setSelectedData(record);
+            setModalActive(true);
+          }}
           onEdit={() => navigate(`/products/edit/${record.id}`)}
           onDelete={() =>
             handleDelete(
@@ -232,12 +223,11 @@ const ProductList: React.FC = () => {
       dataIndex: "categoryId",
       key: "categoryId",
       minWidth: 100,
-      render: (Category) => {
-        if (Category?.name) {
-          return <p>{Category?.name}</p>;
-        } else {
-          return <p> --- </p>;
-        }
+      render: (categoryId) => {
+        const categoryName = categories?.data?.find(
+          (item: TCategory) => item.id === categoryId
+        )?.name;
+        return <span>{categoryName || "---"}</span>;
       },
     },
     {
@@ -245,12 +235,11 @@ const ProductList: React.FC = () => {
       dataIndex: "brandId",
       key: "brandId",
       minWidth: 100,
-      render: (Category) => {
-        if (Category?.name) {
-          return <p>{Category?.name}</p>;
-        } else {
-          return <p> --- </p>;
-        }
+      render: (brandId) => {
+        const brandName = brands?.data?.find(
+          (item: TBrand) => item.id === brandId
+        )?.name;
+        return <span>{brandName || "---"}</span>;
       },
     },
     {
@@ -258,51 +247,51 @@ const ProductList: React.FC = () => {
       dataIndex: "unitId",
       key: "unitId",
       minWidth: 100,
-      render: (Category) => {
-        if (Category?.name) {
-          return <p>{Category?.name}</p>;
-        } else {
-          return <p> --- </p>;
-        }
+      render: (unitId) => {
+        const unitName = units?.data?.find(
+          (item: TUnit) => item.id === unitId
+        )?.name;
+        return <span>{unitName || "---"}</span>;
       },
     },
     {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      minWidth: 100,
-      render: (Category) => {
-        if (Category?.name) {
-          return <p>{Category?.name}</p>;
-        } else {
-          return <p> --- </p>;
-        }
+      width: 80,
+      render: (quantity) => {
+        return <p>{quantity ? quantity : 0}</p>;
       },
     },
 
     {
       title: "Status",
-      dataIndex: "Status",
-      key: "Status",
+      dataIndex: "statusId",
+      key: "statusId",
       width: 100,
-      render: (Status) => {
-        if (Status?.name === "ACTIVE") {
-          return <Tag color="#87d068">{Status?.name}</Tag>;
-        } else if (Status?.name === "INACTIVE") {
-          return <Tag color="#f50">{Status?.name}</Tag>;
+      render: (statusId) => {
+        const statusName = statues?.data?.find(
+          (item: TStatus) => item.id === statusId
+        )?.name;
+        if (statusName === "ACTIVE") {
+          return <Tag color="#87d068">{statusName}</Tag>;
+        } else if (statusName === "INACTIVE") {
+          return <Tag color="#f50">{statusName}</Tag>;
         } else {
-          return <Tag color="#f50">{Status?.name}</Tag>;
+          return <Tag color="#f50">{statusName}</Tag>;
         }
       },
     },
   ];
 
-  console.log(selectedRowKeys);
+  // console.log(selectedRowKeys);
   return (
     <>
       <SummaryCard
         pageTitle="Product"
         backBtnActive={true}
+        resetBtnActive={filterActive ? true : false}
+        resetBtnClick={() => handleReset()}
         filterBtnActive
         filterBtnClick={() => setFilterActive((prev) => !prev)}
         addBtnActive
@@ -320,7 +309,22 @@ const ProductList: React.FC = () => {
               form={form}
               layout="vertical"
               content={
-                <div className="flex md:flex-row flex-col justify-between items-end gap-3 w-full">
+                <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 justify-between items-end gap-3 w-full">
+                  <SelectField
+                    name="categoryId"
+                    label="Category"
+                    placeholder="Filter by Category"
+                    options={[
+                      { value: "", label: "ALL" },
+                      ...(categories?.data?.map((cat: TCategory) => ({
+                        value: cat.id,
+                        label: cat.name,
+                      })) || []),
+                    ]}
+                    onChange={(value) => handleFilter("categoryId", value)}
+                    showSearch
+                  />
+
                   <SelectField
                     name="statusId"
                     placeholder="Filter by Status"
@@ -329,7 +333,7 @@ const ProductList: React.FC = () => {
                       { value: "", label: "ALL" },
                       ...(statues?.data?.map((status: TStatus) => ({
                         value: status.id,
-                        label: status.value,
+                        label: status.name,
                       })) || []),
                     ]}
                     onChange={(value) => handleFilter("statusId", value)}
@@ -362,6 +366,27 @@ const ProductList: React.FC = () => {
           setSelectedRowKeys={setSelectedRowKeys}
         />
       </DefaultCard>
+
+      <ReusableModal
+        title={`${selectedData?.name}`}
+        visible={modalActive}
+        onClose={() => handleReset()}
+        content={
+          <div>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur,
+            ratione in saepe accusantium quod optio reiciendis vitae animi autem
+            rem. Nam, omnis porro dolor nihil eum tempore tempora neque iusto
+            qui optio earum vero consectetur laborum odit inventore magni animi
+            quisquam? Enim officiis facilis, sequi neque dolore, minima atque
+            laboriosam unde aliquam ratione eveniet voluptatum laborum aliquid
+            voluptas! Rem accusamus quisquam pariatur placeat fugit iste
+            exercitationem, ad maxime in fuga unde quae tenetur corrupti
+            explicabo odit inventore hic, eius non soluta nisi sed iusto nulla
+            nostrum officiis. Hic dignissimos nobis molestiae et. Rem,
+            explicabo. Nobis voluptates quidem eveniet explicabo amet!
+          </div>
+        }
+      />
     </>
   );
 };

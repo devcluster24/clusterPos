@@ -28,6 +28,7 @@ import StockInOutReports from "@/pages/Inventory/ProductReports/StockInOutReport
 import CreatePurchase from "@/pages/Purchase/PurchaseMangement/CreatePurchase";
 import PurchaseList from "@/pages/Purchase/PurchaseMangement/PurchaseList";
 import PurchasedProductList from "@/pages/Purchase/PurchaseMangement/PurchasedProductList";
+import EditProduct from "@/pages/Inventory/ProductMangement/EditProduct";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "/products/create",
         element: <CreateProduct />,
+      },
+      {
+        path: "/products/edit/:id",
+        element: <EditProduct />,
       },
       {
         path: "/products/list",

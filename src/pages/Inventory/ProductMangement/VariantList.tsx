@@ -84,7 +84,10 @@ const VariantList: React.FC = () => {
     setIsEdit(true);
     setSelectedData(data);
 
-    const variantNames = data?.Variants?.map((variant: any) => variant.name);
+    const variantNames = data?.Variants?.map((variant: any) => ({
+      id: variant.id,
+      name: variant.name,
+    }));
 
     form.setFieldsValue({
       ...data,
@@ -107,10 +110,14 @@ const VariantList: React.FC = () => {
 
       const payload: VariantPayload = {
         value: values.value,
-        child: values.name.filter(
-          (name: { name: string }) => name?.name?.trim() !== ""
-        ),
+        child: values.name
+          .filter((item: { name: string }) => item?.name?.trim() !== "")
+          .map((item: { name: string; id?: number }) => ({
+            name: item.name.trim(),
+            ...(item.id && { id: item.id }), // Include ID if available
+          })),
       };
+      console.log(payload);
       if (isEdit) {
         result = await editVarient({
           id: selectedData?.id,
@@ -347,7 +354,7 @@ const VariantList: React.FC = () => {
                             style={{ margin: 0, padding: 0, width: "100%" }}
                             {...restField}
                             label={key === 0 ? "Variant Name" : ""}
-                            name={[key]}
+                            name={[name, "name"]}
                             fieldKey={[fieldKey ?? 0, "name"]}
                             rules={[
                               {
@@ -358,6 +365,13 @@ const VariantList: React.FC = () => {
                           >
                             <Input placeholder="Variant Name" />
                           </Form.Item>
+                          <Form.Item
+                            style={{ margin: 0, padding: 0, width: "00%" }}
+                            {...restField}
+                            name={[name, "id"]}
+                            label={key === 0 ? "Variant ID" : ""}
+                            hidden
+                          />
 
                           <button
                             type="button"

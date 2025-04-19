@@ -72,3 +72,15 @@ export type TWarranty = {
   statusId: number;
   Status: TStatus;
 };
+
+export type TVariant = {
+  id: number;
+  name: string;
+  variantTypeId: number;
+};
+
+export type TVariantType = {
+  id: number;
+  value: string;
+  Variants: TVariant[];
+};

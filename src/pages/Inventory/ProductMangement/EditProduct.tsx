@@ -9,10 +9,13 @@ import FormCard from "@/components/ui/card/FormCard";
 import SummaryCard from "@/components/ui/card/SummaryCard";
 import ReusableForm from "@/components/form/ReusableForm";
 import FileInputField from "@/components/form/FileInputField";
-import { Button, Form, UploadFile } from "antd";
-import { useState } from "react";
+import { Form, UploadFile } from "antd";
+import { useEffect, useState } from "react";
 import { UploadChangeParam } from "antd/es/upload";
-import { useCreateProductMutation } from "@/redux/features/admin/Inventory/productApi";
+import {
+  useGetProductByIdQuery,
+  useUpdateProductMutation,
+} from "@/redux/features/admin/Inventory/productApi";
 import { useGetAllStatusQuery } from "@/redux/features/admin/Inventory/statusApi";
 import { useGetAllUnitsQuery } from "@/redux/features/admin/Inventory/unitsApi";
 import { useGetAllCategoryQuery } from "@/redux/features/admin/Inventory/categoryApi";
@@ -24,26 +27,81 @@ import {
   TStatus,
   TSubcategory,
   TUnit,
-  TVariant,
-  TVariantType,
   TWarranty,
 } from "@/types";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { useGetAllWarrentyQuery } from "@/redux/features/admin/Inventory/warrantyApi";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
-import { useGetAllVarientTypeQuery } from "@/redux/features/admin/Inventory/variantTypeApi";
-import { FaTrash } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
 
-const CreateProduct = () => {
+const EditProduct = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [value, setValue] = useState("");
   const navigate = useNavigate();
-  const [hasVariant, setHasvariant] = useState(false);
-  const [hasMultipleUnit, setHasMultipleUnit] = useState(false);
+
+  const { id } = useParams(); // gets the ":id" from the URL
+
+  const numericId = id ? Number(id) : undefined;
+
+  // Only run query when numericId is available
+  const {
+    data: product,
+    isLoading,
+    isFetching,
+    error,
+  } = useGetProductByIdQuery(numericId!, {
+    skip: !numericId, // prevent fetching until ID is defined
+  });
+
+  const [editProduct, { isLoading: editLoading }] = useUpdateProductMutation();
+  const { data: statues } = useGetAllStatusQuery({});
+  const { data: categories } = useGetAllCategoryQuery({});
+  const { data: subcategories } = useGetAllSubcategoryQuery({
+    categoryId: selectedCategory,
+  });
+  const { data: brands } = useGetAllBrandQuery({});
+  const { data: units } = useGetAllUnitsQuery({});
+  const { data: warranties } = useGetAllWarrentyQuery({});
+
+  useEffect(() => {
+    if (product) {
+      form.setFieldsValue({
+        ...product.data,
+      });
+      setValue(product?.data?.description);
+    }
+  }, [product, form]);
+
+  if (!numericId || isLoading || isFetching) return <p>Loading...</p>;
+
+  if (error) return <p>Error fetching product.</p>;
+
+  const handleSubmit = async (values: any) => {
+    console.log("Form Values: ", values);
+    values.description = value;
+    const result = await editProduct({ id: id, data: values }).unwrap();
+    if (result?.success) {
+      Swal.fire({
+        title: "Updated!",
+        text: result?.message || "Product has been updated.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: true,
+      });
+      handleReset();
+    } else {
+      Swal.fire({
+        title: "Failed!",
+        text: result?.message || "Failed to update Product.",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: true,
+      });
+    }
+  };
 
   // Handle file selection
   const handleUpload = (info: UploadChangeParam<UploadFile>) => {
@@ -56,44 +114,6 @@ const CreateProduct = () => {
     return true;
   };
 
-  const [addProduct, { isLoading: addLoading }] = useCreateProductMutation();
-
-  const { data: statues } = useGetAllStatusQuery({});
-  const { data: categories } = useGetAllCategoryQuery({});
-  const { data: subcategories } = useGetAllSubcategoryQuery({
-    categoryId: selectedCategory,
-  });
-  const { data: brands } = useGetAllBrandQuery({});
-  const { data: units } = useGetAllUnitsQuery({});
-  const { data: warranties } = useGetAllWarrentyQuery({});
-  const { data: varients } = useGetAllVarientTypeQuery({});
-  const sizeVariant = varients?.data?.filter(
-    (item: TVariantType) => item?.value === "SIZE"
-  );
-
-  const handleSubmit = async (values: any) => {
-    console.log("Form Values: ", values);
-    const result = await addProduct(values).unwrap();
-    if (result?.success) {
-      Swal.fire({
-        title: "Added!",
-        text: result?.message || "Category has been added.",
-        icon: "success",
-        timer: 2000,
-        showConfirmButton: true,
-      });
-      handleReset();
-    } else {
-      Swal.fire({
-        title: "Failed!",
-        text: result?.message || "Failed to added Category.",
-        icon: "error",
-        timer: 2000,
-        showConfirmButton: true,
-      });
-    }
-  };
-
   // handle reset
   const handleReset = () => {
     form.resetFields();
@@ -103,10 +123,11 @@ const CreateProduct = () => {
 
   return (
     <>
-      <SummaryCard pageTitle="Add Product" backBtnActive={true} />
+      <SummaryCard pageTitle="Edit Product" backBtnActive={true} />
 
       <DefaultCard>
         <ReusableForm
+          loading={isLoading}
           form={form}
           onSubmit={handleSubmit}
           onValuesChange={(changedValues, allValues) => {
@@ -150,12 +171,12 @@ const CreateProduct = () => {
                   label="Product Name"
                   rules={validationRules.required("Product Name")}
                 />
-                {/* <InputField name="code" label="Product Code" disabled /> */}
+                <InputField name="code" label="Product Code" disabled />
                 <SelectField
                   name="unitId"
                   label="Unit"
                   options={[
-                    { value: null, label: "Select Unit" },
+                    { value: "", label: "Select Unit" },
                     ...(units?.data
                       ?.filter((item: TUnit) => item.Status?.name === "ACTIVE")
                       ?.map((item: TUnit) => ({
@@ -184,7 +205,7 @@ const CreateProduct = () => {
                   name="categoryId"
                   label="Category"
                   options={[
-                    { value: null, label: "Select Category" },
+                    { value: "", label: "Select Category" },
                     ...(categories?.data
                       ?.filter(
                         (item: TCategory) => item.Status?.name === "ACTIVE"
@@ -208,7 +229,7 @@ const CreateProduct = () => {
                   options={
                     selectedCategory
                       ? [
-                          { value: null, label: "Select Subcategory" },
+                          { value: "", label: "Select Subcategory" },
                           ...(subcategories?.data
                             ?.filter(
                               (item: TSubcategory) =>
@@ -227,7 +248,7 @@ const CreateProduct = () => {
                   name="brandId"
                   label="Brand"
                   options={[
-                    { value: null, label: "Select Brand" },
+                    { value: "", label: "Select Brand" },
                     ...(brands?.data
                       ?.filter((item: TBrand) => item.Status?.name === "ACTIVE")
                       ?.map((item: TBrand) => ({
@@ -241,7 +262,7 @@ const CreateProduct = () => {
                   name="statusId"
                   label="Status"
                   options={[
-                    { value: null, label: "Select Status" },
+                    { value: "", label: "Select Status" },
                     ...(statues?.data?.map((item: TStatus) => ({
                       value: item.id,
                       label: item.name,
@@ -254,7 +275,7 @@ const CreateProduct = () => {
                   name="warrantyId"
                   label="Warranty"
                   options={[
-                    { value: null, label: "Select Warranty" },
+                    { value: "", label: "Select Warranty" },
                     ...(warranties?.data
                       ?.filter(
                         (item: TWarranty) => item.Status?.name === "ACTIVE"
@@ -263,19 +284,6 @@ const CreateProduct = () => {
                         value: item.id,
                         label: item.duration,
                       })) || []),
-                  ]}
-                  showSearch
-                />
-
-                <SelectField
-                  name="size"
-                  label="Size"
-                  options={[
-                    { value: null, label: "Select Size" },
-                    ...(sizeVariant?.[0]?.Variants?.map((item: TVariant) => ({
-                      value: item.id,
-                      label: item.name,
-                    })) || []),
                   ]}
                   showSearch
                 />
@@ -303,8 +311,8 @@ const CreateProduct = () => {
                   name="condition"
                   label="Condition"
                   options={[
-                    { value: "NEW", label: "New" },
-                    { value: "USED", label: "Used" },
+                    { value: "new", label: "New" },
+                    { value: "used", label: "Used" },
                   ]}
                 />
               </FormCard>
@@ -318,107 +326,19 @@ const CreateProduct = () => {
                   name="hasMultipleUnit"
                   label="Has Multiple Unit?"
                   options={[
-                    { value: true, label: "Yes" },
-                    { value: false, label: "No" },
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
                   ]}
-                  onChange={(value) => setHasMultipleUnit(value)}
                 />
                 <SelectField
                   name="hasVariant"
                   label="Has Variant?"
                   options={[
-                    { value: true, label: "Yes" },
-                    { value: false, label: "No" },
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" },
                   ]}
-                  onChange={(value) => setHasvariant(value)}
                 />
               </FormCard>
-              {hasVariant && (
-                <div
-                  className={`border rounded border-gray-300 dark:border-gray-700 p-4 mb-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow box-border overflow-hidden pb-10 ${
-                    hasVariant ? "" : "hidden"
-                  }`}
-                >
-                  <Form.List name="productVariants">
-                    {(fields, { add, remove }) => (
-                      <>
-                        <div className="flex justify-between items-center gap-2 w-full mb-3">
-                          <p className="bg-blue-500 text-white px-3 text-lg font-semibold rounded-sm">
-                            Create Variant
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => add()}
-                            className="text-blue-500 hover:text-white border rounded-sm px-5 py-1 cursor-pointer hover:bg-blue-500 mt-2"
-                          >
-                            ➕ Add More
-                          </button>
-                        </div>
-                        {fields.map(({ key, name }, index) => (
-                          <div
-                            key={key}
-                            className="grid md:grid-cols-3 grid-cols-2 gap-1 md:py-3 py-1 w-full border-b"
-                          >
-                            <SelectField
-                              name={name.toString()}
-                              label={key === 0 ? "Variant Type" : ""}
-                              options={[
-                                { value: null, label: "Select Variant Type" },
-                                ...(varients?.data?.map(
-                                  (item: TVariantType) => ({
-                                    value: item.id,
-                                    label: item.value,
-                                  })
-                                ) || []),
-                              ]}
-                              showSearch
-                            />
-                            <SelectField
-                              name={name.toString()}
-                              label={key === 0 ? "Variant Name" : ""}
-                              options={[
-                                { value: null, label: "Select Variant" },
-                                ...(sizeVariant?.[0]?.Variants?.map(
-                                  (item: TVariant) => ({
-                                    value: item.id,
-                                    label: item.name,
-                                  })
-                                ) || []),
-                              ]}
-                              showSearch
-                            />
-                            <NumberField
-                              name="unitCost"
-                              label="Unit Cost (Exc. Tax)"
-                            />
-                            <NumberField
-                              name="profitMargin"
-                              label="Profit Margin (%)"
-                            />
-                            <NumberField
-                              name="unitPrice"
-                              label="Unit Price (Exc. Tax)"
-                            />
-                            <div className="flex gap-1">
-                              <NumberField name="quantity" label="Quantity" />
-                              {index !== 0 && (
-                                <Button
-                                  type="link"
-                                  danger
-                                  icon={
-                                    <FaTrash className="size-5 hover:text-red-800" />
-                                  }
-                                  onClick={() => remove(name)}
-                                />
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </Form.List>
-                </div>
-              )}
               {/* Stock and E-commerce Section */}
               <FormCard>
                 <SelectField
@@ -489,7 +409,10 @@ const CreateProduct = () => {
               </div>
               {/* Submit Button */}
               <div className="flex justify-end">
-                <SubmitButton loading={addLoading} />
+                <SubmitButton
+                  selectedRecord={product?.data}
+                  loading={editLoading}
+                />
               </div>
             </>
           }
@@ -499,4 +422,4 @@ const CreateProduct = () => {
   );
 };
 
-export default CreateProduct;
+export default EditProduct;

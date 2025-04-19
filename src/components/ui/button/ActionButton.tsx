@@ -2,18 +2,29 @@ import { Button, Dropdown, Menu } from "antd";
 import { IoMdArrowDropdown } from "react-icons/io";
 
 interface ActionButtonsProps {
+  onView?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   onDuplicate?: () => void;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
+  onView,
   onEdit,
   onDelete,
   onDuplicate,
 }) => {
   const exportMenu = (
     <Menu style={{ padding: "0px", border: "1px solid lightgray" }}>
+      {onView && (
+        <Menu.Item
+          key="view"
+          onClick={onView}
+          style={{ borderBottom: "1px solid lightgray" }}
+        >
+          View
+        </Menu.Item>
+      )}
       {onEdit && (
         <Menu.Item
           key="edit"

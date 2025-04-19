@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form, Select } from "antd";
+import { NoFormStyleProps } from "antd/es/form/context";
+import { FormItemLayout } from "antd/es/form/Form";
 
 interface SelectFieldProps {
+  style?: NoFormStyleProps;
+  layout?: FormItemLayout;
   name?: string;
   label?: string;
   rules?: Array<{ required?: boolean; message?: string }>;
@@ -13,7 +17,9 @@ interface SelectFieldProps {
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
+  style,
   name,
+  layout = "horizontal",
   label,
   rules,
   options,
@@ -23,10 +29,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
   onChange,
 }) => (
   <Form.Item
+    layout={layout}
     label={label}
     name={name}
     rules={rules}
-    style={{ marginBottom: "0px", width: "100%" }}
+    style={{ marginBottom: "0px", width: "100%", ...style }}
   >
     <Select
       showSearch={showSearch} // Enable search only if showSearch is true
